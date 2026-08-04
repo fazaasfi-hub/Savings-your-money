@@ -63,7 +63,7 @@ import { NotificationsModal } from './components/modals/NotificationsModal';
 
 // Icons
 import {
-  LayoutDashboard,
+  LayoutGrid,
   Wallet,
   Receipt,
   Target,
@@ -86,8 +86,48 @@ export default function App() {
   const dockTrackRef = useRef<HTMLDivElement>(null);
   const [dragConstraintsLeft, setDragConstraintsLeft] = useState(0);
 
+  // Advanced Long-Press Drag-to-Switch Tab Navigation
+  const [isDragSelectActive, setIsDragSelectActive] = useState(false);
+  const dragSelectTimerRef = useRef<any>(null);
+
   // Navigation & Core flows
-  const [currentScreen, setCurrentScreen] = useState<'splash' | 'onboarding' | 'login' | 'dashboard' | string>('splash');
+  const [currentScreen, setCurrentScreenState] = useState<'splash' | 'onboarding' | 'login' | 'dashboard' | string>('splash');
+  const [screenDirection, setScreenDirection] = useState<number>(0);
+
+  const SCREEN_INDICES: Record<string, number> = {
+    splash: -2,
+    onboarding: -1,
+    login: -1,
+    dashboard: 0,
+    savings: 1,
+    transactions: 2,
+    wishlist: 3,
+    tools: 4,
+    settings: 5,
+    calendar: 4,
+    statistics: 4,
+    budget: 4,
+    walletSync: 4,
+    aiAdvisor: 4,
+    recurring: 4,
+    debt: 4,
+    export: 4,
+    splitBill: 4,
+  };
+
+  const setCurrentScreen = (newScreen: string) => {
+    const currentIndex = SCREEN_INDICES[newScreen] ?? 0;
+    const prevIndex = SCREEN_INDICES[currentScreen] ?? 0;
+    
+    if (currentIndex > prevIndex) {
+      setScreenDirection(1);
+    } else if (currentIndex < prevIndex) {
+      setScreenDirection(-1);
+    } else {
+      setScreenDirection(0);
+    }
+    setCurrentScreenState(newScreen);
+  };
   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
   const [authUser, setAuthUser] = useState<User | null>(null);
   const [isLocked, setIsLocked] = useState(false);
@@ -548,12 +588,88 @@ export default function App() {
     setNotifications(notifications.map(n => n.id === id ? { ...n, isRead: true } : n));
   };
 
+  // --- ADVANCED LONG-PRESS DRAG-TO-SWITCH GESTURE ENGINE ---
+  const handleDockTouchStart = (e: React.TouchEvent) => {
+    if (dragSelectTimerRef.current) clearTimeout(dragSelectTimerRef.current);
+    if (e.touches.length === 1) {
+      const touch = e.touches[0];
+      dragSelectTimerRef.current = setTimeout(() => {
+        setIsDragSelectActive(true);
+        if (navigator.vibrate) {
+          navigator.vibrate(20); // Firm initial pulse
+        }
+      }, 350); // Deluxe 350ms hold-to-unlock
+    }
+  };
+
+  const handleDockTouchMove = (e: React.TouchEvent) => {
+    if (isDragSelectActive) {
+      if (e.cancelable) {
+        e.preventDefault();
+      }
+      const touch = e.touches[0];
+      const targetElement = document.elementFromPoint(touch.clientX, touch.clientY);
+      const tabButton = targetElement?.closest('[data-tab-id]');
+      if (tabButton) {
+        const tabId = tabButton.getAttribute('data-tab-id');
+        if (tabId && tabId !== currentScreen) {
+          setCurrentScreen(tabId);
+          if (navigator.vibrate) {
+            navigator.vibrate(10); // Fluid tactile tick
+          }
+        }
+      }
+    } else {
+      if (dragSelectTimerRef.current) {
+        clearTimeout(dragSelectTimerRef.current);
+        dragSelectTimerRef.current = null;
+      }
+    }
+  };
+
+  const handleDockTouchEnd = () => {
+    if (dragSelectTimerRef.current) {
+      clearTimeout(dragSelectTimerRef.current);
+      dragSelectTimerRef.current = null;
+    }
+    setIsDragSelectActive(false);
+  };
+
+  const handleDockMouseDown = (e: React.MouseEvent) => {
+    if (dragSelectTimerRef.current) clearTimeout(dragSelectTimerRef.current);
+    dragSelectTimerRef.current = setTimeout(() => {
+      setIsDragSelectActive(true);
+    }, 350);
+  };
+
+  const handleDockMouseMove = (e: React.MouseEvent) => {
+    if (isDragSelectActive) {
+      e.preventDefault();
+      const targetElement = document.elementFromPoint(e.clientX, e.clientY);
+      const tabButton = targetElement?.closest('[data-tab-id]');
+      if (tabButton) {
+        const tabId = tabButton.getAttribute('data-tab-id');
+        if (tabId && tabId !== currentScreen) {
+          setCurrentScreen(tabId);
+        }
+      }
+    }
+  };
+
+  const handleDockMouseUp = () => {
+    if (dragSelectTimerRef.current) {
+      clearTimeout(dragSelectTimerRef.current);
+      dragSelectTimerRef.current = null;
+    }
+    setIsDragSelectActive(false);
+  };
+
   const isDark = settings.theme === 'DARK';
   const t = getTranslation(settings.language);
 
   // Navigation tabs config
   const navTabs = [
-    { id: 'dashboard', label: t.tabDashboard, icon: LayoutDashboard },
+    { id: 'dashboard', label: t.tabDashboard, icon: LayoutGrid },
     { id: 'savings', label: t.tabSavings, icon: Wallet },
     { id: 'transactions', label: t.tabTransactions, icon: Receipt },
     { id: 'wishlist', label: t.tabTarget, icon: Target },
@@ -698,178 +814,214 @@ export default function App() {
 
         {/* Regular Application Screens */}
         {isFullAppView && !isSearchOpen && (
-          <div className="flex-1 overflow-y-auto px-5 pt-4 pb-28 w-full box-border">
-            
-            {currentScreen === 'dashboard' && (
-              <DashboardScreen
-                userProfile={profile}
-                accounts={accounts}
-                transactions={transactions}
-                goals={goals}
-                currency={settings.currency}
-                theme={settings.theme}
-                language={settings.language}
-                onNavigate={(scr) => setCurrentScreen(scr)}
-                onOpenQuickAction={handleOpenQuickAction}
-              />
-            )}
+          <div className="flex-1 overflow-hidden relative flex flex-col w-full min-h-0">
+            <AnimatePresence mode="wait" custom={screenDirection} initial={false}>
+              <motion.div
+                key={currentScreen}
+                custom={screenDirection}
+                variants={{
+                  enter: (direction: number) => ({
+                    x: direction > 0 ? 60 : direction < 0 ? -60 : 0,
+                    opacity: 0,
+                    scale: 0.98,
+                    filter: 'blur(4px)',
+                  }),
+                  center: {
+                    x: 0,
+                    opacity: 1,
+                    scale: 1,
+                    filter: 'blur(0px)',
+                  },
+                  exit: (direction: number) => ({
+                    x: direction > 0 ? -60 : direction < 0 ? 60 : 0,
+                    opacity: 0,
+                    scale: 0.98,
+                    filter: 'blur(4px)',
+                  }),
+                }}
+                initial="enter"
+                animate="center"
+                exit="exit"
+                transition={{
+                  x: { type: "spring", stiffness: 380, damping: 32 },
+                  opacity: { duration: 0.22, ease: "easeInOut" },
+                  scale: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
+                  filter: { duration: 0.18 }
+                }}
+                className="flex-1 overflow-y-auto px-5 pt-4 pb-28 w-full box-border flex flex-col min-h-0"
+              >
+                {currentScreen === 'dashboard' && (
+                  <DashboardScreen
+                    userProfile={profile}
+                    accounts={accounts}
+                    transactions={transactions}
+                    goals={goals}
+                    currency={settings.currency}
+                    theme={settings.theme}
+                    language={settings.language}
+                    onNavigate={(scr) => setCurrentScreen(scr)}
+                    onOpenQuickAction={handleOpenQuickAction}
+                  />
+                )}
 
-            {currentScreen === 'savings' && (
-              <SavingsScreen
-                accounts={accounts}
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-                onAddAccount={handleAddAccount}
-                onDeleteAccount={handleDeleteAccount}
-                onOpenTransfer={() => setCurrentScreen('transactions')}
-              />
-            )}
+                {currentScreen === 'savings' && (
+                  <SavingsScreen
+                    accounts={accounts}
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                    onAddAccount={handleAddAccount}
+                    onDeleteAccount={handleDeleteAccount}
+                    onOpenTransfer={() => setCurrentScreen('transactions')}
+                  />
+                )}
 
-            {currentScreen === 'transactions' && (
-              <TransactionScreen
-                transactions={transactions}
-                categories={categories}
-                accounts={accounts}
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-                onAddTransaction={handleAddTransaction}
-                onSoftDeleteTransaction={handleSoftDeleteTransaction}
-                onRestoreTransaction={handleRestoreTransaction}
-                onNavigateToSavings={() => setCurrentScreen('savings')}
-              />
-            )}
+                {currentScreen === 'transactions' && (
+                  <TransactionScreen
+                    transactions={transactions}
+                    categories={categories}
+                    accounts={accounts}
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                    onAddTransaction={handleAddTransaction}
+                    onSoftDeleteTransaction={handleSoftDeleteTransaction}
+                    onRestoreTransaction={handleRestoreTransaction}
+                    onNavigateToSavings={() => setCurrentScreen('savings')}
+                  />
+                )}
 
-            {currentScreen === 'calendar' && (
-              <CalendarScreen
-                transactions={transactions}
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-              />
-            )}
+                {currentScreen === 'calendar' && (
+                  <CalendarScreen
+                    transactions={transactions}
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                  />
+                )}
 
-            {currentScreen === 'statistics' && (
-              <StatisticsScreen
-                transactions={transactions}
-                categories={categories}
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-              />
-            )}
+                {currentScreen === 'statistics' && (
+                  <StatisticsScreen
+                    transactions={transactions}
+                    categories={categories}
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                  />
+                )}
 
-            {currentScreen === 'budget' && (
-              <BudgetPlannerScreen
-                budgets={budgets}
-                categories={categories}
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-                onUpdateBudget={handleUpdateBudget}
-              />
-            )}
+                {currentScreen === 'budget' && (
+                  <BudgetPlannerScreen
+                    budgets={budgets}
+                    categories={categories}
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                    onUpdateBudget={handleUpdateBudget}
+                  />
+                )}
 
-            {currentScreen === 'wishlist' && (
-              <WishlistGoalScreen
-                goals={goals}
-                wishlists={wishlists}
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-                onAddGoal={handleAddGoal}
-                onDepositGoal={handleDepositGoal}
-                onAddWishlist={handleAddWishlist}
-                onDeleteWishlist={handleDeleteWishlist}
-              />
-            )}
+                {currentScreen === 'wishlist' && (
+                  <WishlistGoalScreen
+                    goals={goals}
+                    wishlists={wishlists}
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                    onAddGoal={handleAddGoal}
+                    onDepositGoal={handleDepositGoal}
+                    onAddWishlist={handleAddWishlist}
+                    onDeleteWishlist={handleDeleteWishlist}
+                  />
+                )}
 
-            {currentScreen === 'walletSync' && (
-              <WalletIntegrationScreen
-                wallets={wallets}
-                pendingNotifs={pendingNotifs}
-                syncLogs={syncLogs}
-                categories={categories}
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-                onConnectWallet={handleConnectWallet}
-                onDisconnectWallet={handleDisconnectWallet}
-                onSyncWallet={handleSyncWallet}
-                onAcceptNotification={handleAcceptNotification}
-                onRejectNotification={handleRejectNotification}
-                onManualImportTransactions={handleManualImportTransactions}
-                onToggleNotificationListener={handleToggleNotificationListener}
-              />
-            )}
+                {currentScreen === 'walletSync' && (
+                  <WalletIntegrationScreen
+                    wallets={wallets}
+                    pendingNotifs={pendingNotifs}
+                    syncLogs={syncLogs}
+                    categories={categories}
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                    onConnectWallet={handleConnectWallet}
+                    onDisconnectWallet={handleDisconnectWallet}
+                    onSyncWallet={handleSyncWallet}
+                    onAcceptNotification={handleAcceptNotification}
+                    onRejectNotification={handleRejectNotification}
+                    onManualImportTransactions={handleManualImportTransactions}
+                    onToggleNotificationListener={handleToggleNotificationListener}
+                  />
+                )}
 
-            {currentScreen === 'settings' && (
-              <SettingsProfileScreen
-                userProfile={profile}
-                settings={settings}
-                isDark={isDark}
-                onUpdateProfile={setProfile}
-                onUpdateSettings={setSettings}
-                onExportBackup={handleExportBackup}
-                onExportCsv={handleExportCsv}
-                onResetData={handleResetData}
-              />
-            )}
+                {currentScreen === 'settings' && (
+                  <SettingsProfileScreen
+                    userProfile={profile}
+                    settings={settings}
+                    isDark={isDark}
+                    onUpdateProfile={setProfile}
+                    onUpdateSettings={setSettings}
+                    onExportBackup={handleExportBackup}
+                    onExportCsv={handleExportCsv}
+                    onResetData={handleResetData}
+                  />
+                )}
 
-            {currentScreen === 'tools' && (
-              <ToolsScreen
-                onNavigateTool={(tool) => setCurrentScreen(tool)}
-                isDark={isDark}
-                language={settings.language}
-              />
-            )}
+                {currentScreen === 'tools' && (
+                  <ToolsScreen
+                    onNavigateTool={(tool) => setCurrentScreen(tool)}
+                    isDark={isDark}
+                    language={settings.language}
+                  />
+                )}
 
-            {currentScreen === 'aiAdvisor' && (
-              <AiAdvisorScreen
-                accounts={accounts}
-                transactions={transactions}
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-              />
-            )}
+                {currentScreen === 'aiAdvisor' && (
+                  <AiAdvisorScreen
+                    accounts={accounts}
+                    transactions={transactions}
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                  />
+                )}
 
-            {currentScreen === 'recurring' && (
-              <RecurringRulesScreen
-                accounts={accounts}
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-              />
-            )}
+                {currentScreen === 'recurring' && (
+                  <RecurringRulesScreen
+                    accounts={accounts}
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                  />
+                )}
 
-            {currentScreen === 'debt' && (
-              <DebtTrackerScreen
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-              />
-            )}
+                {currentScreen === 'debt' && (
+                  <DebtTrackerScreen
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                  />
+                )}
 
-            {currentScreen === 'export' && (
-              <ExportReportScreen
-                userProfile={profile}
-                accounts={accounts}
-                transactions={transactions}
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-              />
-            )}
+                {currentScreen === 'export' && (
+                  <ExportReportScreen
+                    userProfile={profile}
+                    accounts={accounts}
+                    transactions={transactions}
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                  />
+                )}
 
-            {currentScreen === 'splitBill' && (
-              <BillSplitterScreen
-                currency={settings.currency}
-                isDark={isDark}
-                language={settings.language}
-              />
-            )}
+                {currentScreen === 'splitBill' && (
+                  <BillSplitterScreen
+                    currency={settings.currency}
+                    isDark={isDark}
+                    language={settings.language}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
           </div>
         )}
       </div>
@@ -880,29 +1032,53 @@ export default function App() {
           ref={dockContainerRef}
           className={`fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-40 p-1.5 rounded-3xl backdrop-blur-xl border transition-all duration-300 select-none overflow-hidden ${
             isDark 
-              ? 'bg-[#0E1022]/45 border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_0_1px_1px_rgba(255,255,255,0.1)]' 
-              : 'bg-white/40 border-white/50 shadow-[0_20px_50px_rgba(108,76,245,0.12),inset_0_1px_2px_rgba(255,255,255,0.8)]'
+              ? `bg-[#0E1022]/45 border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_0_1px_1px_rgba(255,255,255,0.1)] ${isDragSelectActive ? 'ring-2 ring-[#00E5C9]/50 scale-[1.01] bg-[#0E1022]/70 border-[#00E5C9]/30 shadow-[#00E5C9]/10' : ''}` 
+              : `bg-white/40 border-white/50 shadow-[0_20px_50px_rgba(108,76,245,0.12),inset_0_1px_2px_rgba(255,255,255,0.8)] ${isDragSelectActive ? 'ring-2 ring-[#00E5C9]/50 scale-[1.01] bg-white/70 border-[#00E5C9]/30 shadow-[#00E5C9]/10' : ''}`
           }`}
           style={{ touchAction: 'pan-x' }}
         >
+          {/* Distinct, undulating teal-green gradient line that spans the width of the bar */}
+          <div className="absolute top-0 inset-x-0 h-[2.5px] overflow-hidden pointer-events-none z-10">
+            <motion.div 
+              animate={{
+                x: ['-50%', '50%'],
+              }}
+              transition={{
+                duration: 6,
+                repeat: Infinity,
+                ease: "linear"
+              }}
+              className="w-[200%] h-full bg-gradient-to-r from-transparent via-[#00f2fe] via-[#00E5C9] via-[#00B4D8] via-[#00f2fe] to-transparent opacity-90"
+            />
+          </div>
+          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-[#00E5C9]/20 blur-[1px] pointer-events-none z-10" />
+ 
           <motion.div
             ref={dockTrackRef}
-            drag="x"
+            drag={isDragSelectActive ? false : "x"}
             dragConstraints={{ left: dragConstraintsLeft, right: 0 }}
             dragElastic={0.2}
             dragTransition={{ power: 0.2, timeConstant: 250 }}
-            className="flex items-center gap-1.5 cursor-grab active:cursor-grabbing w-max min-w-full px-1 py-0.5 no-scrollbar overflow-x-visible"
+            onTouchStart={handleDockTouchStart}
+            onTouchMove={handleDockTouchMove}
+            onTouchEnd={handleDockTouchEnd}
+            onMouseDown={handleDockMouseDown}
+            onMouseMove={handleDockMouseMove}
+            onMouseUp={handleDockMouseUp}
+            onMouseLeave={handleDockMouseUp}
+            className="flex items-center gap-1.5 cursor-grab active:cursor-grabbing w-max min-w-full px-1 py-0.5 no-scrollbar overflow-x-visible relative z-20"
           >
             {navTabs.map((tab) => {
               const isActive = currentScreen === tab.id || (tab.id === 'tools' && ['tools', 'aiAdvisor', 'recurring', 'debt', 'export', 'splitBill'].includes(currentScreen));
               return (
                 <button
                   key={tab.id}
+                  data-tab-id={tab.id}
                   onClick={() => setCurrentScreen(tab.id)}
                   className={`relative flex flex-col items-center justify-center py-2.5 px-4 min-w-[78px] rounded-2xl transition-all duration-300 flex-1 ${
                     isActive 
-                      ? isDark ? 'text-white' : 'text-white'
-                      : isDark ? 'text-zinc-400 hover:text-zinc-200' : 'text-slate-500 hover:text-slate-800'
+                      ? 'text-[#011F26] font-extrabold'
+                      : isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-500 hover:text-zinc-950'
                   }`}
                   title={tab.label}
                   style={{ WebkitTapHighlightColor: 'transparent' }}
@@ -910,12 +1086,18 @@ export default function App() {
                   {isActive && (
                     <motion.div
                       layoutId="activeDockIndicator"
-                      className="absolute inset-0 bg-[#6C4CF5] rounded-2xl -z-10 shadow-[0_8px_20px_rgba(108,76,245,0.35)]"
-                      transition={{ type: "spring", stiffness: 380, damping: 26 }}
+                      className="absolute inset-0 bg-gradient-to-r from-[#00E5C9] to-[#00B4D8] rounded-2xl -z-10 border border-[#00f2fe]/40"
+                      animate={{
+                        scale: isDragSelectActive ? 1.05 : 1,
+                        boxShadow: isDragSelectActive 
+                          ? '0px 0px 25px rgba(0,229,201,0.95), 0px 4px 12px rgba(0,180,216,0.6)' 
+                          : '0px 0px 20px rgba(0,229,201,0.75), 0px 2px 8px rgba(0,180,216,0.4)'
+                      }}
+                      transition={{ type: "spring", stiffness: isDragSelectActive ? 450 : 380, damping: isDragSelectActive ? 24 : 26 }}
                     />
                   )}
-                  <tab.icon className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isActive ? 'scale-110' : 'scale-100'}`} />
-                  <span className={`text-[10px] font-semibold mt-1 truncate tracking-tight text-center w-full transition-all duration-300 ${isActive ? 'font-bold opacity-100' : 'opacity-85'}`}>
+                  <tab.icon className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isActive ? 'scale-110 rotate-1' : 'scale-100 opacity-70'}`} />
+                  <span className={`text-[10px] font-bold mt-1 truncate tracking-tight text-center w-full transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-65'}`}>
                     {tab.label}
                   </span>
                 </button>
