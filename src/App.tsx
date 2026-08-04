@@ -814,41 +814,37 @@ export default function App() {
 
         {/* Regular Application Screens */}
         {isFullAppView && !isSearchOpen && (
-          <div className="flex-1 overflow-hidden relative flex flex-col w-full min-h-0">
-            <AnimatePresence mode="wait" custom={screenDirection} initial={false}>
+          <div className="flex-1 overflow-hidden relative w-full min-h-0">
+            <AnimatePresence initial={false} custom={screenDirection}>
               <motion.div
                 key={currentScreen}
                 custom={screenDirection}
                 variants={{
                   enter: (direction: number) => ({
-                    x: direction > 0 ? 60 : direction < 0 ? -60 : 0,
+                    x: direction > 0 ? '100%' : direction < 0 ? '-100%' : 0,
                     opacity: 0,
                     scale: 0.98,
-                    filter: 'blur(4px)',
                   }),
                   center: {
                     x: 0,
                     opacity: 1,
                     scale: 1,
-                    filter: 'blur(0px)',
                   },
                   exit: (direction: number) => ({
-                    x: direction > 0 ? -60 : direction < 0 ? 60 : 0,
+                    x: direction > 0 ? '-100%' : direction < 0 ? '100%' : 0,
                     opacity: 0,
                     scale: 0.98,
-                    filter: 'blur(4px)',
                   }),
                 }}
                 initial="enter"
                 animate="center"
                 exit="exit"
                 transition={{
-                  x: { type: "spring", stiffness: 380, damping: 32 },
+                  x: { type: "spring", stiffness: 420, damping: 38 },
                   opacity: { duration: 0.22, ease: "easeInOut" },
-                  scale: { duration: 0.25, ease: [0.16, 1, 0.3, 1] },
-                  filter: { duration: 0.18 }
+                  scale: { duration: 0.25, ease: "easeInOut" }
                 }}
-                className="flex-1 overflow-y-auto px-5 pt-4 pb-28 w-full box-border flex flex-col min-h-0"
+                className="absolute inset-0 overflow-y-auto px-5 pt-4 pb-28 w-full box-border flex flex-col min-h-0"
               >
                 {currentScreen === 'dashboard' && (
                   <DashboardScreen
