@@ -1,1 +1,7 @@
 include ':app'
+
+try {
+    apply from: 'capacitor.settings.gradle'
+} catch (Exception e) {
+    logger.info("capacitor.settings.gradle not found")
+}
