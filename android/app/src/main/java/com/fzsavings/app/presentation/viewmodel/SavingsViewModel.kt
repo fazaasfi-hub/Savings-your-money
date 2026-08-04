@@ -1,6 +1,7 @@
 package com.fzsavings.app.presentation.viewmodel
 
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.viewModelScope
 import com.fzsavings.app.domain.model.*
 import com.fzsavings.app.domain.repository.SavingsRepository
@@ -12,6 +13,16 @@ import java.util.*
 class SavingsViewModel(
     private val repository: SavingsRepository
 ) : ViewModel() {
+
+    class Factory(private val repository: SavingsRepository) : ViewModelProvider.Factory {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(SavingsViewModel::class.java)) {
+                return SavingsViewModel(repository) as T
+            }
+            throw IllegalArgumentException("Unknown ViewModel class")
+        }
+    }
 
     // UI state flows
     val accounts: StateFlow<List<SavingsAccount>> = repository.getAccounts()

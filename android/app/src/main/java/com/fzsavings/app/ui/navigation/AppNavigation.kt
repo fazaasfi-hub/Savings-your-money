@@ -4,13 +4,14 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.fzsavings.app.presentation.viewmodel.SavingsViewModel
 import com.fzsavings.app.ui.screens.*
 
 @Composable
-fun AppNavigation(
-    navController: NavHostController,
-    viewModel: SavingsViewModel
+fun SavingsNavigation(
+    viewModel: SavingsViewModel,
+    navController: NavHostController = rememberNavController()
 ) {
     NavHost(
         navController = navController,
@@ -30,3 +31,12 @@ fun AppNavigation(
         }
     }
 }
+
+@Composable
+fun AppNavigation(
+    navController: NavHostController,
+    viewModel: SavingsViewModel
+) {
+    SavingsNavigation(viewModel = viewModel, navController = navController)
+}
+
