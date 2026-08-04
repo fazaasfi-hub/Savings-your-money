@@ -61,7 +61,7 @@ User Selected Currency: ${currency || 'IDR'}
 `;
 
       const response = await ai.models.generateContent({
-        model: "gemini-3.6-flash",
+        model: "gemini-2.5-flash",
         contents: prompt,
         config: {
           systemInstruction: `You are a certified professional financial planner (CFP) who is an expert in savings strategies, controlling impulse spending, and recommending optimal savings/investment allocations. Provide warm, polite, deep, motivating, and actionable advice. Ensure your entire response matches the requested language: ${langName}.`,
