@@ -26,7 +26,8 @@ jobs:
       - name: Setup Gradle
         uses: gradle/actions/setup-gradle@v4
         with:
-          gradle-version: 8.10.2
+          gradle-version: '8.10.2'
+          validate-wrappers: false
 
       - name: Grant Execute Permission to Gradlew
         run: chmod +x android/gradlew || true
@@ -34,7 +35,7 @@ jobs:
       - name: Build Android APKs (Debug & Release)
         run: |
           cd android
-          ./gradlew assembleDebug assembleRelease --stacktrace
+          gradle assembleDebug assembleRelease --stacktrace
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
