@@ -30,21 +30,23 @@ jobs:
           validate-wrappers: false
 
       - name: Grant Execute Permission to Gradlew
-        run: chmod +x android/gradlew || true
+        run: chmod +x android/gradlew
 
       - name: Build Android APKs (Debug & Release)
         run: |
           cd android
-          gradle assembleDebug assembleRelease --stacktrace
+          ./gradlew assembleDebug assembleRelease --stacktrace
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: FZ-Savings-Debug-APK
-          path: android/app/build/outputs/apk/debug/app-debug.apk
+          path: android/app/build/outputs/apk/debug/*.apk
+          if-no-files-found: warn
 
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: FZ-Savings-Release-APK
-          path: android/app/build/outputs/apk/release/app-release-unsigned.apk
+          path: android/app/build/outputs/apk/release/*.apk
+          if-no-files-found: warn
