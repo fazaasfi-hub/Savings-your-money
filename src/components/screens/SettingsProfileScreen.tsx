@@ -2,6 +2,7 @@ import React, { useState, useRef } from 'react';
 import { UserProfile, AppSettings } from '../../types';
 import { User, Shield, Lock, Smartphone, Moon, Sun, Globe, Download, Database, RefreshCw, Sparkles, ChevronRight, Check, Camera, Edit2, Upload, X, Languages, Image as ImageIcon } from 'lucide-react';
 import { getTranslation } from '../../utils/translations';
+import { getInitials } from '../../utils/formatters';
 
 interface SettingsProfileScreenProps {
   userProfile: UserProfile;
@@ -122,11 +123,17 @@ export const SettingsProfileScreen: React.FC<SettingsProfileScreenProps> = ({
         <div className="flex items-center space-x-4">
           {/* Avatar with Gallery Upload Overlay */}
           <div className="relative group shrink-0">
-            <img
-              src={userProfile.avatarUrl}
-              alt={userProfile.name}
-              className="w-16 h-16 rounded-2xl object-cover ring-2 ring-indigo-400/50 shadow-md"
-            />
+            {userProfile.avatarUrl ? (
+              <img
+                src={userProfile.avatarUrl}
+                alt={userProfile.name}
+                className="w-16 h-16 rounded-2xl object-cover ring-2 ring-indigo-400/50 shadow-md"
+              />
+            ) : (
+              <div className="w-16 h-16 rounded-2xl bg-indigo-600/90 text-white flex items-center justify-center text-xl font-black ring-2 ring-indigo-400/50 shadow-md">
+                {getInitials(userProfile.name)}
+              </div>
+            )}
             <button
               onClick={() => fileInputRef.current?.click()}
               className="absolute -bottom-1 -right-1 p-1.5 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl shadow-lg border border-indigo-400/50 transition-transform active:scale-95"
@@ -192,14 +199,33 @@ export const SettingsProfileScreen: React.FC<SettingsProfileScreenProps> = ({
         </div>
 
         {/* Action Button: Ubah Foto dari Galeri */}
-        <div className="pt-2 border-t border-white/10 flex items-center justify-between gap-2 text-xs">
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="flex-1 py-2 px-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold text-white text-[11px] flex items-center justify-center space-x-2 transition-colors border border-white/10"
-          >
-            <ImageIcon className="w-3.5 h-3.5 text-indigo-300" />
-            <span>{t.changePhoto}</span>
-          </button>
+        <div className="pt-2 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-2 text-xs">
+          <div className="flex flex-1 gap-2">
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="flex-1 py-2 px-3 bg-white/10 hover:bg-white/20 rounded-xl font-bold text-white text-[11px] flex items-center justify-center space-x-2 transition-colors border border-white/10"
+            >
+              <ImageIcon className="w-3.5 h-3.5 text-indigo-300" />
+              <span>{t.changePhoto}</span>
+            </button>
+            {userProfile.avatarUrl && (
+              <button
+                onClick={() => {
+                  onUpdateProfile({
+                    ...userProfile,
+                    avatarUrl: ''
+                  });
+                  setToastMsg(settings.language === 'ID' ? 'Foto profil berhasil dihapus!' : 'Profile photo deleted!');
+                  setTimeout(() => setToastMsg(null), 3000);
+                }}
+                className="py-2 px-3 bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 rounded-xl font-bold text-[11px] flex items-center justify-center space-x-1.5 transition-colors border border-rose-500/30 shrink-0"
+                title="Hapus foto profil"
+              >
+                <X className="w-3.5 h-3.5" />
+                <span>{settings.language === 'ID' ? 'Hapus' : 'Delete'}</span>
+              </button>
+            )}
+          </div>
           
           <button
             onClick={() => {

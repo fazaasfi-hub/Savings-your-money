@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
+import appLogo from '../../assets/images/app_logo_1785840078052.jpg';
 import {
   ShieldCheck,
   Lock,
@@ -177,106 +178,172 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
   };
 
   return (
-    <div className="absolute inset-0 z-50 bg-[#0c0d10] text-zinc-100 flex flex-col justify-between p-6 select-none overflow-y-auto">
+    <div className="absolute inset-0 z-50 bg-[#090D16] text-zinc-100 flex flex-col justify-between p-6 select-none overflow-y-auto">
+      {/* Premium Multi-Layered Animated Ambient Gradient Backdrop */}
+      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+        <motion.div
+          animate={{
+            scale: [1, 1.1, 0.95, 1],
+            rotate: [0, 60, 120, 180],
+            x: ['-20%', '-15%', '-25%', '-20%'],
+          }}
+          transition={{
+            duration: 18,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute top-0 left-1/4 w-[450px] h-[450px] bg-[#6C4CF5]/10 rounded-full blur-[110px] opacity-40"
+        />
+        <motion.div
+          animate={{
+            scale: [0.95, 1.05, 1, 0.95],
+            rotate: [0, -45, -90, -135],
+            y: ['0%', '8%', '-4%', '0%'],
+          }}
+          transition={{
+            duration: 14,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute bottom-0 right-1/4 w-[350px] h-[350px] bg-[#0ea5e9]/5 rounded-full blur-[100px] opacity-20"
+        />
+      </div>
+
       {/* Header */}
       <div className="pt-2 flex justify-between items-center relative z-10">
-        <div className="flex items-center space-x-2.5">
-          <div className="w-8 h-8 rounded-xl bg-indigo-600 flex items-center justify-center text-white font-black text-xs border border-indigo-500/30">
-            FZ
+        <motion.div 
+          initial={{ x: -15, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 100, damping: 15 }}
+          className="flex items-center space-x-2.5"
+        >
+          <div className="w-8 h-8 rounded-xl overflow-hidden border border-indigo-500/30 shadow-md shrink-0 bg-[#16181D]">
+            <img
+              src={appLogo}
+              alt="FZ"
+              className="w-full h-full object-cover"
+              referrerPolicy="no-referrer"
+            />
           </div>
           <div>
             <span className="text-xs font-bold tracking-widest text-white uppercase block">FZ SAVINGS</span>
             <span className="text-[9px] font-semibold text-zinc-400 uppercase tracking-wider block">Firebase Cloud Auth</span>
           </div>
-        </div>
+        </motion.div>
 
-        <button
+        <motion.button
+          initial={{ scale: 0.9, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          whileHover={{ scale: 1.03 }}
+          whileTap={{ scale: 0.97 }}
+          transition={{ type: "spring", stiffness: 150, damping: 15 }}
           onClick={() => {
             setMode(mode === 'LOGIN' ? 'REGISTER' : 'LOGIN');
             setErrorMsg('');
             setSuccessMsg('');
           }}
-          className="text-[11px] font-bold text-indigo-400 hover:text-white transition-colors px-3 py-1.5 rounded-xl bg-zinc-800/80 border border-zinc-700/60 flex items-center gap-1.5"
+          className="text-[11px] font-bold text-indigo-400 hover:text-white transition-all px-3 py-1.5 rounded-xl bg-zinc-900/90 border border-zinc-800/80 flex items-center gap-1.5 shadow-lg shadow-black/20"
         >
           <span>{mode === 'LOGIN' ? 'Daftar Akun' : 'Masuk Sesi'}</span>
           <ArrowRight className="w-3 h-3 text-indigo-400" />
-        </button>
+        </motion.button>
       </div>
 
       {/* Main Container */}
       <div className="my-auto max-w-sm w-full mx-auto space-y-5 relative z-10 py-4">
-        <div className="text-center space-y-1">
-          <h2 className="text-xl font-bold text-white tracking-tight">
-            {mode === 'LOGIN' ? 'Selamat Datang Kembali' : 'Buat Akun FZ Vault'}
-          </h2>
-          <p className="text-xs text-zinc-400 font-medium max-w-xs mx-auto">
-            {mode === 'LOGIN'
-              ? 'Otentikasi aman berbasis enkripsi Firebase Cloud untuk portofolio finansial Anda.'
-              : 'Daftarkan diri Anda untuk mulai mengelola tabungan dan dompet digital terenkripsi.'}
-          </p>
-        </div>
+        <AnimatePresence mode="wait">
+          <motion.div
+            key={mode}
+            initial={{ opacity: 0, y: 15 }}
+            animate={{ opacity: 1, y: 0 }}
+            exit={{ opacity: 0, y: -15 }}
+            transition={{ duration: 0.35, ease: [0.16, 1, 0.3, 1] }}
+            className="text-center space-y-1.5"
+          >
+            <h2 className="text-2xl font-black text-white tracking-tight">
+              {mode === 'LOGIN' ? 'Selamat Datang Kembali' : 'Buat Akun FZ Vault'}
+            </h2>
+            <p className="text-xs text-zinc-400 font-medium max-w-xs mx-auto leading-relaxed">
+              {mode === 'LOGIN'
+                ? 'Otentikasi aman berbasis enkripsi Firebase Cloud untuk portofolio finansial Anda.'
+                : 'Daftarkan diri Anda untuk mulai mengelola tabungan dan dompet digital terenkripsi.'}
+            </p>
+          </motion.div>
+        </AnimatePresence>
 
         {/* Global Alert Messages */}
         <AnimatePresence>
           {errorMsg && (
             <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-semibold flex items-start gap-2.5"
+              initial={{ opacity: 0, y: -8, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 120, damping: 15 }}
+              className="p-3 rounded-2xl bg-rose-500/10 border border-rose-500/20 text-rose-300 text-xs font-semibold flex items-start gap-2.5 shadow-lg"
             >
-              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
+              <AlertCircle className="w-4 h-4 text-rose-400 shrink-0 mt-0.5 animate-bounce" />
               <span>{errorMsg}</span>
             </motion.div>
           )}
 
           {successMsg && (
             <motion.div
-              initial={{ opacity: 0, y: -6 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0 }}
-              className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold flex items-start gap-2.5"
+              initial={{ opacity: 0, y: -8, scale: 0.95 }}
+              animate={{ opacity: 1, y: 0, scale: 1 }}
+              exit={{ opacity: 0, scale: 0.95 }}
+              transition={{ type: "spring", stiffness: 120, damping: 15 }}
+              className="p-3 rounded-2xl bg-emerald-500/10 border border-emerald-500/20 text-emerald-300 text-xs font-semibold flex items-start gap-2.5 shadow-lg"
             >
-              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
+              <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5 animate-bounce" />
               <span>{successMsg}</span>
             </motion.div>
           )}
         </AnimatePresence>
 
         {/* Form Container */}
-        <form onSubmit={handleSubmit} className="space-y-3.5">
-          {mode === 'REGISTER' && (
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 px-1">
-                Nama Lengkap
-              </label>
-              <div className="relative">
-                <User className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type="text"
-                  required
-                  placeholder="Faza Asfi"
-                  value={fullName}
-                  onChange={(e) => setFullName(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-zinc-900 border border-zinc-800 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-                />
-              </div>
-            </div>
-          )}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <AnimatePresence initial={false}>
+            {mode === 'REGISTER' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, y: -10 }}
+                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-1 pb-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 px-1">
+                    Nama Lengkap
+                  </label>
+                  <div className="relative group">
+                    <User className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors group-focus-within:text-indigo-400" />
+                    <input
+                      type="text"
+                      required
+                      placeholder="Faza Asfi"
+                      value={fullName}
+                      onChange={(e) => setFullName(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-zinc-900/80 border border-zinc-800 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-600/50 focus:border-indigo-500 transition-all shadow-inner"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           <div className="space-y-1">
             <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 px-1">
               Alamat Email
             </label>
-            <div className="relative">
-              <Mail className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <div className="relative group">
+              <Mail className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors group-focus-within:text-indigo-400" />
               <input
                 type="email"
                 required
                 placeholder="faza.asfi@gmail.com"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="w-full pl-10 pr-4 py-3 bg-zinc-900 border border-zinc-800 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                className="w-full pl-10 pr-4 py-3 bg-zinc-900/80 border border-zinc-800 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-600/50 focus:border-indigo-500 transition-all shadow-inner"
               />
             </div>
           </div>
@@ -299,81 +366,97 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
                 </button>
               )}
             </div>
-            <div className="relative">
-              <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
+            <div className="relative group">
+              <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors group-focus-within:text-indigo-400" />
               <input
                 type={showPassword ? 'text' : 'password'}
                 required
                 placeholder="••••••••••••"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
-                className="w-full pl-10 pr-10 py-3 bg-zinc-900 border border-zinc-800 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
+                className="w-full pl-10 pr-10 py-3 bg-zinc-900/80 border border-zinc-800 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-600/50 focus:border-indigo-500 transition-all shadow-inner"
               />
               <button
                 type="button"
                 onClick={() => setShowPassword(!showPassword)}
-                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white"
+                className="absolute right-3.5 top-1/2 -translate-y-1/2 text-zinc-400 hover:text-white transition-colors"
               >
                 {showPassword ? <EyeOff className="w-4 h-4" /> : <Eye className="w-4 h-4" />}
               </button>
             </div>
           </div>
 
-          {mode === 'REGISTER' && (
-            <div className="space-y-1">
-              <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 px-1">
-                Konfirmasi Password
-              </label>
-              <div className="relative">
-                <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2" />
-                <input
-                  type={showPassword ? 'text' : 'password'}
-                  required
-                  placeholder="••••••••••••"
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  className="w-full pl-10 pr-4 py-3 bg-zinc-900 border border-zinc-800 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-1 focus:ring-indigo-500 transition-all"
-                />
-              </div>
-            </div>
-          )}
+          <AnimatePresence initial={false}>
+            {mode === 'REGISTER' && (
+              <motion.div
+                initial={{ opacity: 0, height: 0, y: -10 }}
+                animate={{ opacity: 1, height: 'auto', y: 0 }}
+                exit={{ opacity: 0, height: 0, y: -10 }}
+                transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
+                className="overflow-hidden"
+              >
+                <div className="space-y-1 pb-1">
+                  <label className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 px-1">
+                    Konfirmasi Password
+                  </label>
+                  <div className="relative group">
+                    <Lock className="w-4 h-4 text-zinc-400 absolute left-3.5 top-1/2 -translate-y-1/2 transition-colors group-focus-within:text-indigo-400" />
+                    <input
+                      type={showPassword ? 'text' : 'password'}
+                      required
+                      placeholder="••••••••••••"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full pl-10 pr-4 py-3 bg-zinc-900/80 border border-zinc-800 rounded-2xl text-xs font-medium text-white placeholder-zinc-500 focus:outline-none focus:ring-2 focus:ring-indigo-600/50 focus:border-indigo-500 transition-all shadow-inner"
+                    />
+                  </div>
+                </div>
+              </motion.div>
+            )}
+          </AnimatePresence>
 
           {mode === 'LOGIN' && (
             <div className="flex items-center justify-between px-1 pt-0.5">
-              <label className="flex items-center space-x-2 cursor-pointer">
+              <label className="flex items-center space-x-2 cursor-pointer group">
                 <input
                   type="checkbox"
                   checked={rememberMe}
                   onChange={(e) => setRememberMe(e.target.checked)}
-                  className="w-4 h-4 rounded border-zinc-700 bg-zinc-900 text-indigo-600 focus:ring-indigo-500"
+                  className="w-4 h-4 rounded border-zinc-800 bg-zinc-900 text-indigo-600 focus:ring-indigo-600/40"
                 />
-                <span className="text-xs text-zinc-300 font-medium">Ingat Sesi Saya</span>
+                <span className="text-xs text-zinc-300 font-semibold transition-colors group-hover:text-white">Ingat Sesi Saya</span>
               </label>
             </div>
           )}
 
-          <button
-            type="submit"
-            disabled={isLoading}
-            className="w-full py-3 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs tracking-wider uppercase transition-all flex items-center justify-center space-x-2 shadow-md"
-          >
-            {isLoading ? (
-              <RefreshCw className="w-4 h-4 animate-spin text-white" />
-            ) : (
-              <>
-                <span>{mode === 'LOGIN' ? 'Masuk Sesi Terenkripsi' : 'Daftar Akun Baru'}</span>
-                <ArrowRight className="w-4 h-4" />
-              </>
-            )}
-          </button>
+          <div className="space-y-2.5 pt-1">
+            <motion.button
+              whileHover={{ scale: 1.02 }}
+              whileTap={{ scale: 0.98 }}
+              type="submit"
+              disabled={isLoading}
+              className="w-full py-3.5 rounded-2xl bg-indigo-600 hover:bg-indigo-500 text-white font-bold text-xs tracking-wider uppercase transition-all flex items-center justify-center space-x-2 shadow-lg shadow-indigo-600/20 disabled:opacity-50"
+            >
+              {isLoading ? (
+                <RefreshCw className="w-4 h-4 animate-spin text-white" />
+              ) : (
+                <>
+                  <span>{mode === 'LOGIN' ? 'Masuk Sesi Terenkripsi' : 'Daftar Akun Baru'}</span>
+                  <ArrowRight className="w-4 h-4" />
+                </>
+              )}
+            </motion.button>
 
-          <button
-            type="button"
-            onClick={() => onAuthSuccess({ uid: 'guest', email: 'fazaasfi@gmail.com', displayName: 'Faza Asfi' }, false)}
-            className="w-full py-2.5 rounded-2xl bg-zinc-900 hover:bg-zinc-800 border border-zinc-800 text-zinc-300 font-semibold text-xs transition-colors flex items-center justify-center space-x-1"
-          >
-            <span>Masuk Tanpa Login (Langsung ke Aplikasi)</span>
-          </button>
+            <motion.button
+              whileHover={{ scale: 1.01 }}
+              whileTap={{ scale: 0.99 }}
+              type="button"
+              onClick={() => onAuthSuccess({ uid: 'guest', email: 'fazaasfi@gmail.com', displayName: 'Faza Asfi' }, false)}
+              className="w-full py-3 rounded-2xl bg-zinc-900/60 hover:bg-zinc-800/80 border border-zinc-800/60 text-zinc-300 font-bold text-xs transition-colors flex items-center justify-center space-x-1.5 shadow-md"
+            >
+              <span>Masuk Tanpa Login (Langsung ke Aplikasi)</span>
+            </motion.button>
+          </div>
         </form>
 
         {/* Verification Alert Notice Banner */}

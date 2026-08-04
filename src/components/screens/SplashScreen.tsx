@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Shield, Sparkles, CheckCircle2, Database, Lock, Bell, Cpu, Zap, Star } from 'lucide-react';
+import appLogo from '../../assets/images/app_logo_1785840078052.jpg';
 
 interface SplashScreenProps {
   onFinishLaunch: (destination: 'ONBOARDING' | 'LOGIN' | 'DASHBOARD') => void;
@@ -34,7 +35,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           return prev;
         }
       });
-    }, 280);
+    }, 320);
 
     return () => clearInterval(stepInterval);
   }, []);
@@ -51,8 +52,8 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           } else {
             onFinishLaunch('DASHBOARD');
           }
-        }, 400);
-      }, 500);
+        }, 500);
+      }, 700);
 
       return () => clearTimeout(exitTimer);
     }
@@ -63,49 +64,119 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: isExiting ? 0 : 1, scale: isExiting ? 0.98 : 1 }}
+      animate={{ opacity: isExiting ? 0 : 1, scale: isExiting ? 0.96 : 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.4, ease: 'easeInOut' }}
+      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
       className="absolute inset-0 z-50 bg-[#090D16] text-white flex flex-col justify-between p-6 overflow-hidden select-none"
     >
-      {/* Subtle Gradient Backdrop */}
+      {/* Premium Multi-Layered Animated Ambient Gradient Backdrop */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] h-[500px] bg-gradient-to-b from-[#6C4CF5]/20 via-indigo-600/10 to-transparent rounded-full blur-3xl opacity-70" />
+        <motion.div
+          animate={{
+            scale: [1, 1.15, 0.95, 1],
+            rotate: [0, 90, 180, 270],
+            x: ['-50%', '-45%', '-55%', '-50%'],
+          }}
+          transition={{
+            duration: 15,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute top-0 left-1/2 w-[600px] h-[600px] bg-[#6C4CF5]/15 rounded-full blur-[120px] opacity-60"
+        />
+        <motion.div
+          animate={{
+            scale: [0.9, 1.1, 1, 0.9],
+            rotate: [0, -60, -120, -180],
+            y: ['0%', '10%', '-5%', '0%'],
+          }}
+          transition={{
+            duration: 12,
+            repeat: Infinity,
+            ease: "easeInOut"
+          }}
+          className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#0ea5e9]/10 rounded-full blur-[100px] opacity-40"
+        />
       </div>
 
       {/* Top Header Vault Security Tag */}
       <div className="pt-3 flex justify-between items-center z-10 text-[10px] font-mono tracking-wider text-indigo-300/80">
-        <div className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 shadow-sm">
-          <Shield className="w-3.5 h-3.5 text-[#6C4CF5]" />
+        <motion.div 
+          initial={{ x: -20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 100, delay: 0.1 }}
+          className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 shadow-sm"
+        >
+          <Shield className="w-3.5 h-3.5 text-[#6C4CF5] animate-pulse" />
           <span className="font-bold text-indigo-200">SECURE VAULT OS</span>
-        </div>
-        <div className="flex items-center space-x-1 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 font-sans font-bold text-[10px] text-amber-400">
-          <Star className="w-3 h-3 fill-amber-400" />
+        </motion.div>
+        <motion.div 
+          initial={{ x: 20, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 100, delay: 0.15 }}
+          className="flex items-center space-x-1 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 font-sans font-bold text-[10px] text-amber-400"
+        >
+          <Star className="w-3 h-3 fill-amber-400 animate-spin" style={{ animationDuration: '6s' }} />
           <span>PRO v2.5</span>
-        </div>
+        </motion.div>
       </div>
 
       {/* Main Center Modern Minimalist Logo */}
       <div className="my-auto flex flex-col items-center justify-center text-center z-10">
         <motion.div
-          initial={{ scale: 0.8, opacity: 0, y: 10 }}
-          animate={{ scale: 1, opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-24 h-24 rounded-3xl bg-gradient-to-tr from-[#6C4CF5] via-indigo-600 to-cyan-500 flex items-center justify-center shadow-2xl shadow-indigo-500/30 border border-white/20 mb-6"
+          initial={{ scale: 0.4, opacity: 0, rotate: -15 }}
+          animate={{ scale: 1, opacity: 1, rotate: 0 }}
+          transition={{ 
+            type: "spring", 
+            stiffness: 120, 
+            damping: 14, 
+            mass: 0.8
+          }}
+          whileHover={{ scale: 1.05 }}
+          className="relative w-28 h-28 rounded-[32px] overflow-hidden shadow-2xl shadow-indigo-500/20 border border-indigo-500/30 mb-7 flex items-center justify-center bg-[#16181D]"
         >
-          <Sparkles className="w-10 h-10 text-white" />
+          {/* Shimmer sweeping beam */}
+          <motion.div
+            animate={{
+              x: ['-100%', '150%'],
+            }}
+            transition={{
+              duration: 2.2,
+              repeat: Infinity,
+              repeatDelay: 1,
+              ease: [0.43, 0.13, 0.23, 0.96]
+            }}
+            className="absolute inset-y-0 w-12 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 pointer-events-none z-10"
+          />
+
+          <img
+            src={appLogo}
+            alt="FZ Savings Logo"
+            className="w-full h-full object-cover"
+            referrerPolicy="no-referrer"
+          />
         </motion.div>
 
         <motion.div
-          initial={{ opacity: 0, y: 10 }}
+          initial={{ opacity: 0, y: 15 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5, delay: 0.1 }}
-          className="space-y-1.5"
+          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
+          className="space-y-2"
         >
-          <h1 className="text-2xl font-black tracking-[0.2em] text-white uppercase font-sans">
-            FZ SAVINGS
+          <h1 className="text-3xl font-black tracking-[0.25em] text-white uppercase font-sans">
+            {"FZ SAVINGS".split("").map((letter, idx) => (
+              <motion.span
+                key={idx}
+                initial={{ opacity: 0, filter: "blur(4px)" }}
+                animate={{ opacity: 1, filter: "blur(0px)" }}
+                transition={{ duration: 0.3, delay: 0.3 + idx * 0.04 }}
+                className="inline-block"
+              >
+                {letter === " " ? "\u00A0" : letter}
+              </motion.span>
+            ))}
           </h1>
-          <p className="text-xs font-semibold text-slate-400 tracking-wider">
+          <p className="text-xs font-semibold text-slate-400 tracking-[0.15em] uppercase">
             Enterprise Financial Vault
           </p>
         </motion.div>
@@ -113,26 +184,26 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
 
       {/* Bottom Progress Card */}
       <motion.div
-        initial={{ opacity: 0, y: 15 }}
+        initial={{ opacity: 0, y: 25 }}
         animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.5, delay: 0.15 }}
-        className="z-10 space-y-3 max-w-sm mx-auto w-full pb-4"
+        transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
+        className="z-10 space-y-3.5 max-w-sm mx-auto w-full pb-4"
       >
-        <div className="bg-slate-900/90 border border-slate-800 p-4 rounded-2xl shadow-xl backdrop-blur-md space-y-3">
+        <div className="bg-slate-900/70 border border-slate-800 p-4.5 rounded-[24px] shadow-2xl backdrop-blur-xl space-y-3">
           <div className="flex justify-between items-center text-xs font-semibold text-slate-300">
             <span className="flex items-center gap-2">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse" />
+              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping shrink-0" />
               <span>Memuat sistem...</span>
             </span>
             <span className="font-mono font-bold text-cyan-400">{progressPercent}%</span>
           </div>
 
-          <div className="w-full bg-slate-950 h-2 rounded-full overflow-hidden p-0.5 border border-slate-800">
+          <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
             <motion.div
-              className="h-full bg-gradient-to-r from-[#6C4CF5] to-cyan-400 rounded-full"
+              className="h-full bg-gradient-to-r from-[#6C4CF5] via-indigo-500 to-cyan-400 rounded-full"
               initial={{ width: '5%' }}
               animate={{ width: `${progressPercent}%` }}
-              transition={{ duration: 0.25, ease: 'easeOut' }}
+              transition={{ type: "spring", stiffness: 80, damping: 15 }}
             />
           </div>
 
@@ -140,22 +211,22 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
             <AnimatePresence mode="wait">
               <motion.div
                 key={currentStepIndex}
-                initial={{ opacity: 0, y: 4 }}
-                animate={{ opacity: 1, y: 0 }}
-                exit={{ opacity: 0, y: -4 }}
-                transition={{ duration: 0.15 }}
-                className="flex items-center justify-between text-xs text-slate-300 bg-slate-950/60 px-3 py-2 rounded-xl border border-slate-800/80"
+                initial={{ opacity: 0, y: 8, scale: 0.98 }}
+                animate={{ opacity: 1, y: 0, scale: 1 }}
+                exit={{ opacity: 0, y: -8, scale: 0.98 }}
+                transition={{ duration: 0.2, ease: "easeOut" }}
+                className="flex items-center justify-between text-xs text-slate-300 bg-slate-950/80 px-3.5 py-2.5 rounded-xl border border-slate-850"
               >
                 <div className="flex items-center space-x-2.5 truncate">
                   {React.createElement(INITIALIZATION_STEPS[currentStepIndex].icon, {
-                    className: 'w-4 h-4 text-cyan-400 shrink-0'
+                    className: 'w-4 h-4 text-cyan-400 shrink-0 animate-bounce'
                   })}
                   <span className="font-medium truncate">{INITIALIZATION_STEPS[currentStepIndex].text}</span>
                 </div>
                 {currentStepIndex === INITIALIZATION_STEPS.length - 1 ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 ml-2" />
+                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 ml-2 animate-bounce" />
                 ) : (
-                  <span className="text-[9px] font-mono font-bold text-indigo-300 bg-indigo-950 px-2 py-0.5 rounded border border-indigo-800/50 shrink-0">
+                  <span className="text-[9px] font-mono font-bold text-indigo-300 bg-indigo-950 px-2 py-0.5 rounded border border-indigo-800/50 shrink-0 animate-pulse">
                     {INITIALIZATION_STEPS[currentStepIndex].category}
                   </span>
                 )}

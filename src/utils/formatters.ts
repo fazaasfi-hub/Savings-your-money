@@ -79,3 +79,13 @@ export const getGoalStatusInfo = (current: number, target: number, daysRemaining
     return { label: 'Belum Mulai', color: 'bg-slate-100 text-slate-700 border-slate-300' };
   }
 };
+
+export const getInitials = (name: string): string => {
+  if (!name) return 'U';
+  const parts = name.trim().split(/\s+/);
+  if (parts.length === 1) {
+    return parts[0].substring(0, Math.min(2, parts[0].length)).toUpperCase();
+  }
+  return (parts[0][0] + parts[1][0]).toUpperCase();
+};
+

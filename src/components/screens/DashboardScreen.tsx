@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SavingsAccount, Transaction, Goal, UserProfile } from '../../types';
-import { formatCurrency, getTimeBasedGreeting } from '../../utils/formatters';
+import { formatCurrency, getTimeBasedGreeting, getInitials } from '../../utils/formatters';
 import {
   Wallet,
   ArrowUpRight,
@@ -98,14 +98,18 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
       <div className="flex items-center justify-between pt-1 pb-1">
         <div className="flex items-center space-x-3">
           <div
-            className="w-10 h-10 rounded-full overflow-hidden border border-zinc-700 cursor-pointer shrink-0"
+            className="w-10 h-10 rounded-full overflow-hidden border border-zinc-700 cursor-pointer shrink-0 flex items-center justify-center bg-indigo-600/90 text-white font-bold text-xs"
             onClick={() => onNavigate('settings')}
           >
-            <img
-              src={userProfile.avatarUrl}
-              alt={userProfile.name}
-              className="w-full h-full object-cover"
-            />
+            {userProfile.avatarUrl ? (
+              <img
+                src={userProfile.avatarUrl}
+                alt={userProfile.name}
+                className="w-full h-full object-cover"
+              />
+            ) : (
+              getInitials(userProfile.name)
+            )}
           </div>
 
           <div>
