@@ -50,7 +50,7 @@ jobs:
       - name: Build Android APKs (Debug & Release)
         run: |
           cd android
-          gradle assembleDebug assembleRelease --stacktrace
+          ./gradlew assembleDebug assembleRelease --stacktrace
 
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
