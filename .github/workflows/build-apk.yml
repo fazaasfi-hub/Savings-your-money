@@ -50,6 +50,7 @@ jobs:
       - name: Build Android APKs (Debug & Release)
         run: |
           cd android
+          gradle wrapper --gradle-version 8.10.2
           ./gradlew assembleDebug assembleRelease --stacktrace
 
       - name: Upload Debug APK
