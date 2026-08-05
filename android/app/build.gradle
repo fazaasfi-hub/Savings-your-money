@@ -41,6 +41,10 @@ android {
 
 kapt {
     correctErrorTypes = true
+    javacOptions {
+        option("-source", "17")
+        option("-target", "17")
+    }
 }
 
 repositories {
