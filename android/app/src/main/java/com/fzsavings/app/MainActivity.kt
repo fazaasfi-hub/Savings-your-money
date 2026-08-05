@@ -8,6 +8,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
+import androidx.lifecycle.ViewModelProvider
 import com.fzsavings.app.data.local.SavingsDatabase
 import com.fzsavings.app.data.repository.SavingsRepositoryImpl
 import com.fzsavings.app.presentation.viewmodel.SavingsViewModel
@@ -21,7 +22,7 @@ class MainActivity : ComponentActivity() {
         // Initialize Local Storage Database
         val database = SavingsDatabase.getInstance(applicationContext)
         val repository = SavingsRepositoryImpl(database.dao)
-        val viewModel = SavingsViewModel(repository)
+        val viewModel = ViewModelProvider(this, SavingsViewModel.Factory(repository))[SavingsViewModel::class.java]
 
         setContent {
             FZSavingsTheme {
