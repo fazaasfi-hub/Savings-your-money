@@ -1,6 +1,14 @@
 package com.fzsavings.app.domain.repository
 
-import com.fzsavings.app.domain.model.*
+import com.fzsavings.app.domain.model.Category
+import com.fzsavings.app.domain.model.CategoryBudget
+import com.fzsavings.app.domain.model.ConnectedWallet
+import com.fzsavings.app.domain.model.Goal
+import com.fzsavings.app.domain.model.PendingWalletNotification
+import com.fzsavings.app.domain.model.SavingsAccount
+import com.fzsavings.app.domain.model.SyncLogEntry
+import com.fzsavings.app.domain.model.Transaction
+import com.fzsavings.app.domain.model.Wishlist
 import kotlinx.coroutines.flow.Flow
 
 interface SavingsRepository {

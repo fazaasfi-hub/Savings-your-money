@@ -21,7 +21,7 @@ class MainActivity : ComponentActivity() {
 
         // Initialize Local Storage Database
         val database = SavingsDatabase.getInstance(applicationContext)
-        val repository = SavingsRepositoryImpl(database.dao)
+        val repository = SavingsRepositoryImpl(database.dao())
         val viewModel = ViewModelProvider(this, SavingsViewModel.Factory(repository))[SavingsViewModel::class.java]
 
         setContent {

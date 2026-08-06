@@ -4,7 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.fzsavings.app.domain.model.*
+import com.fzsavings.app.domain.model.Category
+import com.fzsavings.app.domain.model.CategoryBudget
+import com.fzsavings.app.domain.model.ConnectedWallet
+import com.fzsavings.app.domain.model.Goal
+import com.fzsavings.app.domain.model.PendingWalletNotification
+import com.fzsavings.app.domain.model.SavingsAccount
+import com.fzsavings.app.domain.model.SyncLogEntry
+import com.fzsavings.app.domain.model.Transaction
+import com.fzsavings.app.domain.model.Wishlist
 
 @Database(
     entities = [
@@ -22,7 +30,7 @@ import com.fzsavings.app.domain.model.*
     exportSchema = false
 )
 abstract class SavingsDatabase : RoomDatabase() {
-    abstract val dao: SavingsDao
+    abstract fun dao(): SavingsDao
 
     companion object {
         @Volatile
