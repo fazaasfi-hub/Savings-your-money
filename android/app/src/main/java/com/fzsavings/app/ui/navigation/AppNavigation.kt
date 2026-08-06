@@ -6,7 +6,10 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.fzsavings.app.presentation.viewmodel.SavingsViewModel
-import com.fzsavings.app.ui.screens.*
+import com.fzsavings.app.ui.screens.DashboardScreen
+import com.fzsavings.app.ui.screens.LoginRegisterScreen
+import com.fzsavings.app.ui.screens.OnboardingScreen
+import com.fzsavings.app.ui.screens.SplashScreen
 
 @Composable
 fun SavingsNavigation(
