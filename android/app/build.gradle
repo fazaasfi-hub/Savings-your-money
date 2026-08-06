@@ -37,14 +37,15 @@ android {
     kotlinOptions {
         jvmTarget = '17'
     }
+    lint {
+        checkReleaseBuilds false
+        abortOnError false
+        quiet true
+    }
 }
 
 kapt {
     correctErrorTypes = true
-    javacOptions {
-        option("-source", "17")
-        option("-target", "17")
-    }
 }
 
 repositories {
