@@ -35,6 +35,7 @@ import {
 } from './data/mockWalletData';
 
 // App Screens Imports
+import appLogo from './assets/images/app_logo_1785840078052.jpg';
 import { getTranslation } from './utils/translations';
 import { SplashScreen } from './components/screens/SplashScreen';
 import { OnboardingScreen } from './components/screens/OnboardingScreen';
@@ -722,8 +723,12 @@ export default function App() {
         <div className={`px-5 py-3 border-b flex items-center justify-between z-30 transition-colors ${
           isDark ? 'bg-[#0E1022]/90 border-slate-800/80' : 'bg-white/90 border-slate-200/80'
         }`}>
-          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setCurrentScreen('dashboard')}>
-            <div className="w-3 h-3 rounded-full bg-[#6C4CF5] shadow-xs shadow-purple-500/50" />
+          <div className="flex items-center space-x-2.5 cursor-pointer" onClick={() => setCurrentScreen('dashboard')}>
+            <img
+              src={appLogo}
+              alt="FZ Savings Icon"
+              className="w-6 h-6 rounded-lg object-cover border border-indigo-500/30 shadow-xs shrink-0"
+            />
             <span className={`text-xs font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
               FZ SAVINGS
             </span>
