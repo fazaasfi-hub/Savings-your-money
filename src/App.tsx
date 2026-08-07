@@ -136,12 +136,16 @@ export default function App() {
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
 
-  // LocalStorage state persistence
+  // LocalStorage state persistence - Clean start without dummy data
+  const isDataCleared = typeof window !== 'undefined' && localStorage.getItem('fz_data_cleared_v1') === 'true';
+
   const [accounts, setAccounts] = useState<SavingsAccount[]>(() => {
+    if (!isDataCleared) return [];
     const saved = localStorage.getItem('fz_accounts');
     if (saved !== null) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed.filter((a: any) => !a.id?.startsWith('acc_celengan_') && !a.id?.startsWith('acc_dana_'));
       } catch (e) {
         console.error(e);
       }
@@ -150,10 +154,12 @@ export default function App() {
   });
 
   const [transactions, setTransactions] = useState<Transaction[]>(() => {
+    if (!isDataCleared) return [];
     const saved = localStorage.getItem('fz_transactions');
     if (saved !== null) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed.filter((t: any) => !t.id?.startsWith('tx_'));
       } catch (e) {
         console.error(e);
       }
@@ -165,7 +171,8 @@ export default function App() {
     const saved = localStorage.getItem('fz_categories');
     if (saved !== null) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed) && parsed.length > 0) return parsed;
       } catch (e) {
         console.error(e);
       }
@@ -174,10 +181,12 @@ export default function App() {
   });
 
   const [goals, setGoals] = useState<Goal[]>(() => {
+    if (!isDataCleared) return [];
     const saved = localStorage.getItem('fz_goals');
     if (saved !== null) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed.filter((g: any) => !g.id?.startsWith('goal_'));
       } catch (e) {
         console.error(e);
       }
@@ -186,10 +195,12 @@ export default function App() {
   });
 
   const [wishlists, setWishlists] = useState<Wishlist[]>(() => {
+    if (!isDataCleared) return [];
     const saved = localStorage.getItem('fz_wishlists');
     if (saved !== null) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed.filter((w: any) => !w.id?.startsWith('wish_'));
       } catch (e) {
         console.error(e);
       }
@@ -198,10 +209,12 @@ export default function App() {
   });
 
   const [budgets, setBudgets] = useState<CategoryBudget[]>(() => {
+    if (!isDataCleared) return [];
     const saved = localStorage.getItem('fz_budgets');
     if (saved !== null) {
       try {
-        return JSON.parse(saved);
+        const parsed = JSON.parse(saved);
+        if (Array.isArray(parsed)) return parsed.filter((b: any) => !b.id?.startsWith('bud_'));
       } catch (e) {
         console.error(e);
       }
@@ -220,19 +233,37 @@ export default function App() {
   });
 
   const [wallets, setWallets] = useState<ConnectedWallet[]>(() => {
+    if (!isDataCleared) return [];
     const saved = localStorage.getItem('fz_wallets');
     return saved ? JSON.parse(saved) : INITIAL_CONNECTED_WALLETS;
   });
 
   const [pendingNotifs, setPendingNotifs] = useState<PendingWalletNotification[]>(() => {
+    if (!isDataCleared) return [];
     const saved = localStorage.getItem('fz_pendingNotifs');
     return saved ? JSON.parse(saved) : INITIAL_PENDING_NOTIFICATIONS;
   });
 
   const [syncLogs, setSyncLogs] = useState<SyncLogEntry[]>(() => {
+    if (!isDataCleared) return [];
     const saved = localStorage.getItem('fz_syncLogs');
     return saved ? JSON.parse(saved) : INITIAL_SYNC_LOGS;
   });
+
+  // Automatically mark legacy data cleared
+  useEffect(() => {
+    if (!localStorage.getItem('fz_data_cleared_v1')) {
+      localStorage.setItem('fz_data_cleared_v1', 'true');
+      localStorage.setItem('fz_accounts', JSON.stringify([]));
+      localStorage.setItem('fz_transactions', JSON.stringify([]));
+      localStorage.setItem('fz_goals', JSON.stringify([]));
+      localStorage.setItem('fz_wishlists', JSON.stringify([]));
+      localStorage.setItem('fz_budgets', JSON.stringify([]));
+      localStorage.setItem('fz_wallets', JSON.stringify([]));
+      localStorage.setItem('fz_pendingNotifs', JSON.stringify([]));
+      localStorage.setItem('fz_syncLogs', JSON.stringify([]));
+    }
+  }, []);
 
   // Calculate dynamic bottom dock drag bounds
   useEffect(() => {
@@ -691,10 +722,17 @@ export default function App() {
         <div className={`px-5 py-3 border-b flex items-center justify-between z-30 transition-colors ${
           isDark ? 'bg-[#0E1022]/90 border-slate-800/80' : 'bg-white/90 border-slate-200/80'
         }`}>
-          <div className="flex items-center space-x-2">
-            <div className="w-3 h-3 rounded-full bg-[#6C4CF5] shadow-xs shadow-purple-500/50" />
+          <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setCurrentScreen('dashboard')}>
+            <img
+              src="/app_icon.png"
+              alt="FZ Savings Logo"
+              className="w-6.5 h-6.5 rounded-lg object-cover border border-indigo-500/30 shadow-xs"
+            />
             <span className={`text-xs font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
               FZ SAVINGS
+            </span>
+            <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 uppercase tracking-wider">
+              Aplikasi Nabung
             </span>
           </div>
 
@@ -815,13 +853,13 @@ export default function App() {
         {/* Regular Application Screens */}
         {isFullAppView && !isSearchOpen && (
           <div className="flex-1 overflow-hidden relative w-full min-h-0">
-            <AnimatePresence initial={false} custom={screenDirection}>
+            <AnimatePresence mode="wait" initial={false} custom={screenDirection}>
               <motion.div
                 key={currentScreen}
                 custom={screenDirection}
                 variants={{
                   enter: (direction: number) => ({
-                    x: direction > 0 ? '100%' : direction < 0 ? '-100%' : 0,
+                    x: direction > 0 ? 30 : direction < 0 ? -30 : 0,
                     opacity: 0,
                     scale: 0.98,
                   }),
@@ -831,7 +869,7 @@ export default function App() {
                     scale: 1,
                   },
                   exit: (direction: number) => ({
-                    x: direction > 0 ? '-100%' : direction < 0 ? '100%' : 0,
+                    x: direction > 0 ? -30 : direction < 0 ? 30 : 0,
                     opacity: 0,
                     scale: 0.98,
                   }),
@@ -840,10 +878,10 @@ export default function App() {
                 animate="center"
                 exit="exit"
                 transition={{
-                  x: { type: "spring", stiffness: 420, damping: 38 },
-                  opacity: { duration: 0.22, ease: "easeInOut" },
-                  scale: { duration: 0.25, ease: "easeInOut" }
+                  duration: 0.18,
+                  ease: [0.25, 0.1, 0.25, 1],
                 }}
+                style={{ willChange: "transform, opacity" }}
                 className="absolute inset-0 overflow-y-auto px-5 pt-4 pb-28 w-full box-border flex flex-col min-h-0"
               >
                 {currentScreen === 'dashboard' && (

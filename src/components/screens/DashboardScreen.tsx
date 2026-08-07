@@ -253,6 +253,107 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
         </div>
       </div>
 
+      {/* 3.1 SETOR TABUNGAN CEPAT & QUICK DEPOSIT PRESETS */}
+      <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-900/60 via-purple-900/40 to-zinc-900 border border-indigo-500/30 space-y-3">
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
+              <PlusCircle className="w-4 h-4" />
+            </div>
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-black text-white">Setor Tabungan Cepat</span>
+                <span className="text-[9px] font-extrabold text-indigo-300 bg-indigo-500/20 px-1.5 py-0.5 rounded-full border border-indigo-500/30 uppercase">Tabungan</span>
+              </div>
+              <p className="text-[10px] text-zinc-300">Tambah saldo celengan & wujudkan target impianmu</p>
+            </div>
+          </div>
+          
+          <button
+            onClick={() => onOpenQuickAction('INCOME')}
+            className="px-3 py-1.5 bg-[#6C4CF5] hover:bg-indigo-600 text-white text-[10px] font-bold rounded-xl shadow-lg transition-all shrink-0 flex items-center gap-1"
+          >
+            <Sparkles className="w-3 h-3" />
+            <span>Setor Sekarang</span>
+          </button>
+        </div>
+
+        {/* Quick Deposit Buttons */}
+        <div className="pt-1 border-t border-indigo-500/20">
+          <span className="text-[9px] font-bold text-indigo-300 uppercase tracking-wider block mb-1.5">Nominal Setor Instant:</span>
+          <div className="grid grid-cols-4 gap-1.5">
+            {[10000, 20000, 50000, 100000].map((amt) => (
+              <button
+                key={amt}
+                onClick={() => onOpenQuickAction('INCOME')}
+                className="py-1.5 px-2 bg-indigo-950/80 hover:bg-indigo-800/80 text-indigo-200 border border-indigo-500/30 rounded-xl text-[10px] font-bold text-center transition-colors"
+              >
+                +Rp {(amt / 1000).toFixed(0)}k
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* 3.2 TARGET IMPIN & CELENGAN DIGITAL */}
+      {goals && goals.length > 0 && (
+        <div className="space-y-2">
+          <div className="flex items-center justify-between px-1">
+            <h3 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
+              <Target className="w-3.5 h-3.5 text-amber-400" />
+              <span>Target Impian & Celengan ({goals.length})</span>
+            </h3>
+            <span
+              className="text-[10px] font-semibold text-indigo-400 flex items-center gap-0.5 cursor-pointer hover:text-indigo-300"
+              onClick={() => onNavigate('wishlist')}
+            >
+              <span>Lihat Semua</span>
+              <ChevronRight className="w-3 h-3" />
+            </span>
+          </div>
+
+          <div className="space-y-2">
+            {goals.slice(0, 3).map((goal) => {
+              const progress = Math.min(100, Math.round((goal.currentAmount / goal.targetAmount) * 100));
+              return (
+                <div
+                  key={goal.id}
+                  className="p-3.5 rounded-2xl fintech-card space-y-2 hover:border-amber-500/40 transition-all cursor-pointer"
+                  onClick={() => onNavigate('wishlist')}
+                >
+                  <div className="flex items-center justify-between">
+                    <div className="flex items-center space-x-2.5 min-w-0">
+                      <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20 font-bold text-xs">
+                        🎯
+                      </div>
+                      <div className="min-w-0">
+                        <h4 className="text-xs font-bold text-white truncate">{goal.name}</h4>
+                        <span className="text-[9px] text-zinc-400 font-medium">{goal.category || 'Tabungan'}</span>
+                      </div>
+                    </div>
+
+                    <div className="text-right shrink-0">
+                      <span className="text-xs font-bold text-amber-400 font-mono block">{progress}%</span>
+                      <span className="text-[9px] text-zinc-400 font-mono">
+                        {formatCurrency(goal.currentAmount, currency)} / {formatCurrency(goal.targetAmount, currency)}
+                      </span>
+                    </div>
+                  </div>
+
+                  {/* Progress Bar */}
+                  <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden p-0.5 border border-zinc-700/50">
+                    <div
+                      className="bg-gradient-to-r from-amber-500 to-indigo-500 h-full rounded-full transition-all duration-500"
+                      style={{ width: `${progress}%` }}
+                    />
+                  </div>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
       {/* 4. ACCOUNTS VAULT (CLEAN SWIPEABLE CARDS) */}
       <div className="space-y-2">
         <div className="flex items-center justify-between px-1">
