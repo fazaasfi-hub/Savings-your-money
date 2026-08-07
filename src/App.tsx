@@ -723,16 +723,12 @@ export default function App() {
           isDark ? 'bg-[#0E1022]/90 border-slate-800/80' : 'bg-white/90 border-slate-200/80'
         }`}>
           <div className="flex items-center space-x-2 cursor-pointer" onClick={() => setCurrentScreen('dashboard')}>
-            <img
-              src="/app_icon.png"
-              alt="FZ Savings Logo"
-              className="w-6.5 h-6.5 rounded-lg object-cover border border-indigo-500/30 shadow-xs"
-            />
+            <div className="w-3 h-3 rounded-full bg-[#6C4CF5] shadow-xs shadow-purple-500/50" />
             <span className={`text-xs font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
               FZ SAVINGS
             </span>
             <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 uppercase tracking-wider">
-              Aplikasi Nabung
+              Tabungan
             </span>
           </div>
 
