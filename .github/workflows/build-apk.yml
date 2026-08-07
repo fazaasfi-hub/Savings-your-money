@@ -44,6 +44,11 @@ jobs:
           gradle-version: '8.10.2'
           validate-wrappers: false
 
+      - name: Generate Fresh Gradle Wrapper
+        run: |
+          cd android
+          gradle wrapper --gradle-version 8.10.2
+
       - name: Grant Execute Permission to Gradlew
         run: chmod +x android/gradlew
 
