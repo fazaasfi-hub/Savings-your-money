@@ -27,7 +27,7 @@ import com.fzsavings.app.domain.model.Wishlist
         SyncLogEntry::class
     ],
     version = 1,
-    exportSchema = false
+    exportSchema = true
 )
 abstract class SavingsDatabase : RoomDatabase() {
     abstract fun dao(): SavingsDao
