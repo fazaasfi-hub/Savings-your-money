@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { Shield, Sparkles, CheckCircle2, Database, Lock, Bell, Cpu, Zap, Star } from 'lucide-react';
-import appLogo from '../../assets/images/app_logo_1785840078052.jpg';
+import { AppLogoIcon } from '../AppLogoIcon';
 
 interface SplashScreenProps {
   onFinishLaunch: (destination: 'ONBOARDING' | 'LOGIN' | 'DASHBOARD') => void;
@@ -149,12 +149,7 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
             className="absolute inset-y-0 w-12 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 pointer-events-none z-10"
           />
 
-          <img
-            src={appLogo}
-            alt="FZ Savings Logo"
-            className="w-full h-full object-cover"
-            referrerPolicy="no-referrer"
-          />
+          <AppLogoIcon size="2xl" className="w-full h-full rounded-none" />
         </motion.div>
 
         <motion.div

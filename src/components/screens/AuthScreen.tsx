@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import appLogo from '../../assets/images/app_logo_1785840078052.jpg';
+import { AppLogoIcon } from '../AppLogoIcon';
 import {
   ShieldCheck,
   Lock,
@@ -217,14 +217,7 @@ export const AuthScreen: React.FC<AuthScreenProps> = ({ onAuthSuccess }) => {
           transition={{ type: "spring", stiffness: 100, damping: 15 }}
           className="flex items-center space-x-2.5"
         >
-          <div className="w-8 h-8 rounded-xl overflow-hidden border border-indigo-500/30 shadow-md shrink-0 bg-[#16181D]">
-            <img
-              src={appLogo}
-              alt="FZ"
-              className="w-full h-full object-cover"
-              referrerPolicy="no-referrer"
-            />
-          </div>
+          <AppLogoIcon size="md" />
           <div>
             <span className="text-xs font-bold tracking-widest text-white uppercase block">FZ SAVINGS</span>
             <span className="text-[9px] font-semibold text-zinc-400 uppercase tracking-wider block">Firebase Cloud Auth</span>
