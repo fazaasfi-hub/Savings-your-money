@@ -35,6 +35,7 @@ export const LiquidGlassBottomBar: React.FC<LiquidGlassBottomBarProps> = ({
   const [dragActiveIndex, setDragActiveIndex] = useState<number | null>(null);
   const [isDragging, setIsDragging] = useState(false);
   const [isKeyboardOpen, setIsKeyboardOpen] = useState(false);
+  const prevIndexRef = useRef<number | null>(null);
 
   useEffect(() => {
     const handleFocus = () => {
@@ -221,7 +222,9 @@ export const LiquidGlassBottomBar: React.FC<LiquidGlassBottomBarProps> = ({
       <div
         ref={containerRef}
         onPointerDown={handlePointerDown}
-        className={`relative p-1.5 rounded-[32px] transition-all duration-300 overflow-hidden cursor-grab active:cursor-grabbing ${containerClasses}`}
+        className={`relative p-1.5 rounded-[32px] transition-all duration-300 ${
+          liquidGlassEnabled ? 'overflow-visible' : 'overflow-hidden'
+        } cursor-grab active:cursor-grabbing ${containerClasses}`}
       >
         {/* iOS 18 Specular Reflection Glare across top edge - glass mode only */}
         {liquidGlassEnabled && (
@@ -283,7 +286,7 @@ export const LiquidGlassBottomBar: React.FC<LiquidGlassBottomBarProps> = ({
                     transition={{
                       type: 'spring',
                       stiffness: 300,
-                      damping: 26,
+                      damping: 24,
                       mass: 0.7,
                     }}
                   >
