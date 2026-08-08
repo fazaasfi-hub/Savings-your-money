@@ -22,10 +22,14 @@
   transform: translate3d(0, 0, 0);
   backface-visibility: hidden;
   will-change: transform, opacity;
+  -webkit-transform: translate3d(0, 0, 0);
 }
 
 .overflow-y-auto, .overflow-x-auto {
   -webkit-overflow-scrolling: touch;
+  transform: translate3d(0, 0, 0);
+  will-change: transform;
+  contain: content;
 }
 
 /* Production Fintech Card & Glass Utilities */

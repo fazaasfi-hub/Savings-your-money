@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { SavingsAccount, Transaction, UserProfile } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { FileText, Download, Share2, CheckCircle2, ShieldCheck, Printer } from 'lucide-react';
+import { translateText } from '../../utils/translations';
 
 interface ExportReportScreenProps {
   userProfile: UserProfile;
@@ -10,6 +11,7 @@ interface ExportReportScreenProps {
   transactions: Transaction[];
   currency: 'IDR' | 'USD' | 'EUR';
   isDark: boolean;
+  language?: string;
 }
 
 export const ExportReportScreen: React.FC<ExportReportScreenProps> = ({
@@ -18,9 +20,11 @@ export const ExportReportScreen: React.FC<ExportReportScreenProps> = ({
   transactions,
   currency,
   isDark,
+  language,
 }) => {
   const [reportType, setReportType] = useState<'SUMMARY' | 'FULL_TRANSACTIONS'>('SUMMARY');
   const [downloaded, setDownloaded] = useState(false);
+  const t = (text: string) => translateText(text, language);
 
   const totalBalance = accounts.reduce((s, a) => s + a.balance, 0);
   const totalIncome = transactions.filter(t => t.type === 'INCOME').reduce((s, t) => s + t.amount, 0);
@@ -42,22 +46,22 @@ export const ExportReportScreen: React.FC<ExportReportScreenProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h1 className={`text-lg font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Ekspor Laporan Keuangan 📄
+            {t("Ekspor Laporan Keuangan 📄")}
           </h1>
-          <p className="text-xs text-slate-400">Unduh laporan resmi ringkasan aset & mutasi arus kas</p>
+          <p className="text-xs text-slate-400">{t("Unduh laporan resmi ringkasan aset & mutasi arus kas")}</p>
         </div>
       </div>
 
       {downloaded && (
         <div className="p-3 bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 rounded-2xl flex items-center space-x-2 text-xs font-bold">
           <CheckCircle2 className="w-4 h-4 shrink-0" />
-          <span>Laporan keuangan berhasil diunduh ke perangkat Anda!</span>
+          <span>{t("Laporan keuangan berhasil diunduh ke perangkat Anda!")}</span>
         </div>
       )}
 
       {/* Options */}
       <div className={`p-4 rounded-2xl border space-y-3 ${isDark ? 'bg-[#14182E] border-slate-800' : 'bg-white border-slate-200'}`}>
-        <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Pilih Jenis Laporan</h3>
+        <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t("Pilih Jenis Laporan")}</h3>
         <div className="grid grid-cols-2 gap-2">
           <button
             onClick={() => setReportType('SUMMARY')}
@@ -67,8 +71,8 @@ export const ExportReportScreen: React.FC<ExportReportScreenProps> = ({
                 : isDark ? 'border-slate-800 bg-slate-900 text-slate-400' : 'border-slate-200 bg-slate-50 text-slate-600'
             }`}
           >
-            <span className="text-xs block font-bold">Ringkasan Eksekutif</span>
-            <span className="text-[10px] text-slate-400 font-normal">Total aset & statistik bulanan</span>
+            <span className="text-xs block font-bold">{t("Ringkasan Eksekutif")}</span>
+            <span className="text-[10px] text-slate-400 font-normal">{t("Total aset & statistik bulanan")}</span>
           </button>
           <button
             onClick={() => setReportType('FULL_TRANSACTIONS')}
@@ -78,8 +82,8 @@ export const ExportReportScreen: React.FC<ExportReportScreenProps> = ({
                 : isDark ? 'border-slate-800 bg-slate-900 text-slate-400' : 'border-slate-200 bg-slate-50 text-slate-600'
             }`}
           >
-            <span className="text-xs block font-bold">Mutasi Transaksi</span>
-            <span className="text-[10px] text-slate-400 font-normal">Daftar lengkap seluruh arus kas</span>
+            <span className="text-xs block font-bold">{t("Mutasi Transaksi")}</span>
+            <span className="text-[10px] text-slate-400 font-normal">{t("Daftar lengkap seluruh arus kas")}</span>
           </button>
         </div>
       </div>
@@ -88,44 +92,44 @@ export const ExportReportScreen: React.FC<ExportReportScreenProps> = ({
       <div className={`p-6 rounded-[24px] border space-y-4 font-mono text-xs ${isDark ? 'bg-[#14182E] border-slate-800 text-slate-300' : 'bg-white border-slate-200 text-slate-700'}`}>
         <div className="flex items-center justify-between border-b pb-3 border-slate-700/40">
           <div>
-            <h4 className="font-bold text-sm tracking-wide text-[#6C4CF5]">FZ SAVINGS STATEMENT</h4>
-            <span className="text-[10px] text-slate-400">Dicetak oleh: {userProfile.name} ({userProfile.email})</span>
+            <h4 className="font-bold text-sm tracking-wide text-[#6C4CF5]">{t("FZ SAVINGS STATEMENT")}</h4>
+            <span className="text-[10px] text-slate-400">{t("Dicetak oleh:")} {userProfile.name} ({userProfile.email})</span>
           </div>
           <div className="text-right text-[10px] text-slate-400">
-            <span>Tanggal: {new Date().toLocaleDateString('id-ID')}</span>
+            <span>{t("Tanggal:")} {new Date().toLocaleDateString('id-ID')}</span>
           </div>
         </div>
 
         <div className="space-y-1.5 text-[11px]">
           <div className="flex justify-between">
-            <span className="text-slate-400">Total Akun Rekening:</span>
-            <span className="font-bold">{accounts.length} Akun</span>
+            <span className="text-slate-400">{t("Total Akun Rekening:")}</span>
+            <span className="font-bold">{accounts.length} {t("Akun")}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-400">Total Akumulasi Saldo:</span>
+            <span className="text-slate-400">{t("Total Akumulasi Saldo:")}</span>
             <span className="font-bold text-emerald-400">{formatCurrency(totalBalance, currency)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-400">Total Pemasukan Tercatat:</span>
+            <span className="text-slate-400">{t("Total Pemasukan Tercatat:")}</span>
             <span className="font-bold text-emerald-400">{formatCurrency(totalIncome, currency)}</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-slate-400">Total Pengeluaran Tercatat:</span>
+            <span className="text-slate-400">{t("Total Pengeluaran Tercatat:")}</span>
             <span className="font-bold text-rose-400">{formatCurrency(totalExpense, currency)}</span>
           </div>
         </div>
 
         {reportType === 'FULL_TRANSACTIONS' && (
           <div className="pt-3 border-t border-slate-700/40 space-y-2 max-h-48 overflow-y-auto">
-            <span className="text-[10px] uppercase font-bold text-slate-400 block">Daftar Transaksi ({transactions.length})</span>
+            <span className="text-[10px] uppercase font-bold text-slate-400 block">{t("Daftar Transaksi")} ({transactions.length})</span>
             {transactions.length === 0 ? (
-              <p className="text-[11px] text-slate-500 italic">Belum ada transaksi.</p>
+              <p className="text-[11px] text-slate-500 italic">{t("Belum ada transaksi.")}</p>
             ) : (
-              transactions.map(t => (
-                <div key={t.id} className="flex justify-between text-[10px] border-b border-slate-800/50 pb-1">
-                  <span>{t.date} - {t.title}</span>
-                  <span className={t.type === 'INCOME' ? 'text-emerald-400' : 'text-rose-400'}>
-                    {t.type === 'INCOME' ? '+' : '-'}{formatCurrency(t.amount, currency)}
+              transactions.map(tItem => (
+                <div key={tItem.id} className="flex justify-between text-[10px] border-b border-slate-800/50 pb-1">
+                  <span>{tItem.date} - {t(tItem.title)}</span>
+                  <span className={tItem.type === 'INCOME' ? 'text-emerald-400' : 'text-rose-400'}>
+                    {tItem.type === 'INCOME' ? '+' : '-'}{formatCurrency(tItem.amount, currency)}
                   </span>
                 </div>
               ))
@@ -141,7 +145,7 @@ export const ExportReportScreen: React.FC<ExportReportScreenProps> = ({
           className="py-3 bg-[#6C4CF5] hover:bg-indigo-700 text-white text-xs font-bold rounded-2xl shadow-md flex items-center justify-center space-x-2 transition-all"
         >
           <Download className="w-4 h-4" />
-          <span>Unduh PDF</span>
+          <span>{t("Unduh PDF")}</span>
         </button>
 
         <button
@@ -151,7 +155,7 @@ export const ExportReportScreen: React.FC<ExportReportScreenProps> = ({
           }`}
         >
           <FileText className="w-4 h-4" />
-          <span>Ekspor CSV</span>
+          <span>{t("Ekspor CSV")}</span>
         </button>
       </div>
     </motion.div>

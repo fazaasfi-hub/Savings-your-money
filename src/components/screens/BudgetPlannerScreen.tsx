@@ -3,12 +3,14 @@ import { motion } from 'motion/react';
 import { CategoryBudget, Category } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { Plus, AlertTriangle, CheckCircle2, AlertCircle, PieChart } from 'lucide-react';
+import { translateText } from '../../utils/translations';
 
 interface BudgetPlannerScreenProps {
   budgets: CategoryBudget[];
   categories: Category[];
   currency: 'IDR' | 'USD' | 'EUR';
   isDark?: boolean;
+  language?: string;
   onUpdateBudget: (budget: CategoryBudget) => void;
 }
 
@@ -17,11 +19,13 @@ export const BudgetPlannerScreen: React.FC<BudgetPlannerScreenProps> = ({
   categories,
   currency,
   isDark = false,
+  language,
   onUpdateBudget
 }) => {
   const [isAdding, setIsAdding] = useState(false);
   const [selectedCatId, setSelectedCatId] = useState(categories[0]?.id || '');
   const [limit, setLimit] = useState('');
+  const t = (text: string) => translateText(text, language);
 
   const handleSave = (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,8 +57,8 @@ export const BudgetPlannerScreen: React.FC<BudgetPlannerScreenProps> = ({
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Perencana Anggaran</h2>
-          <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Kendalikan batas pengeluaran kategori setiap bulan</p>
+          <h2 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{t("Perencana Anggaran")}</h2>
+          <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t("Kendalikan batas pengeluaran kategori setiap bulan")}</p>
         </div>
 
         <button
@@ -62,7 +66,7 @@ export const BudgetPlannerScreen: React.FC<BudgetPlannerScreenProps> = ({
           className="px-3.5 py-1.5 bg-[#6C4CF5] hover:bg-indigo-700 text-white text-xs font-bold rounded-2xl shadow-md transition-all inline-flex items-center space-x-1"
         >
           <Plus className="w-4 h-4" />
-          <span>Atur Anggaran</span>
+          <span>{t("Atur Anggaran")}</span>
         </button>
       </div>
 
@@ -71,10 +75,10 @@ export const BudgetPlannerScreen: React.FC<BudgetPlannerScreenProps> = ({
         <form onSubmit={handleSave} className={`p-5 border rounded-[24px] shadow-lg space-y-4 ${
           isDark ? 'bg-[#1E293B] border-slate-800 text-white' : 'bg-white border-slate-200/80 text-slate-900'
         }`}>
-          <h3 className={`text-sm font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>Set Batas Anggaran Kategori</h3>
+          <h3 className={`text-sm font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t("Set Batas Anggaran Kategori")}</h3>
 
           <div>
-            <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Kategori Pengeluaran</label>
+            <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Kategori Pengeluaran")}</label>
             <select
               value={selectedCatId}
               onChange={(e) => setSelectedCatId(e.target.value)}
@@ -83,13 +87,13 @@ export const BudgetPlannerScreen: React.FC<BudgetPlannerScreenProps> = ({
               }`}
             >
               {categories.filter(c => c.type === 'EXPENSE').map(c => (
-                <option key={c.id} value={c.id}>{c.name}</option>
+                <option key={c.id} value={c.id}>{t(c.name)}</option>
               ))}
             </select>
           </div>
 
           <div>
-            <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Batas Maksimal Bulanan (Rp)</label>
+            <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Batas Maksimal Bulanan (Rp)")}</label>
             <input
               type="number"
               value={limit}
@@ -108,13 +112,13 @@ export const BudgetPlannerScreen: React.FC<BudgetPlannerScreenProps> = ({
               onClick={() => setIsAdding(false)}
               className={`px-3.5 py-2 text-xs font-semibold ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
             >
-              Batal
+              {t("Batal")}
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-[#6C4CF5] text-white text-xs font-bold rounded-xl hover:bg-indigo-700 shadow-md"
             >
-              Simpan Batas
+              {t("Simpan Batas")}
             </button>
           </div>
         </form>
@@ -140,8 +144,8 @@ export const BudgetPlannerScreen: React.FC<BudgetPlannerScreenProps> = ({
                     <PieChart className="w-4 h-4 text-[#6C4CF5]" />
                   </div>
                   <div>
-                    <h3 className={`text-xs font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>{cat?.name || 'Kategori'}</h3>
-                    <span className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Batas: {formatCurrency(b.monthlyLimit, currency)}</span>
+                    <h3 className={`text-xs font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t(cat?.name || 'Kategori')}</h3>
+                    <span className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t("Batas:")} {formatCurrency(b.monthlyLimit, currency)}</span>
                   </div>
                 </div>
 
@@ -149,17 +153,17 @@ export const BudgetPlannerScreen: React.FC<BudgetPlannerScreenProps> = ({
                   {isOver ? (
                     <span className="px-2 py-0.5 bg-rose-500/10 text-rose-400 border border-rose-500/30 text-[10px] font-bold rounded-full flex items-center gap-1">
                       <AlertCircle className="w-3 h-3" />
-                      <span>Over Budget</span>
+                      <span>{t("Over Budget")}</span>
                     </span>
                   ) : isWarning ? (
                     <span className="px-2 py-0.5 bg-amber-500/10 text-amber-400 border border-amber-500/30 text-[10px] font-bold rounded-full flex items-center gap-1">
                       <AlertTriangle className="w-3 h-3" />
-                      <span>Mendekati Batas</span>
+                      <span>{t("Mendekati Batas")}</span>
                     </span>
                   ) : (
                     <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 text-[10px] font-bold rounded-full flex items-center gap-1">
                       <CheckCircle2 className="w-3 h-3" />
-                      <span>Aman</span>
+                      <span>{t("Aman")}</span>
                     </span>
                   )}
                 </div>
@@ -167,7 +171,7 @@ export const BudgetPlannerScreen: React.FC<BudgetPlannerScreenProps> = ({
 
               <div>
                 <div className="flex justify-between items-center text-[10px] font-semibold mb-1">
-                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Terpakai: {formatCurrency(b.spentAmount, currency)}</span>
+                  <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>{t("Terpakai:")} {formatCurrency(b.spentAmount, currency)}</span>
                   <span className={`font-bold ${isOver ? 'text-rose-500' : isWarning ? 'text-amber-500' : isDark ? 'text-white' : 'text-slate-900'}`}>
                     {percent}%
                   </span>

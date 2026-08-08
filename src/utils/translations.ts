@@ -1197,6 +1197,1276 @@ export const uiTranslations: Record<string, Record<string, string>> = {
     JA: "この日付の取引はありません。",
     ZH: "该日期无交易记录。",
     KO: "해당 날짜에 거래 내역이 없습니다."
+  },
+  "Kas & Rekening": {
+    EN: "Cash & Accounts",
+    ES: "Efectivo y Cuentas",
+    JA: "現金と口座",
+    ZH: "现金与账户",
+    KO: "현금 및 계좌",
+    FR: "Trésorerie et Comptes",
+    DE: "Bargeld & Konten",
+    AR: "النقد والحسابات"
+  },
+  "Target Nabung": {
+    EN: "Savings Goals",
+    ES: "Metas de Ahorro",
+    JA: "貯金目標",
+    ZH: "储蓄目标",
+    KO: "저금 목표",
+    FR: "Objectifs d'Épargne",
+    DE: "Sparziele",
+    AR: "أهداف الادخار"
+  },
+  "Fokus kumpulkan tabungan & raih target uangmu": {
+    EN: "Focus on building savings & reach your cash target",
+    ES: "Concéntrese en acumular ahorros y alcance su meta de efectivo",
+    JA: "貯金を増やし、目標額を達成することに集中します",
+    ZH: "专注于积累储蓄并达到您的现金目标",
+    KO: "저축을 늘리고 목표 금액 달성에 집중하세요",
+    FR: "Concentrez-vous sur l'accumulation d'épargne et atteignez votre objectif",
+    DE: "Fokus auf den Aufbau von Ersparnissen & Erreichen Ihres Sparziels",
+    AR: "تركز على زيادة المدخرات وتحقيق هدفك المالي"
+  },
+  "Tambah Target": {
+    EN: "Add Goal",
+    ES: "Añadir Meta",
+    JA: "目標を追加",
+    ZH: "添加目标",
+    KO: "목표 추가",
+    FR: "Ajouter un Objectif",
+    DE: "Ziel hinzufügen",
+    AR: "إضافة هدف"
+  },
+  "Total Progres Nabung": {
+    EN: "Total Savings Progress",
+    ES: "Progreso Total de Ahorro",
+    JA: "総貯金進捗状況",
+    ZH: "总储蓄进度",
+    KO: "총 저축 진행 상황",
+    FR: "Progression Totale de l'Épargne",
+    DE: "Gesamter Sparfortschritt",
+    AR: "إجمالي التقدم في الادخار"
+  },
+  "Target Tercapai": {
+    EN: "Goal Achieved",
+    ES: "Meta Alcanzada",
+    JA: "目標達成",
+    ZH: "目标已达成",
+    KO: "목표 달성",
+    FR: "Objectif Atteint",
+    DE: "Ziel erreicht",
+    AR: "تم تحقيق الهدف"
+  },
+  "Buat Target Nabung Baru": {
+    EN: "Create New Savings Goal",
+    ES: "Crear Nueva Meta de Ahorro",
+    JA: "新しい貯金目標を作成する",
+    ZH: "创建新储蓄目标",
+    KO: "새로운 저금 목표 설정",
+    FR: "Créer un Nouvel Objectif d'Épargne",
+    DE: "Neues Sparziel erstellen",
+    AR: "إنشاء هدف ادخار جديد"
+  },
+  "Nama Target Tabungan": {
+    EN: "Savings Goal Name",
+    ES: "Nombre de la Meta",
+    JA: "貯金目標名",
+    ZH: "储蓄目标名称",
+    KO: "저금 목표 이름",
+    FR: "Nom de l'Objectif d'Épargne",
+    DE: "Name des Sparziels",
+    AR: "اسم هدف الادخار"
+  },
+  "Contoh: Tabungan Liburan, Uang Pangkal, Laptop": {
+    EN: "e.g., Vacation Savings, Down Payment, Laptop",
+    ES: "Ej: Ahorro para Vacaciones, Enganche, Laptop",
+    JA: "例：旅行貯金、頭金、パソコン",
+    ZH: "例如：假期储蓄、首付款、电脑",
+    KO: "예: 휴가 저축, 보증금, 노트북",
+    FR: "ex. Épargne Vacances, Apport, Ordinateur",
+    DE: "z.B. Urlaubskasse, Anzahlung, Laptop",
+    AR: "مثال: مدخرات الإجازة، الدفعة الأولى، لابتوب"
+  },
+  "Simpan Target": {
+    EN: "Save Goal",
+    ES: "Guardar Meta",
+    JA: "目標を保存",
+    ZH: "保存目标",
+    KO: "목표 저장",
+    FR: "Enregistrer l'Objectif",
+    DE: "Ziel speichern",
+    AR: "حفظ الهدف"
+  },
+  "Setor Uang ke": {
+    EN: "Deposit Money to",
+    ES: "Depositar Dinero en",
+    JA: "にお金を入金する",
+    ZH: "存入资金到",
+    KO: "에 돈 저금하기",
+    FR: "Déposer de l'Argent sur",
+    DE: "Geld einzahlen auf",
+    AR: "إيداع الأموال في"
+  },
+  "Tutup": {
+    EN: "Close",
+    ES: "Cerrar",
+    JA: "閉じる",
+    ZH: "关闭",
+    KO: "닫기",
+    FR: "Fermer",
+    DE: "Schließen",
+    AR: "إغلاق"
+  },
+  "Nominal Setoran (Rp)": {
+    EN: "Deposit Amount",
+    ES: "Monto de Depósito",
+    JA: "入金額",
+    ZH: "存入金额",
+    KO: "저금액",
+    FR: "Montant du Dépôt",
+    DE: "Einzahlungsbetrag",
+    AR: "مبلغ الإيداع"
+  },
+  "Konfirmasi Setor": {
+    EN: "Confirm Deposit",
+    ES: "Confirmar Depósito",
+    JA: "入金を確認",
+    ZH: "确认存入",
+    KO: "저금 확인",
+    FR: "Confirmer le Dépôt",
+    DE: "Einzahlung bestätigen",
+    AR: "تأكيد الإيداع"
+  },
+  "Belum ada target nabung": {
+    EN: "No savings goals yet",
+    ES: "Aún no hay metas de ahorro",
+    JA: "貯金目標がまだありません",
+    ZH: "暂无储蓄目标",
+    KO: "설정된 저금 목표가 없습니다",
+    FR: "Pas encore d'objectifs d'épargne",
+    DE: "Noch keine Sparziele vorhanden",
+    AR: "لا توجد أهداف ادخار بعد"
+  },
+  "Klik tombol \"+ Tambah Target\" untuk memulai impian baru.": {
+    EN: "Click the \"+ Add Goal\" button to start a new dream.",
+    ES: "Haga clic en el botón \"+ Añadir Meta\" para comenzar un nuevo sueño.",
+    JA: "「+ 目標を追加」ボタンをクリックして、新しい夢を始めましょう。",
+    ZH: "点击 \"+ 添加目标\" 按钮开启全新梦想。",
+    KO: "새로운 꿈을 시작하려면 \"+ 목표 추가\" 버튼을 누르세요.",
+    FR: "Cliquez sur le bouton \"+ Ajouter un Objectif\" pour commencer un nouveau rêve.",
+    DE: "Klicken Sie auf den Button \"+ Ziel hinzufügen\", um einen neuen Traum zu starten.",
+    AR: "انقر فوق الزر \"+ إضافة هدف\" لبدء حلم جديد."
+  },
+  "TARGET TERCAPAI! 🎉": {
+    EN: "GOAL ACHIEVED! 🎉",
+    ES: "¡META ALCANZADA! 🎉",
+    JA: "目標達成！ 🎉",
+    ZH: "目标已达成！ 🎉",
+    KO: "목표 달성! 🎉",
+    FR: "OBJECTIF ATTEINT ! 🎉",
+    DE: "ZIEL ERREICHT! 🎉",
+    AR: "تم تحقيق الهدف! 🎉"
+  },
+  "Progres Terkumpul": {
+    EN: "Saved Progress",
+    ES: "Progreso Acumulado",
+    JA: "貯蓄進捗状況",
+    ZH: "储蓄进度",
+    KO: "저축 진행 상황",
+    FR: "Progression Épargnée",
+    DE: "Sparfortschritt",
+    AR: "التقدم المحرز"
+  },
+  "Terkumpul:": {
+    EN: "Saved:",
+    ES: "Acumulado:",
+    JA: "貯蓄額:",
+    ZH: "已储蓄:",
+    KO: "모인 금액:",
+    FR: "Épargné :",
+    DE: "Gespart:",
+    AR: "المجمع:"
+  },
+  "Target:": {
+    EN: "Target:",
+    ES: "Objetivo:",
+    JA: "目標:",
+    ZH: "目标:",
+    KO: "목표:",
+    FR: "Cible :",
+    DE: "Ziel:",
+    AR: "الهدف:"
+  },
+  "Statistik & Analisis": {
+    EN: "Statistics & Analysis",
+    ES: "Estadísticas y Análisis",
+    JA: "統計と分析",
+    ZH: "统计与分析",
+    KO: "통계 및 분석",
+    FR: "Statistiques et Analyses",
+    DE: "Statistiken & Analysen",
+    AR: "الإحصاءات والتحليل"
+  },
+  "Visualisasi arus kas & pola pengeluaran": {
+    EN: "Visualization of cash flow & spending patterns",
+    ES: "Visualización del flujo de caja y patrones de gasto",
+    JA: "キャッシュフローと支出パターンの可視化",
+    ZH: "现金流与消费模式可视化",
+    KO: "현금 흐름 및 지출 패턴 시각화",
+    FR: "Visualisation des flux de trésorerie et des d'épargnes",
+    DE: "Visualisierung von Cashflow & Konsumverhalten",
+    AR: "رسم بياني للتدفقات النقدية وأنماط الإنفاق"
+  },
+  "Arus kas Anda berada pada kondisi sangat sehat dengan rasio tabungan di atas 30%.": {
+    EN: "Your cash flow is in a very healthy state with a savings ratio above 30%.",
+    ES: "Su flujo de caja está en un estado muy saludable con una tasa de ahorro superior al 30%.",
+    JA: "貯蓄率が30％を超えており、キャッシュフローは非常に健全な状態です。",
+    ZH: "您的现金流处于非常健康的状态，储蓄率在30%以上。",
+    KO: "저축률이 30%를 초과하여 현금 흐름이 매우 건강한 상태입니다.",
+    FR: "Votre flux de trésorerie est très sain avec un taux d'épargne supérieur à 30%.",
+    DE: "Ihr Cashflow ist in einem sehr gesunden Zustand mit einer Sparquote von über 30%.",
+    AR: "التدفق النقدي لديك في حالة صحية للغاية مع نسبة ادخار تزيد عن 30%."
+  },
+  "Arus Kas Bulanan": {
+    EN: "Monthly Cash Flow",
+    ES: "Flujo de Caja Mensual",
+    JA: "月次キャッシュフロー",
+    ZH: "月度现金流",
+    KO: "월간 현금 흐름",
+    FR: "Flux de Trésorerie Mensuel",
+    DE: "Monatlicher Cashflow",
+    AR: "التدفق الندقي الشهري"
+  },
+  "Distribusi Pengeluaran": {
+    EN: "Expense Distribution",
+    ES: "Distribución de Gastos",
+    JA: "支出の内訳",
+    ZH: "支出分布",
+    KO: "지출 분포",
+    FR: "Distribution des Dépenses",
+    DE: "Ausgabenverteilung",
+    AR: "توزيع المصروفات"
+  },
+  "Saran Hemat AI FZ Savings": {
+    EN: "FZ Savings AI Saving Advice",
+    ES: "Consejo de Ahorro de IA de FZ Savings",
+    JA: "FZ Savings AI 節約のアドバイス",
+    ZH: "FZ Savings AI 储蓄建议",
+    KO: "FZ Savings AI 저축 조언",
+    FR: "Conseil d'Épargne IA de FZ Savings",
+    DE: "FZ Savings KI-Spartipp",
+    AR: "نصيحة الادخار الذكية من FZ Savings"
+  },
+  "Pengeluaran untuk kategori Makan & Minum merupakan yang terbesar bulan ini. Jika dialokasikan 15% lebih hemat, Anda bisa mempercepat pencapaian target tabungan Anda hingga 2 minggu lebih awal.": {
+    EN: "Spending in the Food & Drink category is the largest this month. If you allocate 15% more savings, you can accelerate your savings goal by up to 2 weeks earlier.",
+    ES: "El gasto en la categoría Alimentos y Bebidas es el mayor este mes. Si destina un 15% más al ahorro, puede acelerar su meta de ahorro hasta 2 semanas antes.",
+    JA: "今月は「飲食」カテゴリーの支出が最大です。もし15％節約できれば、貯金目標の達成を最大2週間早めることができます。",
+    ZH: "本月餐饮类支出最大。如果能多节省15%的预算，您的储蓄目标可以提前最多2周实现。",
+    KO: "이번 달 '식음료' 카테고리 지출이 가장 큽니다. 15%만 더 저축하면 저금 목표 달성을 최대 2주 앞당길 수 있습니다.",
+    FR: "Les d'épargnes dans la catégorie Nourriture & Boisson sont les plus importantes ce mois-ci. En économisant 15% de plus, vous pouvez accélérer votre objectif d'épargne jusqu'à 2 semaines plus tôt.",
+    DE: "Die Ausgaben in der Kategorie Essen & Trinken sind diesen Monat am höchsten. Wenn Sie 15% mehr sparen, können Sie Ihr Sparziel bis zu 2 Wochen früher erreichen.",
+    AR: "الإنفاق في فئة الطعام والشراب هو الأكبر هذا الشهر. إذا قمت بتوفير 15% إضافية، يمكنك تسريع هدف الادخار الخاص بك بمقدار أسبوعين قبل الموعد المحدد."
+  },
+  "Kendalikan batas pengeluaran kategori setiap bulan": {
+    EN: "Control category spending limits each month",
+    ES: "Controle los límites de gasto de categorías cada mes",
+    JA: "毎月のカテゴリー別支出制限をコントロールします",
+    ZH: "控制每月各分类的支出上限",
+    KO: "매월 카테고리별 지출 한도를 제어하세요",
+    FR: "Contrôlez les limites de dépenses par catégorie chaque mois",
+    DE: "Monatliche Ausgabenlimits pro Kategorie kontrollieren",
+    AR: "التحكم في حدود الإنفاق للفئات كل شهر"
+  },
+  "Atur Anggaran": {
+    EN: "Set Budget",
+    ES: "Definir Presupuesto",
+    JA: "予算を設定",
+    ZH: "设置预算",
+    KO: "예산 설정",
+    FR: "Définir le Budget",
+    DE: "Budget festlegen",
+    AR: "تعيين الميزانية"
+  },
+  "Set Batas Anggaran Kategori": {
+    EN: "Set Category Budget Limit",
+    ES: "Definir Límite de Presupuesto de Categoría",
+    JA: "カテゴリー別の予算制限を設定する",
+    ZH: "设置分类预算上限",
+    KO: "카테고리별 예산 한도 설정",
+    FR: "Définir la Limite Budgétaire de la Catégorie",
+    DE: "Ausgabenlimit pro Kategorie festlegen",
+    AR: "تعيين حد ميزانية الفئة"
+  },
+  "Kategori Pengeluaran": {
+    EN: "Expense Category",
+    ES: "Categoría de Gasto",
+    JA: "支出カテゴリー",
+    ZH: "支出分类",
+    KO: "지출 카테고리",
+    FR: "Catégorie de Dépense",
+    DE: "Ausgabenkategorie",
+    AR: "فئة المصروفات"
+  },
+  "Simpan Batas": {
+    EN: "Save Limit",
+    ES: "Guardar Límite",
+    JA: "制限を保存",
+    ZH: "保存限制",
+    KO: "한도 저장",
+    FR: "Enregistrer la Limite",
+    DE: "Limit speichern",
+    AR: "حفظ الحد"
+  },
+  "Batas Bulanan": {
+    EN: "Monthly Limit",
+    ES: "Límite Mensual",
+    JA: "月間制限",
+    ZH: "每月限额",
+    KO: "월간 한도",
+    FR: "Limite Mensuelle",
+    DE: "Monatliches Limit",
+    AR: "الحد الشهري"
+  },
+  "Terpakai": {
+    EN: "Spent",
+    ES: "Gastado",
+    JA: "支出済",
+    ZH: "已用",
+    KO: "사용액",
+    FR: "Dépensé",
+    DE: "Ausgegeben",
+    AR: "المستهلك"
+  },
+  "Tersisa": {
+    EN: "Remaining",
+    ES: "Restante",
+    JA: "残り",
+    ZH: "剩余",
+    KO: "남은 금액",
+    FR: "Restant",
+    DE: "Verbleibend",
+    AR: "المتبقي"
+  },
+  "Anggaran Terlampaui!": {
+    EN: "Budget Exceeded!",
+    ES: "¡Presupuesto Excedido!",
+    JA: "予算超過！",
+    ZH: "超出预算！",
+    KO: "예산 초과!",
+    FR: "Budget Dépassé !",
+    DE: "Budget überschritten!",
+    AR: "تجاوزت الميزانية!"
+  },
+  "Sangat Aman": {
+    EN: "Very Safe",
+    ES: "Muy Seguro",
+    JA: "安全圏",
+    ZH: "非常安全",
+    KO: "안전함",
+    FR: "Très Sûr",
+    DE: "Sehr sicher",
+    AR: "آمن جداً"
+  },
+  "Mendekati Batas": {
+    EN: "Near Limit",
+    ES: "Cerca del Límite",
+    JA: "上限間近",
+    ZH: "接近上限",
+    KO: "한도 임박",
+    FR: "Proche de la Limite",
+    DE: "Nahe am Limit",
+    AR: "قريب من الحد"
+  },
+  "Nama Tagihan": {
+    EN: "Bill Name",
+    ES: "Nombre de la Factura",
+    JA: "請求書名",
+    ZH: "账单名称",
+    KO: "청구 이름",
+    FR: "Nom de la Facture",
+    DE: "Rechnungsname",
+    AR: "اسم الفاتورة"
+  },
+  "Total Tagihan (Rp)": {
+    EN: "Total Bill Amount",
+    ES: "Monto Total de la Factura",
+    JA: "請求合計金額",
+    ZH: "总账单金额",
+    KO: "총 청구 금액",
+    FR: "Montant Total de la Facture",
+    DE: "Gesamtrechnungsbetrag",
+    AR: "إجمالي الفاتورة"
+  },
+  "Daftar Teman Patungan": {
+    EN: "Participants List",
+    ES: "Lista de Participantes",
+    JA: "参加者リスト",
+    ZH: "参与分摊人员名单",
+    KO: "정산 참가자 목록",
+    FR: "Liste des Participants",
+    DE: "Teilnehmerliste",
+    AR: "قائمة المشاركين"
+  },
+  "Tambah Teman": {
+    EN: "Add Friend",
+    ES: "Añadir Amigo",
+    JA: "友達を追加",
+    ZH: "添加好友",
+    KO: "친구 추가",
+    FR: "Ajouter un Ami",
+    DE: "Freund hinzufügen",
+    AR: "إضافة صديق"
+  },
+  "Hasil Pembagian Tagihan": {
+    EN: "Bill Split Results",
+    ES: "Resultados de División de Factura",
+    JA: "割り勘結果",
+    ZH: "分账结果",
+    KO: "더치페이 정산 결과",
+    FR: "Résultats de la Répartition",
+    DE: "Aufteilungsergebnisse",
+    AR: "نتائج تقسيم الفاتورة"
+  },
+  "Rata-rata Per Orang": {
+    EN: "Average Per Person",
+    ES: "Promedio Por Persona",
+    JA: "一人当たりの平均額",
+    ZH: "人均费用",
+    KO: "1인당 평균액",
+    FR: "Moyenne Par Personne",
+    DE: "Durchschnitt pro Person",
+    AR: "المعدل لكل شخص"
+  },
+  "Total Piutang (Orang Utang Ke Kita)": {
+    EN: "Total Receivables (Others Owe Us)",
+    ES: "Cobros Totales (Nos Deben)",
+    JA: "未回収合計 (他人が自分に借りている分)",
+    ZH: "应收款总额 (他人欠我)",
+    KO: "받을 돈 총액 (타인이 나에게 진 빚)",
+    FR: "Créances Totales (On nous doit)",
+    DE: "Gesamtforderungen (Andere schulden uns)",
+    AR: "إجمالي المستحقات (آخرون يدينون لنا)"
+  },
+  "Total Hutang (Kita Utang Ke Orang)": {
+    EN: "Total Debt (We Owe Others)",
+    ES: "Deudas Totales (Debemos)",
+    JA: "借入合計 (自分が他人に借りている分)",
+    ZH: "债务总额 (我欠他人)",
+    KO: "갚을 돈 총액 (내가 타인에게 진 빚)",
+    FR: "Dettes Totales (Nous devons)",
+    DE: "Gesamtschulden (Wir schulden anderen)",
+    AR: "إجمالي الديون (نحن ندين لآخرين)"
+  },
+  "Tambah Utang / Piutang": {
+    EN: "Add Debt / Receivable",
+    ES: "Añadir Deuda / Cobro",
+    JA: "借入・貸出を追加",
+    ZH: "新增债务/应收款",
+    KO: "빚/채권 추가",
+    FR: "Ajouter Dette / Créance",
+    DE: "Schuld / Forderung hinzufügen",
+    AR: "إضافة دين / مستحق"
+  },
+  "Nama Rekan": {
+    EN: "Friend's Name",
+    ES: "Nombre del Amigo",
+    JA: "相手の名前",
+    ZH: "联系人姓名",
+    KO: "상대방 이름",
+    FR: "Nom de l'Ami",
+    DE: "Name des Freundes",
+    AR: "اسم الصديق"
+  },
+  "Tipe Catatan": {
+    EN: "Record Type",
+    ES: "Tipo de Registro",
+    JA: "記録タイプ",
+    ZH: "记录类型",
+    KO: "기록 유형",
+    FR: "Type d'Enregistrement",
+    DE: "Erfassungsart",
+    AR: "نوع السجل"
+  },
+  "Piutang (Dia Ngutang)": {
+    EN: "Receivable (They Owe Me)",
+    ES: "Cobro (Me Deben)",
+    JA: "貸出金 (相手が自分に借りている)",
+    ZH: "应收款 (他们欠我)",
+    KO: "받을 돈 (상대방이 빌려감)",
+    FR: "Créance (On me doit)",
+    DE: "Forderung (Andere schulden mir)",
+    AR: "مستحق (هم يدينون لي)"
+  },
+  "Hutang (Saya Ngutang)": {
+    EN: "Debt (I Owe Them)",
+    ES: "Deuda (Debo)",
+    JA: "借入金 (自分が相手に借りている)",
+    ZH: "债务 (我欠他们)",
+    KO: "갚을 돈 (내가 빌림)",
+    FR: "Dette (Je dois)",
+    DE: "Schuld (Ich schulde ihnen)",
+    AR: "دين (أنا أدين لهم)"
+  },
+  "Tanggal Jatuh Tempo": {
+    EN: "Due Date",
+    ES: "Fecha de Vencimiento",
+    JA: "返済期日",
+    ZH: "截止日期",
+    KO: "정산 기일",
+    FR: "Date d'Échéance",
+    DE: "Fälligkeitsdatum",
+    AR: "تاريخ الاستحقاق"
+  },
+  "Catatan Tambahan": {
+    EN: "Additional Notes",
+    ES: "Notas Adicionales",
+    JA: "追加のメモ",
+    ZH: "备注信息",
+    KO: "추가 메모",
+    FR: "Notes Complémentaires",
+    DE: "Zusätzliche Notizen",
+    AR: "ملاحظات إضافية"
+  },
+  "Simpan Catatan": {
+    EN: "Save Record",
+    ES: "Guardar Registro",
+    JA: "記録を保存",
+    ZH: "保存记录",
+    KO: "기록 저장",
+    FR: "Enregistrer le Scribe",
+    DE: "Eintrag speichern",
+    AR: "حفظ السجل"
+  },
+  "Daftar Utang & Piutang": {
+    EN: "Debt & Receivables List",
+    ES: "Lista de Deudas y Cobros",
+    JA: "借入・貸出一覧",
+    ZH: "债务与应收款列表",
+    KO: "빚 및 채권 목록",
+    FR: "Liste des Dettes et Créances",
+    DE: "Schulden- & Forderungsliste",
+    AR: "قائمة الديون والمستحقات"
+  },
+  "Lunas": {
+    EN: "Paid",
+    ES: "Pagado",
+    JA: "完済",
+    ZH: "已结清",
+    KO: "상환 완료",
+    FR: "Payé",
+    DE: "Bezahlt",
+    AR: "تم السداد"
+  },
+  "Belum Lunas": {
+    EN: "Unpaid",
+    ES: "Pendiente",
+    JA: "未返済",
+    ZH: "未结清",
+    KO: "미상환",
+    FR: "Non Payé",
+    DE: "Offen",
+    AR: "لم يسدد"
+  },
+  "Pilih Jenis Laporan": {
+    EN: "Select Report Type",
+    ES: "Seleccionar Tipo de Informe",
+    JA: "レポートの種類を選択",
+    ZH: "选择报告类型",
+    KO: "보고서 유형 선택",
+    FR: "Sélectionner le Type de Rapport",
+    DE: "Berichtstyp auswählen",
+    AR: "حدد نوع التقرير"
+  },
+  "Laporan Ringkas Aset (Summary)": {
+    EN: "Asset Summary Report",
+    ES: "Resumen de Activos",
+    JA: "資産概要レポート",
+    ZH: "资产摘要报告",
+    KO: "자산 요약 보고서",
+    FR: "Rapport Sommaire des Actifs",
+    DE: "Vermögensübersicht (Zusammenfassung)",
+    AR: "تقرير ملخص الأصول"
+  },
+  "Mutasi Seluruh Transaksi (Full)": {
+    EN: "Full Transaction Statement",
+    ES: "Estado de Transacciones Completo",
+    JA: "全取引明細書",
+    ZH: "全量交易明细账单",
+    KO: "전체 거래 내역서",
+    FR: "Relevé Complet des Transactions",
+    DE: "Vollständiger Transaktionsauszug",
+    AR: "كشف معاملات كامل"
+  },
+  "Format Ekspor": {
+    EN: "Export Format",
+    ES: "Formato de Exportación",
+    JA: "出力形式",
+    ZH: "导出格式",
+    KO: "내보내기 형식",
+    FR: "Format d'Exportation",
+    DE: "Exportformat",
+    AR: "صيغة التصدير"
+  },
+  "Unduh Laporan": {
+    EN: "Download Report",
+    ES: "Descargar Informe",
+    JA: "レポートをダウンロード",
+    ZH: "下载报告",
+    KO: "보고서 다운로드",
+    FR: "Télécharger le Rapport",
+    DE: "Bericht herunterladen",
+    AR: "تحميل التقرير"
+  },
+  "Pratinjau Laporan Finansial": {
+    EN: "Financial Report Preview",
+    ES: "Vista Previa del Informe",
+    JA: "財務レポートのプレビュー",
+    ZH: "财务报告预览",
+    KO: "재무 보고서 미리보기",
+    FR: "Aperçu du Rapport Financier",
+    DE: "Vorschau des Finanzberichts",
+    AR: "معاينة التقرير المالي"
+  },
+  "Total Tagihan Aktif": {
+    EN: "Total Active Bills",
+    ES: "Total de Facturas Activas",
+    JA: "アクティブな請求合計",
+    ZH: "未缴账单总额",
+    KO: "활성 공과금 합계",
+    FR: "Total des Factures Actives",
+    DE: "Aktive Rechnungen gesamt",
+    AR: "إجمالي الفواتير النشطة"
+  },
+  "Atur Tagihan Berulang": {
+    EN: "Set Recurring Bill",
+    ES: "Configurar Factura Recurrente",
+    JA: "定期請求を設定する",
+    ZH: "设置周期账单",
+    KO: "정기 청구 공과금 설정",
+    FR: "Définir la Facture Récurrente",
+    DE: "Wiederkehrende Rechnung einrichten",
+    AR: "إعداد فاتورة متكررة"
+  },
+  "Nama Tagihan / Langganan": {
+    EN: "Bill / Subscription Name",
+    ES: "Nombre de Factura / Suscripción",
+    JA: "請求・サブスク名",
+    ZH: "账单/订阅名称",
+    KO: "요금/구독 명칭",
+    FR: "Nom de la Facture / Abonnement",
+    DE: "Rechnungs- / Abonnementsname",
+    AR: "اسم الفاتورة / الاشتراك"
+  },
+  "Nominal Tagihan (Rp)": {
+    EN: "Bill Amount",
+    ES: "Monto de la Factura",
+    JA: "請求金額",
+    ZH: "账单金额",
+    KO: "청구 금액",
+    FR: "Montant de la Facture",
+    DE: "Rechnungsbetrag",
+    AR: "مبلغ الفاتورة"
+  },
+  "Frekuensi Pembayaran": {
+    EN: "Payment Frequency",
+    ES: "Frecuencia de Pago",
+    JA: "お支払い頻度",
+    ZH: "支付周期",
+    KO: "납부 주기",
+    FR: "Fréquence de Paiement",
+    DE: "Zahlungshäufigkeit",
+    AR: "تكرار الدفع"
+  },
+  "Rekening Sumber": {
+    EN: "Source Account",
+    ES: "Cuenta de Origen",
+    JA: "引き落とし口座",
+    ZH: "支付账户",
+    KO: "출금 계좌",
+    FR: "Compte Source",
+    DE: "Quellkonto",
+    AR: "الحساب المصدر"
+  },
+  "Simpan Aturan": {
+    EN: "Save Rule",
+    ES: "Guardar Regla",
+    JA: "ルールを保存",
+    ZH: "保存规则",
+    KO: "규칙 저장",
+    FR: "Enregistrer la Règle",
+    DE: "Regel speichern",
+    AR: "حفظ القاعدة"
+  },
+  "Harian": {
+    EN: "Daily",
+    ES: "Diario",
+    JA: "毎日",
+    ZH: "每日",
+    KO: "매일",
+    FR: "Quotidien",
+    DE: "Täglich",
+    AR: "يومي"
+  },
+  "Mingguan": {
+    EN: "Weekly",
+    ES: "Semanal",
+    JA: "毎週",
+    ZH: "每周",
+    KO: "매주",
+    FR: "Hebdomadaire",
+    DE: "Wöchentlich",
+    AR: "أسبوعي"
+  },
+  "Bulanan": {
+    EN: "Monthly",
+    ES: "Mensual",
+    JA: "毎月",
+    ZH: "每月",
+    KO: "매월",
+    FR: "Mensuel",
+    DE: "Monatlich",
+    AR: "شهري"
+  },
+  "Belum ada anggaran bulanan diatur.": {
+    EN: "No monthly budget configured yet.",
+    ES: "Aún no se ha configurado ningún presupuesto mensual.",
+    JA: "月間予算はまだ設定されていません。",
+    ZH: "暂无配置的每月预算限制。",
+    KO: "아직 설정된 월간 예산이 없습니다.",
+    FR: "Aucun budget mensuel configuré pour le moment.",
+    DE: "Noch kein monatliches Budget eingerichtet.",
+    AR: "لم يتم تكوين ميزانية شهرية بعد."
+  },
+  "Kondisi keuangan luar biasa stabil dengan porsi menabung yang konsisten.": {
+    EN: "Financial condition is exceptionally stable with a consistent savings portion.",
+    ES: "La condición financiera es excepcionalmente estable con una porción de ahorro constante.",
+    JA: "一貫した貯蓄部分により、財務状況は非常に安定しています。",
+    ZH: "财务状况异常稳定，储蓄比例保持一致。",
+    KO: "일관된 저축 비율로 재정 상태가 매우 안정적입니다.",
+    FR: "La situation financière est exceptionnellement stable avec une part d'épargne constante.",
+    DE: "Die finanzielle Situation ist außergewöhnlich stabil mit einer konsistenten Sparquote.",
+    AR: "الوضع المالي مستقر بشكل استثنائي مع نسبة ادخار ثابتة."
+  },
+  "Auto-Save & Tagihan Otomatis ⚡": {
+    EN: "Auto-Save & Automatic Bills ⚡",
+    ES: "Ahorro Automático y Facturas ⚡",
+    JA: "自動保存と自動請求 ⚡",
+    ZH: "自动保存和自动账单 ⚡",
+    KO: "자동 저축 및 공과금 자동화 ⚡",
+    FR: "Épargne Auto & Factures Automatiques ⚡",
+    DE: "Automatisches Sparen & Rechnungen ⚡",
+    AR: "الادخار التلقائي والفواتير التلقائية ⚡"
+  },
+  "Jadwalkan transfer rutin & pembayaran tagihan tanpa lupa": {
+    EN: "Schedule regular transfers & bill payments automatically",
+    ES: "Programa transferencias regulares y pagos de facturas automáticamente",
+    JA: "定期的な振込と請求書の支払いを自動的にスケジュールします",
+    ZH: "自动安排定期转账和账单支付",
+    KO: "정기 이체 및 공과금 납부를 자동화하세요",
+    FR: "Planifiez des virements réguliers et le paiement de factures automatiquement",
+    DE: "Planen Sie regelmäßige Überweisungen und Rechnungszahlungen automatisch",
+    AR: "جدولة التحويلات المنتظمة ودفع الفواتير تلقائيًا"
+  },
+  "Tambah Jadwal": {
+    EN: "Add Schedule",
+    ES: "Añadir Horario",
+    JA: "スケジュールを追加",
+    ZH: "添加计划",
+    KO: "일정 추가",
+    FR: "Ajouter un Calendrier",
+    DE: "Zeitplan hinzufügen",
+    AR: "إضافة جدول"
+  },
+  "Buat Aturan Otomatis Baru": {
+    EN: "Create New Auto Rule",
+    ES: "Crear Nueva Regla Automática",
+    JA: "新しい自動ルールを作成する",
+    ZH: "创建新自动规则",
+    KO: "새로운 자동 규칙 설정",
+    FR: "Créer une Nouvelle Règle Automatique",
+    DE: "Neue automatische Regel erstellen",
+    AR: "إنشاء قاعدة تلقائية جديدة"
+  },
+  "Nama Aturan / Tagihan": {
+    EN: "Rule / Bill Name",
+    ES: "Nombre de la Regla / Factura",
+    JA: "ルール・請求名",
+    ZH: "规则/账单名称",
+    KO: "규칙/청구 이름",
+    FR: "Nom de la Règle / Facture",
+    DE: "Regel- / Rechnungsname",
+    AR: "اسم القاعدة / الفاتورة"
+  },
+  "Contoh: Nabung Rutin / Bayar Wifi": {
+    EN: "e.g., Regular Savings / Pay Wifi",
+    ES: "Ej: Ahorro Regular / Pagar Wifi",
+    JA: "例：定期貯蓄 / Wifiの支払い",
+    ZH: "例如：定期储蓄/支付Wifi",
+    KO: "예: 정기 저금 / 와이파이 요금",
+    FR: "ex. Épargne Régulière / Payer le Wifi",
+    DE: "z.B. Regelmäßiges Sparen / Wifi bezahlen",
+    AR: "مثال: الادخار المنتظم / دفع الواي فاي"
+  },
+  "Nominal (Rp)": {
+    EN: "Amount",
+    ES: "Monto",
+    JA: "金額",
+    ZH: "金额",
+    KO: "금액",
+    FR: "Montant",
+    DE: "Betrag",
+    AR: "المبلغ"
+  },
+  "Frekuensi": {
+    EN: "Frequency",
+    ES: "Frecuencia",
+    JA: "頻度",
+    ZH: "频率",
+    KO: "주기",
+    FR: "Fréquence",
+    DE: "Häufigkeit",
+    AR: "التكرار"
+  },
+  "Simpan Jadwal": {
+    EN: "Save Schedule",
+    ES: "Guardar Horario",
+    JA: "スケジュールを保存",
+    ZH: "保存计划",
+    KO: "일정 저장",
+    FR: "Enregistrer le Calendrier",
+    DE: "Zeitplan speichern",
+    AR: "حفظ الجدول"
+  },
+  "Belum ada aturan otomatis yang dibuat.": {
+    EN: "No automatic rules created yet.",
+    ES: "Aún no se han creado reglas automáticas.",
+    JA: "自動ルールはまだ作成されていません。",
+    ZH: "尚未创建任何自动规则。",
+    KO: "아직 생성된 자동 규칙이 없습니다.",
+    FR: "Aucune règle automatique n'a encore été créée.",
+    DE: "Noch keine automatischen Regeln erstellt.",
+    AR: "لم يتم إنشاء قواعد تلقائية بعد."
+  },
+  "Bulan": {
+    EN: "Month",
+    ES: "Mes",
+    JA: "月",
+    ZH: "月",
+    KO: "월",
+    FR: "Mois",
+    DE: "Monat",
+    AR: "شهر"
+  },
+  "Minggu": {
+    EN: "Week",
+    ES: "Semana",
+    JA: "週",
+    ZH: "周",
+    KO: "주",
+    FR: "Semaine",
+    DE: "Woche",
+    AR: "أسبوع"
+  },
+  "Hari": {
+    EN: "Day",
+    ES: "Día",
+    JA: "日",
+    ZH: "日",
+    KO: "일",
+    FR: "Jour",
+    DE: "Tag",
+    AR: "يوم"
+  },
+  "Eksekusi berikutnya:": {
+    EN: "Next execution:",
+    ES: "Siguiente ejecución:",
+    JA: "次回実行：",
+    ZH: "下次执行：",
+    KO: "다음 실행일:",
+    FR: "Prochaine exécution :",
+    DE: "Nächste Ausführung:",
+    AR: "التنفيذ التالي:"
+  },
+  "Widget Layar Utama HP": {
+    EN: "Home Screen Widget",
+    ES: "Widget de Pantalla de Inicio",
+    JA: "ホーム画面ウィジェット",
+    ZH: "主屏幕小部件",
+    KO: "홈 화면 위젯",
+    FR: "Widget d'Écran d'Accueil",
+    DE: "Startbildschirm-Widget",
+    AR: "أداة الشاشة الرئيسية"
+  },
+  "OCR Struk Scanner Cam": {
+    EN: "OCR Receipt Scanner Cam",
+    ES: "Cámara de Escáner de Recibos OCR",
+    JA: "OCRレシートスキャナー",
+    ZH: "OCR收据扫描相机",
+    KO: "OCR 영수증 스캐너 카메라",
+    FR: "Scanner de Reçus OCR",
+    DE: "OCR-Belegscanner-Kamera",
+    AR: "كاميرا قارئ الفواتير OCR"
+  },
+  "Mulai Ulang Splash Screen": {
+    EN: "Restart Splash Screen",
+    ES: "Reiniciar Pantalla de Inicio",
+    JA: "スプラッシュ画面の再起動",
+    ZH: "重启启动画面",
+    KO: "시작 화면 재시작",
+    FR: "Redémarrer l'Écran d'Accueil",
+    DE: "Begrüßungsbildschirm neu starten",
+    AR: "إعادة تشغيل شاشة الترحيب"
+  },
+  "Cari Data": {
+    EN: "Search Data",
+    ES: "Buscar Datos",
+    JA: "データを検索",
+    ZH: "搜索数据",
+    KO: "데이터 검색",
+    FR: "Rechercher des Données",
+    DE: "Daten suchen",
+    AR: "بحث البيانات"
+  },
+  "Notifikasi": {
+    EN: "Notifications",
+    ES: "Notificaciones",
+    JA: "通知",
+    ZH: "通知",
+    KO: "알림",
+    FR: "Notifications",
+    DE: "Benachrichtigungen",
+    AR: "الإشعارات"
+  },
+  "Ganti Tema": {
+    EN: "Change Theme",
+    ES: "Cambiar Tema",
+    JA: "テーマを変更",
+    ZH: "更改主题",
+    KO: "테마 변경",
+    FR: "Changer le Thème",
+    DE: "Thema ändern",
+    AR: "تغيير المظهر"
+  },
+  "Kunci Layar": {
+    EN: "Lock Screen",
+    ES: "Bloquear Pantalla",
+    JA: "画面을 락",
+    ZH: "锁屏",
+    KO: "화면 잠금",
+    FR: "Verrouiller l'Écran",
+    DE: "Bildschirm sperren",
+    AR: "قفل الشاشة"
+  },
+  "Tabungan": {
+    EN: "Savings",
+    ES: "Ahorros",
+    JA: "貯蓄",
+    ZH: "储蓄",
+    KO: "저축",
+    FR: "Épargne",
+    DE: "Sparen",
+    AR: "المدخرات"
+  },
+  "Sangat Sehat 🎉": {
+    EN: "Excellent Health 🎉",
+    ES: "Excelente Salud 🎉",
+    JA: "非常に良好 🎉",
+    ZH: "非常健康 🎉",
+    KO: "매우 건강함 🎉",
+    FR: "Excellente Santé 🎉",
+    DE: "Hervorragende Gesundheit 🎉",
+    AR: "صحة ممتازة 🎉"
+  },
+  "Sehat & Stabil 👍": {
+    EN: "Healthy & Stable 👍",
+    ES: "Saludable y Estable 👍",
+    JA: "健全で安定 👍",
+    ZH: "健康且稳定 👍",
+    KO: "건강하고 안정적 👍",
+    FR: "Sain et Stable 👍",
+    DE: "Gesund & Stabil 👍",
+    AR: "صحي ومستقر 👍"
+  },
+  "Perlu Ditingkatkan 💪": {
+    EN: "Needs Improvement 💪",
+    ES: "Necesita Mejora 💪",
+    JA: "要改善 💪",
+    ZH: "需要改进 💪",
+    KO: "개선 필요 💪",
+    FR: "Besoin d'Amélioration 💪",
+    DE: "Verbesserungswürdig 💪",
+    AR: "بحاجة لتحسين 💪"
+  },
+  "Tabungan Kamu": {
+    EN: "Your Savings",
+    ES: "Tus Ahorros",
+    JA: "あなたの貯蓄",
+    ZH: "您的储蓄",
+    KO: "귀하의 저축",
+    FR: "Votre Épargne",
+    DE: "Ihre Ersparnisse",
+    AR: "مدخراتك"
+  },
+  "Buat Tabungan": {
+    EN: "Create Savings Goal",
+    ES: "Crear Meta de Ahorro",
+    JA: "貯金目標を作成",
+    ZH: "创建储蓄目标",
+    KO: "저축 목표 생성",
+    FR: "Créer un Objectif d'Épargne",
+    DE: "Sparziel erstellen",
+    AR: "إنشاء هدف ادخار"
+  },
+  "Saldo Terkumpul": {
+    EN: "Collected Balance",
+    ES: "Saldo Acumulado",
+    JA: "収集された残高",
+    ZH: "已收集余额",
+    KO: "수집된 잔액",
+    FR: "Solde Collecté",
+    DE: "Gesammeltes Guthaben",
+    AR: "الرصيد المجمع"
+  },
+  "Setor ke Tabungan Ini": {
+    EN: "Deposit into This Savings",
+    ES: "Depositar en este Ahorro",
+    JA: "この貯蓄に入金する",
+    ZH: "存入此储蓄",
+    KO: "이 저축에 입금",
+    FR: "Déposer sur cette Épargne",
+    DE: "Auf dieses Sparkonto einzahlen",
+    AR: "إيداع في هذه المدخرات"
+  },
+  "Setor Tabungan Cepat": {
+    EN: "Quick Savings Deposit",
+    ES: "Depósito de Ahorro Rápido",
+    JA: "クイック貯金入金",
+    ZH: "快速储蓄存款",
+    KO: "빠른 저축 입금",
+    FR: "Dépôt d'Épargne Rapide",
+    DE: "Schnelle Einzahlung auf Sparkonto",
+    AR: "إيداع ادخار سريع"
+  },
+  "Tambah saldo celengan tabungan kamu dengan mudah": {
+    EN: "Add balance to your savings piggy bank easily",
+    ES: "Agrega saldo a tu alcancía de ahorros fácilmente",
+    JA: "貯金箱に残高を簡単に追加できます",
+    ZH: "轻松向您的储蓄存钱罐添加余额",
+    KO: "저금통에 잔액을 쉽게 추가하세요",
+    FR: "Ajoutez facilement du solde à votre tirelire",
+    DE: "Fügen Sie Ihrem Sparschwein ganz einfach Guthaben hinzu",
+    AR: "أضف رصيدًا إلى حصالتك بسهولة"
+  },
+  "Setor Sekarang": {
+    EN: "Deposit Now",
+    ES: "Depositar Ahora",
+    JA: "今すぐ入金",
+    ZH: "现在存款",
+    KO: "지금 입금",
+    FR: "Déposer Maintenant",
+    DE: "Jetzt einzahlen",
+    AR: "إيداع الآن"
+  },
+  "Nominal Setor Instant:": {
+    EN: "Instant Deposit Amount:",
+    ES: "Monto de Depósito Instantáneo:",
+    JA: "即時入金額：",
+    ZH: "即时存款金额：",
+    KO: "즉시 입금 금액:",
+    FR: "Montant du Dépôt Instantané :",
+    DE: "Sofortiger Einzahlungsbetrag:",
+    AR: "مبلغ الإيداع الفوري:"
+  },
+  "Deadline:": {
+    EN: "Deadline:",
+    ES: "Fecha límite:",
+    JA: "期限：",
+    ZH: "截止日期:",
+    KO: "마감일:",
+    FR: "Date limite :",
+    DE: "Frist:",
+    AR: "الموعد النهائي:"
+  },
+  "Pantau & setor tabungan langsung dari Widget": {
+    EN: "Monitor & deposit savings directly from the Widget",
+    ES: "Supervisa y deposita ahorros directamente desde el Widget",
+    JA: "ウィジェットから直接貯蓄を監視および預け入れ",
+    ZH: "直接从组件监控和存入储蓄",
+    KO: "위젯에서 직접 저축을 모니터링하고 예금하세요",
+    FR: "Surveillez et déposez de l'épargne directement depuis le Widget",
+    DE: "Überwachen und zahlen Sie Ersparnisse direkt über das Widget ein",
+    AR: "مراقبة وإيداع المدخرات مباشرة من الأداة"
+  },
+  "Gaya Tampilan Widget:": {
+    EN: "Widget Display Style:",
+    ES: "Estilo de Visualización del Widget:",
+    JA: "ウィジェットの表示スタイル：",
+    ZH: "小部件显示样式：",
+    KO: "위젯 표시 스타일:",
+    FR: "Style d'Affichage du Widget :",
+    DE: "Widget-Anzeigestil:",
+    AR: "نمط عرض الأداة:"
+  },
+  "Total Tabungan": {
+    EN: "Total Savings",
+    ES: "Ahorros Totales",
+    JA: "合計貯蓄",
+    ZH: "总储蓄",
+    KO: "총 저축액",
+    FR: "Épargne Totale",
+    DE: "Ersparnisse insgesamt",
+    AR: "إجمالي المدخرات"
+  },
+  "Widget Progres Nabung": {
+    EN: "Savings Progress Widget",
+    ES: "Widget de Progreso de Ahorro",
+    JA: "貯蓄進行状況ウィジェット",
+    ZH: "储蓄进度小部件",
+    KO: "저축 진행 상황 위젯",
+    FR: "Widget de Progression de l'Épargne",
+    DE: "Sparfortschritts-Widget",
+    AR: "أداة تقدم الادخار"
+  },
+  "Target Terkumpul": {
+    EN: "Saved Target",
+    ES: "Meta Guardada",
+    JA: "貯蓄目標",
+    ZH: "已存目标",
+    KO: "저축 목표액",
+    FR: "Cible Épargnée",
+    DE: "Gespartes Ziel",
+    AR: "الهدف المحفوظ"
+  },
+  "Nabung Rp50rb Direct": {
+    EN: "Deposit $50 Direct",
+    ES: "Depositar $50 Directo",
+    JA: "直接50を貯金する",
+    ZH: "直接存入 50",
+    KO: "직접 50 입금",
+    FR: "Déposer 50 Directement",
+    DE: "Direkt 50 einzahlen",
+    AR: "إidاع 50 مباشرة"
+  },
+  "Ringkasan Tabungan HP": {
+    EN: "Mobile Savings Summary",
+    ES: "Resumen de Ahorros Móviles",
+    JA: "モバイル貯蓄の概要",
+    ZH: "移动储蓄摘要",
+    KO: "모바일 저축 요약",
+    FR: "Résumé de l'Épargne Mobile",
+    DE: "Mobile Ersparnisübersicht",
+    AR: "ملخص الادخار على الهاتف"
+  },
+  "Terhubung Aplikasi Real-time": {
+    EN: "Connected to Real-time App",
+    ES: "Conectado a la Aplicación en Tiempo Real",
+    JA: "リアルタイムアプリに接続",
+    ZH: "连接到实时应用",
+    KO: "실시간 앱에 연결됨",
+    FR: "Connecté à l'Application en Temps Réel",
+    DE: "Mit der Echtzeit-App verbunden",
+    AR: "متصل بالتطبيق في الوقت الفعلي"
+  },
+  "Saldo Gabungan Tabungan": {
+    EN: "Combined Savings Balance",
+    ES: "Saldo de Ahorros Combinado",
+    JA: "合計貯蓄残高",
+    ZH: "组合储蓄余额",
+    KO: "결합된 저축 잔액",
+    FR: "Solde d'Épargne Combiné",
+    DE: "Kombiniertes Sparguthaben",
+    AR: "رصيد الادخار المشترك"
+  },
+  "Target Teratas:": {
+    EN: "Top Goals:",
+    ES: "Metas Principales:",
+    JA: "上位の目標：",
+    ZH: "首要目标：",
+    KO: "주요 목표:",
+    FR: "Principaux Objectifs :",
+    DE: "Top-Ziele:",
+    AR: "أعلى الأهداف:"
+  },
+  "Cara Tambahkan ke HP (Android & iOS)": {
+    EN: "How to Add to Phone (Android & iOS)",
+    ES: "Cómo Agregar al Teléfono (Android e iOS)",
+    JA: "スマホへの追加方法（Android & iOS）",
+    ZH: "如何添加到手机 (Android & iOS)",
+    KO: "휴대전화에 추가하는 방법 (Android & iOS)",
+    FR: "Comment l'Ajouter au Téléphone (Android & iOS)",
+    DE: "So fügen Sie es zum Telefon hinzu (Android & iOS)",
+    AR: "كيفية الإضافة إلى الهاتف (Android & iOS)"
+  },
+  "Tekan lama layar utama HP Anda > pilih \"Widget\" > cari FZ Savings > pilih ukuran widget yang Anda sukai. Widget memperbarui saldo secara real-time.": {
+    EN: "Long press your home screen > select \"Widgets\" > search for FZ Savings > select your preferred widget size. The widget updates balances in real-time.",
+    ES: "Mantenga presionada la pantalla de inicio > seleccione \"Widgets\" > busque FZ Savings > seleccione el tamaño de widget que prefiera. El widget actualiza los saldos en tiempo real.",
+    JA: "ホーム画面を長押し ＞ 「ウィジェット」を選択 ＞ FZ Savingsを検索 ＞ お好みのウィジェットサイズを選択します。ウィジェットは残高をリアルタイムで更新します。",
+    ZH: "长按主屏幕 > 选择“小部件” > 搜索 FZ Savings > 选择您喜欢的小部件尺寸。小部件会实时更新余额。",
+    KO: "홈 화면을 길게 누르고 > \"위젯\"을 선택 > FZ Savings를 검색 > 원하는 위젯 크기를 선택하십시오. 위젯은 잔액을 실시간으로 업데이트합니다.",
+    FR: "Appuyez longuement sur votre écran d'accueil > sélectionnez « Widgets » > recherchez FZ Savings > sélectionnez la taille de widget préférée. Le widget met à jour les soldes en temps réel.",
+    DE: "Drücken Sie lange auf Ihren Startbildschirm > wählen Sie „Widgets“ > suchen Sie nach FZ Savings > wählen Sie Ihre bevorzugte Widget-Größe. Das Widget aktualisiert die Guthaben in Echtzeit.",
+    AR: "اضغط مع الاستمرار على الشاشة الرئيسية > اختر \"الأدوات\" > ابحث عن FZ Savings > حدد حجم الأداة المفضل لديك. تقوم الأداة بتحديث الأرصدة في الوقت الفعلي."
+  },
+  "Selesai Pratinjau Widget": {
+    EN: "Finish Widget Preview",
+    ES: "Finalizar Vista Previa del Widget",
+    JA: "ウィジェットのプレビューを終了",
+    ZH: "完成小部件预览",
+    KO: "위젯 미리보기 완료",
+    FR: "Terminer l'Aperçu du Widget",
+    DE: "Widget-Vorschau beenden",
+    AR: "إنهاء معاينة الأداة"
+  },
+  "Disinkronkan": {
+    EN: "Synced",
+    ES: "Sincronizado",
+    JA: "同期済み",
+    ZH: "已同步",
+    KO: "동기화됨",
+    FR: "Synchronisé",
+    DE: "Synchronisiert",
+    AR: "تمت المزامنة"
+  },
+  "Gaya Navigasi Liquid Glass": {
+    EN: "Liquid Glass Navigation Style",
+    ES: "Estilo de Navegación de Vidrio Líquido",
+    JA: "リキッドガラスナビゲーションスタイル",
+    ZH: "液体玻璃导航样式",
+    KO: "액체 유리 탐색 스타일",
+    FR: "Style de Navigation Verre Liquide",
+    DE: "Flüssigglas-Navigationsstil",
+    AR: "نمط التنقل الزجاجي السائل"
+  },
+  "Aktifkan efek visual gel mika premium & transisi cair elastis": {
+    EN: "Enable premium mica gel visual effects & elastic liquid transitions",
+    ES: "Activar efectos visuales de gel de mica premium y transiciones líquidas elásticas",
+    JA: "プレミアムマイカゲル視覚効果と弾性液体遷移を有効にする",
+    ZH: "启用高级云母凝胶视觉效果和弹性液体过渡",
+    KO: "프리미엄 운모 겔 시각 효과 및 탄성 액체 전환 활성화",
+    FR: "Activer les effets visuels de gel de mica premium et les transitions liquides élastiques",
+    DE: "Aktivieren Sie Premium-Glimmergel-Visuelleffekte und elastische Flüssigkeitsübergänge",
+    AR: "تمكين تأثيرات هلام الميكا المرئية الفاخرة وانتقالات السائل المرنة"
+  },
+  "Minimalis Klasik (Lebih Ringan)": {
+    EN: "Classic Minimalist (Lighter)",
+    ES: "Minimalista Clásico (Más Ligero)",
+    JA: "クラシックミニマリスト（軽量）",
+    ZH: "经典极简 (更轻量)",
+    KO: "클래식 미니멀리스트 (가벼움)",
+    FR: "Minimaliste Classique (Plus Léger)",
+    DE: "Klassischer Minimalismus (Leichter)",
+    AR: "كلاسيكي بسيط (أخف)"
+  },
+  "Menggunakan navigasi bawah flat standar yang simpel & hemat memori": {
+    EN: "Uses standard flat bottom navigation that is simple & memory efficient",
+    ES: "Usa navegación de fondo plano estándar que es simple y eficiente en memoria",
+    JA: "シンプルでメモリ効率の良い標準的なフラットボトムナビゲーションを使用します",
+    ZH: "使用简单且节省内存的标准扁平底部导航",
+    KO: "간단하고 메모리 효율적인 표준 평면 하단 탐색을 사용합니다",
+    FR: "Utilise une navigation inférieure plate standard, simple et économe en mémoire",
+    DE: "Verwendet eine standardmäßige flache Bodennavigation, die einfach und speichereffizient ist",
+    AR: "يستخدم شريط التنقل السفلي المسطح القياسي البسيط والفعال في استهلاك الذاكرة"
   }
 };
 

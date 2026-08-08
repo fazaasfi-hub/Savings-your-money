@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { formatCurrency } from '../../utils/formatters';
 import { Users, Plus, ArrowUpRight, ArrowDownRight, CheckCircle2, Trash2, Calendar } from 'lucide-react';
+import { translateText } from '../../utils/translations';
 
 interface DebtItem {
   id: string;
@@ -16,9 +17,10 @@ interface DebtItem {
 interface DebtTrackerScreenProps {
   currency: 'IDR' | 'USD' | 'EUR';
   isDark: boolean;
+  language?: string;
 }
 
-export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, isDark }) => {
+export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, isDark, language }) => {
   const [debts, setDebts] = useState<DebtItem[]>([
     {
       id: 'debt_1',
@@ -46,6 +48,7 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
   const [type, setType] = useState<'PIUTANG' | 'HUTANG'>('PIUTANG');
   const [dueDate, setDueDate] = useState('');
   const [notes, setNotes] = useState('');
+  const t = (text: string) => translateText(text, language);
 
   const totalPiutang = debts.filter(d => d.type === 'PIUTANG' && !d.isPaid).reduce((s, d) => s + d.amount, 0);
   const totalHutang = debts.filter(d => d.type === 'HUTANG' && !d.isPaid).reduce((s, d) => s + d.amount, 0);
@@ -91,16 +94,16 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
       <div className="flex items-center justify-between">
         <div>
           <h1 className={`text-lg font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Pencatat Hutang & Piutang 🤝
+            {t("Pencatat Hutang & Piutang 🤝")}
           </h1>
-          <p className="text-xs text-slate-400">Pantau uang yang dipinjamkan atau yang harus dibayar</p>
+          <p className="text-xs text-slate-400">{t("Pantau uang yang dipinjamkan atau yang harus dibayar")}</p>
         </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
           className="px-3 py-1.5 bg-[#6C4CF5] hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-1 transition-all shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>Catat Catatan</span>
+          <span>{t("Catat Catatan")}</span>
         </button>
       </div>
 
@@ -109,7 +112,7 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
         <div className={`p-4 rounded-2xl border ${isDark ? 'bg-[#14182E] border-slate-800' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center space-x-1.5 text-emerald-400 text-xs font-bold mb-1">
             <ArrowDownRight className="w-4 h-4" />
-            <span>Piutang (Orang Lain)</span>
+            <span>{t("Piutang (Orang Lain)")}</span>
           </div>
           <div className={`text-base font-black font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {formatCurrency(totalPiutang, currency)}
@@ -119,7 +122,7 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
         <div className={`p-4 rounded-2xl border ${isDark ? 'bg-[#14182E] border-slate-800' : 'bg-white border-slate-200'}`}>
           <div className="flex items-center space-x-1.5 text-rose-400 text-xs font-bold mb-1">
             <ArrowUpRight className="w-4 h-4" />
-            <span>Hutang (Kita)</span>
+            <span>{t("Hutang (Kita)")}</span>
           </div>
           <div className={`text-base font-black font-mono ${isDark ? 'text-white' : 'text-slate-900'}`}>
             {formatCurrency(totalHutang, currency)}
@@ -135,10 +138,10 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
           onSubmit={handleAdd}
           className={`p-4 rounded-2xl border space-y-3 ${isDark ? 'bg-[#14182E] border-slate-800' : 'bg-white border-slate-200'}`}
         >
-          <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Tambah Catatan Hutang / Piutang</h3>
+          <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t("Tambah Catatan Hutang / Piutang")}</h3>
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Tipe</label>
+              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t("Tipe")}</label>
               <select
                 value={type}
                 onChange={(e: any) => setType(e.target.value)}
@@ -146,17 +149,17 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
                   isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                 }`}
               >
-                <option value="PIUTANG">Piutang (Orang Hutang ke Kita)</option>
-                <option value="HUTANG">Hutang (Kita Hutang)</option>
+                <option value="PIUTANG">{t("Piutang (Orang Hutang ke Kita)")}</option>
+                <option value="HUTANG">{t("Hutang (Kita Hutang)")}</option>
               </select>
             </div>
             <div>
-              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Nama Orang</label>
+              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t("Nama Orang")}</label>
               <input
                 type="text"
                 value={personName}
                 onChange={(e) => setPersonName(e.target.value)}
-                placeholder="Nama rekan..."
+                placeholder={t("Nama rekan...")}
                 className={`w-full px-3 py-2 text-xs rounded-xl border outline-none ${
                   isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                 }`}
@@ -167,7 +170,7 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Nominal (Rp)</label>
+              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t("Nominal (Rp)")}</label>
               <input
                 type="number"
                 value={amount}
@@ -180,7 +183,7 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
               />
             </div>
             <div>
-              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Jatuh Tempo</label>
+              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t("Jatuh Tempo")}</label>
               <input
                 type="date"
                 value={dueDate}
@@ -193,12 +196,12 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
           </div>
 
           <div>
-            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Catatan / Keterangan</label>
+            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t("Catatan / Keterangan")}</label>
             <input
               type="text"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="Contoh: Untuk keperluan darurat"
+              placeholder={t("Contoh: Untuk keperluan darurat")}
               className={`w-full px-3 py-2 text-xs rounded-xl border outline-none ${
                 isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
               }`}
@@ -211,13 +214,13 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
               onClick={() => setIsAdding(false)}
               className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800"
             >
-              Batal
+              {t("Batal")}
             </button>
             <button
               type="submit"
               className="px-4 py-1.5 bg-[#6C4CF5] text-white text-xs font-bold rounded-xl shadow-md"
             >
-              Simpan
+              {t("Simpan")}
             </button>
           </div>
         </motion.form>
@@ -228,7 +231,7 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
         {debts.length === 0 ? (
           <div className={`p-8 rounded-2xl border text-center ${isDark ? 'bg-[#14182E] border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500'}`}>
             <Users className="w-8 h-8 mx-auto text-indigo-400 mb-2 opacity-60" />
-            <p className="text-xs">Belum ada catatan hutang atau piutang.</p>
+            <p className="text-xs">{t("Belum ada catatan hutang atau piutang.")}</p>
           </div>
         ) : (
           debts.map(d => (
@@ -250,15 +253,15 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
                     <span className={`text-[9px] px-2 py-0.5 rounded-full font-bold ${
                       d.type === 'PIUTANG' ? 'bg-emerald-500/10 text-emerald-400' : 'bg-rose-500/10 text-rose-400'
                     }`}>
-                      {d.type}
+                      {t(d.type)}
                     </span>
                   </div>
                   <div className={`text-xs font-bold font-mono mt-0.5 ${d.isPaid ? 'line-through text-slate-400' : isDark ? 'text-white' : 'text-slate-900'}`}>
                     {formatCurrency(d.amount, currency)}
                   </div>
-                  {d.notes && <p className="text-[11px] text-slate-400 mt-0.5">{d.notes}</p>}
+                  {d.notes && <p className="text-[11px] text-slate-400 mt-0.5">{t(d.notes)}</p>}
                   <span className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
-                    <Calendar className="w-3 h-3" /> Jatuh Tempo: {d.dueDate}
+                    <Calendar className="w-3 h-3" /> {t("Jatuh Tempo:")} {d.dueDate}
                   </span>
                 </div>
               </div>
@@ -269,7 +272,7 @@ export const DebtTrackerScreen: React.FC<DebtTrackerScreenProps> = ({ currency, 
                   className={`p-2 rounded-xl transition-colors ${
                     d.isPaid ? 'bg-emerald-500 text-white' : isDark ? 'bg-slate-800 text-slate-300 hover:bg-slate-700' : 'bg-slate-100 text-slate-700 hover:bg-slate-200'
                   }`}
-                  title={d.isPaid ? 'Tandai Belum Lunas' : 'Tandai Lunas'}
+                  title={d.isPaid ? t('Tandai Belum Lunas') : t('Tandai Lunas')}
                 >
                   <CheckCircle2 className="w-4 h-4" />
                 </button>

@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { motion } from 'motion/react';
 import { formatCurrency, formatNumberInput, parseNumberInput } from '../../utils/formatters';
 import { Users, Plus, Trash2, Calculator, Receipt, DollarSign } from 'lucide-react';
+import { translateText } from '../../utils/translations';
 
 interface Participant {
   id: string;
@@ -12,9 +13,10 @@ interface Participant {
 interface BillSplitterScreenProps {
   currency: 'IDR' | 'USD' | 'EUR';
   isDark: boolean;
+  language?: string;
 }
 
-export const BillSplitterScreen: React.FC<BillSplitterScreenProps> = ({ currency, isDark }) => {
+export const BillSplitterScreen: React.FC<BillSplitterScreenProps> = ({ currency, isDark, language }) => {
   const [billName, setBillName] = useState('Makan Bareng Cafe');
   const [totalAmount, setTotalAmount] = useState('');
   const [participants, setParticipants] = useState<Participant[]>([
@@ -23,6 +25,7 @@ export const BillSplitterScreen: React.FC<BillSplitterScreenProps> = ({ currency
     { id: 'p_3', name: 'Siti', amountToPay: 0 },
   ]);
   const [newName, setNewName] = useState('');
+  const t = (text: string) => translateText(text, language);
 
   const addParticipant = (e: React.FormEvent) => {
     e.preventDefault();
@@ -49,16 +52,16 @@ export const BillSplitterScreen: React.FC<BillSplitterScreenProps> = ({ currency
       <div className="flex items-center justify-between">
         <div>
           <h1 className={`text-lg font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Kalkulator Split Bill Patungan 🍕
+            {t("Kalkulator Split Bill Patungan 🍕")}
           </h1>
-          <p className="text-xs text-slate-400">Bagi rata tagihan makanan atau belanjaan secara adil</p>
+          <p className="text-xs text-slate-400">{t("Bagi rata tagihan makanan atau belanjaan secara adil")}</p>
         </div>
       </div>
 
       {/* Bill Inputs */}
       <div className={`p-5 rounded-2xl border space-y-3 ${isDark ? 'bg-[#14182E] border-slate-800' : 'bg-white border-slate-200'}`}>
         <div>
-          <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Nama Tagihan / Kegiatan</label>
+          <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t("Nama Tagihan / Kegiatan")}</label>
           <input
             type="text"
             value={billName}
@@ -70,12 +73,12 @@ export const BillSplitterScreen: React.FC<BillSplitterScreenProps> = ({ currency
         </div>
 
         <div>
-          <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Total Tagihan (Rp)</label>
+          <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t("Total Tagihan (Rp)")}</label>
           <input
             type="text"
             value={formatNumberInput(totalAmount)}
             onChange={(e) => setTotalAmount(parseNumberInput(e.target.value).toString())}
-            placeholder="Contoh: 450.000"
+            placeholder={t("Contoh: 450.000")}
             className={`w-full px-3 py-2 text-xs rounded-xl border outline-none font-mono ${
               isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
             }`}
@@ -86,7 +89,7 @@ export const BillSplitterScreen: React.FC<BillSplitterScreenProps> = ({ currency
       {/* Participants Management */}
       <div className={`p-5 rounded-2xl border space-y-4 ${isDark ? 'bg-[#14182E] border-slate-800' : 'bg-white border-slate-200'}`}>
         <div className="flex items-center justify-between">
-          <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Daftar Anggota Patungan ({participants.length})</h3>
+          <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t("Daftar Anggota Patungan")} ({participants.length})</h3>
         </div>
 
         <form onSubmit={addParticipant} className="flex gap-2 w-full min-w-0">
@@ -94,7 +97,7 @@ export const BillSplitterScreen: React.FC<BillSplitterScreenProps> = ({ currency
             type="text"
             value={newName}
             onChange={(e) => setNewName(e.target.value)}
-            placeholder="Nama teman..."
+            placeholder={t("Nama teman...")}
             className={`min-w-0 flex-1 px-3 py-2 text-xs rounded-xl border outline-none ${
               isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
             }`}
@@ -103,7 +106,7 @@ export const BillSplitterScreen: React.FC<BillSplitterScreenProps> = ({ currency
             type="submit"
             className="px-4 py-2 bg-[#6C4CF5] hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md transition-all shrink-0 whitespace-nowrap"
           >
-            Tambah
+            {t("Tambah")}
           </button>
         </form>
 
@@ -140,12 +143,12 @@ export const BillSplitterScreen: React.FC<BillSplitterScreenProps> = ({ currency
 
       {/* Summary Box */}
       <div className="p-5 rounded-[24px] bg-gradient-to-r from-indigo-900 via-purple-900 to-slate-900 text-white shadow-xl space-y-2 border border-white/10">
-        <span className="text-[10px] uppercase font-bold text-indigo-200">Hasil Kalkulasi Per Orang</span>
+        <span className="text-[10px] uppercase font-bold text-indigo-200">{t("Hasil Kalkulasi Per Orang")}</span>
         <div className="text-2xl font-black font-mono text-emerald-400">
           {formatCurrency(splitAmount, currency)}
         </div>
         <p className="text-[11px] text-indigo-200">
-          Dari total {formatCurrency(numericTotal, currency)} dibagi rata ke {participants.length} orang untuk kegiatan <strong>{billName}</strong>.
+          {t("Dari total")} {formatCurrency(numericTotal, currency)} {t("dibagi rata ke")} {participants.length} {t("orang untuk kegiatan")} <strong>{billName}</strong>.
         </p>
       </div>
     </motion.div>

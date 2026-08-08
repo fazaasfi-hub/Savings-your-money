@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
-import { Shield, Sparkles, CheckCircle2, Database, Lock, Bell, Cpu, Zap, Star } from 'lucide-react';
 import { AppLogoIcon } from '../AppLogoIcon';
 
 interface SplashScreenProps {
@@ -9,12 +8,11 @@ interface SplashScreenProps {
   isLoggedIn?: boolean;
 }
 
-const INITIALIZATION_STEPS = [
-  { id: 1, text: 'Menginisialisasi Secure Room Database...', icon: Database, category: 'STORAGE' },
-  { id: 2, text: 'Sinkronisasi DataStore & Enkripsi Prefs...', icon: Cpu, category: 'SECURITY' },
-  { id: 3, text: 'Verifikasi Autentikasi Biometrik & Sesi...', icon: Lock, category: 'AUTH' },
-  { id: 4, text: 'Menyiapkan Notifikasi Real-time & WorkManager...', icon: Bell, category: 'SERVICES' },
-  { id: 5, text: 'FZ Savings Premium Siap Digunakan', icon: Zap, category: 'READY' }
+const LOADING_STATUSES = [
+  'Mempersiapkan akun...',
+  'Menyiapkan enkripsi data...',
+  'Sinkronisasi saldo & target...',
+  'Hampir selesai...'
 ];
 
 export const SplashScreen: React.FC<SplashScreenProps> = ({
@@ -22,26 +20,49 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
   isFirstInstall = false,
   isLoggedIn = true
 }) => {
-  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+  const [phase, setPhase] = useState<'BOX_OUTLINE' | 'ICON_FILLED' | 'LOADING'>('BOX_OUTLINE');
+  const [currentStep, setCurrentStep] = useState(0);
   const [isExiting, setIsExiting] = useState(false);
 
+  // Phase transitions: Outline -> Icon fill -> Progress Bar
   useEffect(() => {
+    // Phase 1: Icon fills in after 500ms
+    const fillTimer = setTimeout(() => {
+      setPhase('ICON_FILLED');
+    }, 500);
+
+    // Phase 2: Loading progress bar appears at 1200ms
+    const progressTimer = setTimeout(() => {
+      setPhase('LOADING');
+    }, 1100);
+
+    return () => {
+      clearTimeout(fillTimer);
+      clearTimeout(progressTimer);
+    };
+  }, []);
+
+  // Cycle progress steps once in LOADING phase
+  useEffect(() => {
+    if (phase !== 'LOADING') return;
+
     const stepInterval = setInterval(() => {
-      setCurrentStepIndex((prev) => {
-        if (prev < INITIALIZATION_STEPS.length - 1) {
+      setCurrentStep((prev) => {
+        if (prev < LOADING_STATUSES.length - 1) {
           return prev + 1;
         } else {
           clearInterval(stepInterval);
           return prev;
         }
       });
-    }, 320);
+    }, 420);
 
     return () => clearInterval(stepInterval);
-  }, []);
+  }, [phase]);
 
+  // Exit trigger when loading finishes
   useEffect(() => {
-    if (currentStepIndex === INITIALIZATION_STEPS.length - 1) {
+    if (phase === 'LOADING' && currentStep === LOADING_STATUSES.length - 1) {
       const exitTimer = setTimeout(() => {
         setIsExiting(true);
         setTimeout(() => {
@@ -52,184 +73,142 @@ export const SplashScreen: React.FC<SplashScreenProps> = ({
           } else {
             onFinishLaunch('DASHBOARD');
           }
-        }, 500);
-      }, 700);
+        }, 450);
+      }, 400);
 
       return () => clearTimeout(exitTimer);
     }
-  }, [currentStepIndex, isFirstInstall, isLoggedIn, onFinishLaunch]);
+  }, [phase, currentStep, isFirstInstall, isLoggedIn, onFinishLaunch]);
 
-  const progressPercent = Math.round(((currentStepIndex + 1) / INITIALIZATION_STEPS.length) * 100);
+  const progressPercent = phase === 'LOADING'
+    ? Math.round(((currentStep + 1) / LOADING_STATUSES.length) * 100)
+    : 0;
 
   return (
     <motion.div
       initial={{ opacity: 0 }}
-      animate={{ opacity: isExiting ? 0 : 1, scale: isExiting ? 0.96 : 1 }}
+      animate={{ opacity: isExiting ? 0 : 1, scale: isExiting ? 0.98 : 1 }}
       exit={{ opacity: 0 }}
-      transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-      className="absolute inset-0 z-50 bg-[#090D16] text-white flex flex-col justify-between p-6 overflow-hidden select-none"
+      transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+      className="absolute inset-0 z-50 bg-[#0A0D18] text-white flex flex-col items-center justify-center p-6 select-none overflow-hidden"
     >
-      {/* Premium Multi-Layered Animated Ambient Gradient Backdrop */}
-      <div className="absolute inset-0 pointer-events-none overflow-hidden">
+      {/* Soft Ambient Glow */}
+      <div className="absolute inset-0 pointer-events-none flex items-center justify-center">
         <motion.div
           animate={{
-            scale: [1, 1.15, 0.95, 1],
-            rotate: [0, 90, 180, 270],
-            x: ['-50%', '-45%', '-55%', '-50%'],
+            scale: [1, 1.1, 1],
+            opacity: [0.25, 0.45, 0.25]
           }}
           transition={{
-            duration: 15,
+            duration: 4,
             repeat: Infinity,
             ease: "easeInOut"
           }}
-          className="absolute top-0 left-1/2 w-[600px] h-[600px] bg-[#6C4CF5]/15 rounded-full blur-[120px] opacity-60"
-        />
-        <motion.div
-          animate={{
-            scale: [0.9, 1.1, 1, 0.9],
-            rotate: [0, -60, -120, -180],
-            y: ['0%', '10%', '-5%', '0%'],
-          }}
-          transition={{
-            duration: 12,
-            repeat: Infinity,
-            ease: "easeInOut"
-          }}
-          className="absolute bottom-0 right-0 w-[400px] h-[400px] bg-[#0ea5e9]/10 rounded-full blur-[100px] opacity-40"
+          className="w-80 h-80 bg-[#6C4CF5]/20 rounded-full blur-[100px]"
         />
       </div>
 
-      {/* Top Header Vault Security Tag */}
-      <div className="pt-3 flex justify-between items-center z-10 text-[10px] font-mono tracking-wider text-indigo-300/80">
-        <motion.div 
-          initial={{ x: -20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 100, delay: 0.1 }}
-          className="flex items-center space-x-2 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 shadow-sm"
-        >
-          <Shield className="w-3.5 h-3.5 text-[#6C4CF5] animate-pulse" />
-          <span className="font-bold text-indigo-200">SECURE VAULT OS</span>
-        </motion.div>
-        <motion.div 
-          initial={{ x: 20, opacity: 0 }}
-          animate={{ x: 0, opacity: 1 }}
-          transition={{ type: "spring", stiffness: 100, delay: 0.15 }}
-          className="flex items-center space-x-1 px-3 py-1.5 rounded-full bg-slate-900/80 border border-slate-800 font-sans font-bold text-[10px] text-amber-400"
-        >
-          <Star className="w-3 h-3 fill-amber-400 animate-spin" style={{ animationDuration: '6s' }} />
-          <span>PRO v2.5</span>
-        </motion.div>
-      </div>
-
-      {/* Main Center Modern Minimalist Logo */}
-      <div className="my-auto flex flex-col items-center justify-center text-center z-10">
-        <motion.div
-          initial={{ scale: 0.4, opacity: 0, rotate: -15 }}
-          animate={{ scale: 1, opacity: 1, rotate: 0 }}
-          transition={{ 
-            type: "spring", 
-            stiffness: 120, 
-            damping: 14, 
-            mass: 0.8
-          }}
-          whileHover={{ scale: 1.05 }}
-          className="relative w-28 h-28 rounded-[32px] overflow-hidden shadow-2xl shadow-indigo-500/20 border border-indigo-500/30 mb-7 flex items-center justify-center bg-[#16181D]"
-        >
-          {/* Shimmer sweeping beam */}
+      {/* Main Content Box */}
+      <div className="relative z-10 flex flex-col items-center justify-center text-center w-full max-w-xs space-y-6">
+        
+        {/* Phase 1 & 2: Box & Icon Animation */}
+        <div className="flex flex-col items-center space-y-4">
           <motion.div
-            animate={{
-              x: ['-100%', '150%'],
-            }}
-            transition={{
-              duration: 2.2,
-              repeat: Infinity,
-              repeatDelay: 1,
-              ease: [0.43, 0.13, 0.23, 0.96]
-            }}
-            className="absolute inset-y-0 w-12 bg-gradient-to-r from-transparent via-white/10 to-transparent skew-x-12 pointer-events-none z-10"
-          />
+            initial={{ scale: 0.8, opacity: 0 }}
+            animate={{ scale: 1, opacity: 1 }}
+            transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
+            className="relative"
+          >
+            {/* Glowing outer ring when box/icon is active */}
+            <motion.div
+              animate={{
+                scale: phase === 'BOX_OUTLINE' ? [1, 1.08, 1] : [1, 1.12, 1],
+                opacity: phase === 'BOX_OUTLINE' ? [0.3, 0.6, 0.3] : [0.2, 0.5, 0.2]
+              }}
+              transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+              className="absolute -inset-2 bg-gradient-to-r from-[#6C4CF5] to-cyan-400 rounded-3xl blur-md"
+            />
 
-          <AppLogoIcon size="2xl" className="w-full h-full rounded-none" />
-        </motion.div>
-
-        <motion.div
-          initial={{ opacity: 0, y: 15 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6, delay: 0.2, ease: [0.16, 1, 0.3, 1] }}
-          className="space-y-2"
-        >
-          <h1 className="text-3xl font-black tracking-[0.25em] text-white uppercase font-sans">
-            {"FZ SAVINGS".split("").map((letter, idx) => (
-              <motion.span
-                key={idx}
-                initial={{ opacity: 0, filter: "blur(4px)" }}
-                animate={{ opacity: 1, filter: "blur(0px)" }}
-                transition={{ duration: 0.3, delay: 0.3 + idx * 0.04 }}
-                className="inline-block"
+            {/* Box container that smoothly transitions from outline to filled */}
+            <motion.div
+              animate={{
+                backgroundColor: phase === 'BOX_OUTLINE' ? 'rgba(18, 22, 41, 0.2)' : 'rgba(18, 22, 41, 1)',
+                borderColor: phase === 'BOX_OUTLINE' ? 'rgba(108, 76, 245, 0.8)' : 'rgba(255, 255, 255, 0.12)'
+              }}
+              transition={{ duration: 0.5 }}
+              className="relative w-22 h-22 sm:w-24 sm:h-24 rounded-3xl border-2 shadow-2xl flex items-center justify-center overflow-hidden"
+            >
+              {/* App Icon: Fades/scales in during ICON_FILLED phase */}
+              <motion.div
+                initial={{ opacity: 0, scale: 0.6 }}
+                animate={{
+                  opacity: phase !== 'BOX_OUTLINE' ? 1 : 0,
+                  scale: phase !== 'BOX_OUTLINE' ? 1 : 0.6
+                }}
+                transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+                className="w-full h-full flex items-center justify-center"
               >
-                {letter === " " ? "\u00A0" : letter}
-              </motion.span>
-            ))}
-          </h1>
-          <p className="text-xs font-semibold text-slate-400 tracking-[0.15em] uppercase">
-            Enterprise Financial Vault
-          </p>
-        </motion.div>
-      </div>
+                <AppLogoIcon size="2xl" className="w-full h-full" />
+              </motion.div>
+            </motion.div>
+          </motion.div>
 
-      {/* Bottom Progress Card */}
-      <motion.div
-        initial={{ opacity: 0, y: 25 }}
-        animate={{ opacity: 1, y: 0 }}
-        transition={{ duration: 0.6, delay: 0.3, ease: [0.16, 1, 0.3, 1] }}
-        className="z-10 space-y-3.5 max-w-sm mx-auto w-full pb-4"
-      >
-        <div className="bg-slate-900/70 border border-slate-800 p-4.5 rounded-[24px] shadow-2xl backdrop-blur-xl space-y-3">
-          <div className="flex justify-between items-center text-xs font-semibold text-slate-300">
-            <span className="flex items-center gap-2">
-              <span className="w-2.5 h-2.5 rounded-full bg-cyan-400 animate-ping shrink-0" />
-              <span>Memuat sistem...</span>
-            </span>
-            <span className="font-mono font-bold text-cyan-400">{progressPercent}%</span>
-          </div>
+          {/* Title & Tagline: Appears along with the Icon */}
+          <motion.div
+            initial={{ opacity: 0, y: 8 }}
+            animate={{
+              opacity: phase !== 'BOX_OUTLINE' ? 1 : 0,
+              y: phase !== 'BOX_OUTLINE' ? 0 : 8
+            }}
+            transition={{ duration: 0.4, delay: 0.1 }}
+            className="space-y-1"
+          >
+            <h1 className="text-2xl font-black tracking-widest text-white uppercase">
+              FZ SAVINGS
+            </h1>
+            <p className="text-xs font-medium text-slate-400 tracking-wider">
+              Aplikasi Tabungan Digital
+            </p>
+          </motion.div>
+        </div>
 
-          <div className="w-full bg-slate-950 h-2.5 rounded-full overflow-hidden p-0.5 border border-slate-800">
+        {/* Phase 3: Progress Bar Morphs / Appears underneath */}
+        <motion.div
+          initial={{ opacity: 0, y: 12, height: 0 }}
+          animate={{
+            opacity: phase === 'LOADING' ? 1 : 0,
+            y: phase === 'LOADING' ? 0 : 12,
+            height: phase === 'LOADING' ? 'auto' : 0
+          }}
+          transition={{ duration: 0.45, ease: [0.16, 1, 0.3, 1] }}
+          className="w-full space-y-2.5 pt-1 overflow-hidden"
+        >
+          <div className="w-full bg-slate-900/90 h-1.5 rounded-full overflow-hidden p-0 border border-white/10 shadow-inner">
             <motion.div
               className="h-full bg-gradient-to-r from-[#6C4CF5] via-indigo-500 to-cyan-400 rounded-full"
-              initial={{ width: '5%' }}
+              initial={{ width: '0%' }}
               animate={{ width: `${progressPercent}%` }}
-              transition={{ type: "spring", stiffness: 80, damping: 15 }}
+              transition={{ duration: 0.35, ease: "easeInOut" }}
             />
           </div>
 
-          <div className="pt-1">
+          <div className="h-5 flex items-center justify-between text-xs text-slate-400 font-medium px-0.5">
             <AnimatePresence mode="wait">
-              <motion.div
-                key={currentStepIndex}
-                initial={{ opacity: 0, y: 8, scale: 0.98 }}
-                animate={{ opacity: 1, y: 0, scale: 1 }}
-                exit={{ opacity: 0, y: -8, scale: 0.98 }}
-                transition={{ duration: 0.2, ease: "easeOut" }}
-                className="flex items-center justify-between text-xs text-slate-300 bg-slate-950/80 px-3.5 py-2.5 rounded-xl border border-slate-850"
+              <motion.span
+                key={currentStep}
+                initial={{ opacity: 0, y: 3 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -3 }}
+                transition={{ duration: 0.18 }}
               >
-                <div className="flex items-center space-x-2.5 truncate">
-                  {React.createElement(INITIALIZATION_STEPS[currentStepIndex].icon, {
-                    className: 'w-4 h-4 text-cyan-400 shrink-0 animate-bounce'
-                  })}
-                  <span className="font-medium truncate">{INITIALIZATION_STEPS[currentStepIndex].text}</span>
-                </div>
-                {currentStepIndex === INITIALIZATION_STEPS.length - 1 ? (
-                  <CheckCircle2 className="w-4 h-4 text-emerald-400 shrink-0 ml-2 animate-bounce" />
-                ) : (
-                  <span className="text-[9px] font-mono font-bold text-indigo-300 bg-indigo-950 px-2 py-0.5 rounded border border-indigo-800/50 shrink-0 animate-pulse">
-                    {INITIALIZATION_STEPS[currentStepIndex].category}
-                  </span>
-                )}
-              </motion.div>
+                {LOADING_STATUSES[currentStep]}
+              </motion.span>
             </AnimatePresence>
+            <span className="font-mono font-bold text-indigo-400 text-[11px]">{progressPercent}%</span>
           </div>
-        </div>
-      </motion.div>
+        </motion.div>
+
+      </div>
     </motion.div>
   );
 };

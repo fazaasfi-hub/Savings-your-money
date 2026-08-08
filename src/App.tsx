@@ -36,7 +36,8 @@ import {
 
 // App Screens Imports
 import { AppLogoIcon } from './components/AppLogoIcon';
-import { getTranslation } from './utils/translations';
+import { getTranslation, translateText } from './utils/translations';
+import { getDensityClasses, getCardTextureClasses, getAccentColorConfig } from './utils/theme';
 import { SplashScreen } from './components/screens/SplashScreen';
 import { OnboardingScreen } from './components/screens/OnboardingScreen';
 import { AuthScreen } from './components/screens/AuthScreen';
@@ -61,6 +62,10 @@ import { BillSplitterScreen } from './components/screens/BillSplitterScreen';
 // Modals
 import { ScanQrModal } from './components/modals/ScanQrModal';
 import { NotificationsModal } from './components/modals/NotificationsModal';
+import { HomeScreenWidgetModal } from './components/HomeScreenWidgetModal';
+import { OcrReceiptScannerModal } from './components/modals/OcrReceiptScannerModal';
+import { MorphingFab } from './components/MorphingFab';
+import { LiquidGlassBottomBar } from './components/LiquidGlassBottomBar';
 
 // Icons
 import {
@@ -78,7 +83,9 @@ import {
   RotateCcw,
   ShieldCheck,
   ArrowRight,
-  Check
+  Check,
+  Smartphone,
+  Camera
 } from 'lucide-react';
 
 export default function App() {
@@ -135,6 +142,8 @@ export default function App() {
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isScanQrOpen, setIsScanQrOpen] = useState(false);
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [isWidgetModalOpen, setIsWidgetModalOpen] = useState(false);
+  const [isOcrScannerOpen, setIsOcrScannerOpen] = useState(false);
   const [notifications, setNotifications] = useState<AppNotification[]>(INITIAL_NOTIFICATIONS);
 
   // LocalStorage state persistence - Clean start without dummy data
@@ -578,7 +587,7 @@ export default function App() {
     if (action === 'TARGET') {
       setCurrentScreen('wishlist');
     } else if (action === 'TRANSFER') {
-      setCurrentScreen('savings');
+      setCurrentScreen('wishlist');
     } else if (action === 'SCAN_QR') {
       setIsScanQrOpen(true);
     } else {
@@ -698,12 +707,13 @@ export default function App() {
 
   const isDark = settings.theme === 'DARK';
   const t = getTranslation(settings.language);
-
-  // Navigation tabs config
+  const densityConfig = getDensityClasses(settings.density);
+  const accentConfig = getAccentColorConfig(settings.accentColor);
+  const cardTextureClass = getCardTextureClasses(settings.cardTexture, isDark, settings.liquidGlassEnabled !== false);  // Navigation tabs config
   const navTabs = [
     { id: 'dashboard', label: t.tabDashboard, icon: LayoutGrid },
-    { id: 'savings', label: t.tabSavings, icon: Wallet },
     { id: 'transactions', label: t.tabTransactions, icon: Receipt },
+    { id: 'savings', label: translateText('Kas & Rekening', settings.language), icon: Wallet },
     { id: 'wishlist', label: t.tabTarget, icon: Target },
     { id: 'tools', label: t.tabTools, icon: Sparkles },
     { id: 'settings', label: t.tabProfile, icon: Settings }
@@ -718,29 +728,54 @@ export default function App() {
       
 
 
+
       {/* 2. Top Navigation Bar (Only for main screens) */}
       {isFullAppView && (
-        <div className={`px-5 py-3 border-b flex items-center justify-between z-30 transition-colors ${
+        <div className={`px-3 sm:px-5 py-2.5 border-b flex items-center justify-between z-30 transition-colors w-full max-w-full overflow-hidden ${
           isDark ? 'bg-[#0E1022]/90 border-slate-800/80' : 'bg-white/90 border-slate-200/80'
         }`}>
-          <div className="flex items-center space-x-2.5 cursor-pointer" onClick={() => setCurrentScreen('dashboard')}>
+          {/* Logo Brand Title */}
+          <div className="flex items-center space-x-2 shrink-0 cursor-pointer" onClick={() => setCurrentScreen('dashboard')}>
             <AppLogoIcon size="sm" />
             <span className={`text-xs font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
               FZ SAVINGS
             </span>
-            <span className="text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 uppercase tracking-wider">
-              Tabungan
+            <span className="hidden sm:inline-block text-[9px] font-extrabold px-2 py-0.5 rounded-full bg-indigo-500/15 text-indigo-400 border border-indigo-500/30 uppercase tracking-wider">
+              {translateText("Tabungan", settings.language)}
             </span>
           </div>
 
-          <div className="flex items-center space-x-1">
+          {/* Action Icons Bar (Responsive & No-Overflow) */}
+          <div className="flex items-center space-x-0.5 sm:space-x-1 shrink-0 overflow-x-auto no-scrollbar max-w-[65%] sm:max-w-none">
+            {/* Home Screen Widget Simulator Trigger */}
+            <button
+              onClick={() => setIsWidgetModalOpen(true)}
+              className={`p-1.5 rounded-xl transition-colors shrink-0 ${
+                isDark ? 'text-cyan-400 hover:bg-slate-800' : 'text-cyan-600 hover:bg-slate-100'
+              }`}
+              title={translateText("Widget Layar Utama HP", settings.language)}
+            >
+              <Smartphone className="w-4 h-4" />
+            </button>
+
+            {/* OCR Struk Scanner Cam Trigger */}
+            <button
+              onClick={() => setIsOcrScannerOpen(true)}
+              className={`p-1.5 rounded-xl transition-colors shrink-0 ${
+                isDark ? 'text-amber-400 hover:bg-slate-800' : 'text-amber-600 hover:bg-slate-100'
+              }`}
+              title={translateText("OCR Struk Scanner Cam", settings.language)}
+            >
+              <Camera className="w-4 h-4" />
+            </button>
+
             {/* Replay App Splash Screen */}
             <button
               onClick={() => setCurrentScreen('splash')}
-              className={`p-1.5 rounded-xl transition-colors ${
+              className={`hidden md:flex p-1.5 rounded-xl transition-colors shrink-0 ${
                 isDark ? 'text-indigo-400 hover:bg-slate-800' : 'text-indigo-600 hover:bg-slate-100'
               }`}
-              title="Mulai Ulang Splash Screen"
+              title={translateText("Mulai Ulang Splash Screen", settings.language)}
             >
               <RotateCcw className="w-4 h-4" />
             </button>
@@ -748,12 +783,12 @@ export default function App() {
             {/* Global Search */}
             <button
               onClick={() => setIsSearchOpen(!isSearchOpen)}
-              className={`p-1.5 rounded-xl transition-colors ${
+              className={`p-1.5 rounded-xl transition-colors shrink-0 ${
                 isSearchOpen
                   ? 'bg-[#6C4CF5] text-white shadow-xs'
                   : isDark ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100'
               }`}
-              title="Cari Data"
+              title={translateText("Cari Data", settings.language)}
             >
               <Search className="w-4 h-4" />
             </button>
@@ -761,10 +796,10 @@ export default function App() {
             {/* Notifications */}
             <button
               onClick={() => setIsNotificationsOpen(true)}
-              className={`p-1.5 rounded-xl transition-colors relative ${
+              className={`p-1.5 rounded-xl transition-colors relative shrink-0 ${
                 isDark ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100'
               }`}
-              title="Notifikasi"
+              title={translateText("Notifikasi", settings.language)}
             >
               <Bell className="w-4 h-4" />
               {notifications.filter(n => !n.isRead).length > 0 && (
@@ -775,10 +810,10 @@ export default function App() {
             {/* Dark/Light Switcher */}
             <button
               onClick={() => setSettings({ ...settings, theme: isDark ? 'LIGHT' : 'DARK' })}
-              className={`p-1.5 rounded-xl transition-colors ${
+              className={`p-1.5 rounded-xl transition-colors shrink-0 ${
                 isDark ? 'text-amber-400 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100'
               }`}
-              title="Ganti Tema"
+              title={translateText("Ganti Tema", settings.language)}
             >
               {isDark ? <Sun className="w-4 h-4" /> : <Moon className="w-4 h-4" />}
             </button>
@@ -786,10 +821,10 @@ export default function App() {
             {/* Lock Device */}
             <button
               onClick={() => setIsLocked(true)}
-              className={`p-1.5 rounded-xl transition-colors ${
+              className={`p-1.5 rounded-xl transition-colors shrink-0 ${
                 isDark ? 'text-slate-300 hover:bg-slate-800' : 'text-slate-600 hover:bg-slate-100'
               }`}
-              title="Kunci Layar"
+              title={translateText("Kunci Layar", settings.language)}
             >
               <Lock className="w-4 h-4" />
             </button>
@@ -798,7 +833,7 @@ export default function App() {
       )}
 
       {/* 3. Main Screen Viewport */}
-      <div className="flex-1 w-full max-w-full relative flex flex-col min-h-0">
+      <div className="flex-1 w-full max-w-full relative flex flex-col min-h-0 overflow-hidden">
         
         {/* Splash Screen */}
         {currentScreen === 'splash' && (
@@ -849,38 +884,34 @@ export default function App() {
 
         {/* Regular Application Screens */}
         {isFullAppView && !isSearchOpen && (
-          <div className="flex-1 overflow-hidden relative w-full min-h-0">
-            <AnimatePresence mode="wait" initial={false} custom={screenDirection}>
-              <motion.div
-                key={currentScreen}
-                custom={screenDirection}
-                variants={{
-                  enter: (direction: number) => ({
-                    x: direction > 0 ? 30 : direction < 0 ? -30 : 0,
-                    opacity: 0,
-                    scale: 0.98,
-                  }),
-                  center: {
-                    x: 0,
-                    opacity: 1,
-                    scale: 1,
-                  },
-                  exit: (direction: number) => ({
-                    x: direction > 0 ? -30 : direction < 0 ? 30 : 0,
-                    opacity: 0,
-                    scale: 0.98,
-                  }),
-                }}
-                initial="enter"
-                animate="center"
-                exit="exit"
-                transition={{
-                  duration: 0.18,
-                  ease: [0.25, 0.1, 0.25, 1],
-                }}
-                style={{ willChange: "transform, opacity" }}
-                className="absolute inset-0 overflow-y-auto px-5 pt-4 pb-28 w-full box-border flex flex-col min-h-0"
-              >
+          <AnimatePresence mode="wait" initial={false} custom={screenDirection}>
+            <motion.div
+              key={currentScreen}
+              custom={screenDirection}
+              variants={{
+                enter: (direction: number) => ({
+                  x: direction > 0 ? 15 : direction < 0 ? -15 : 0,
+                  opacity: 0,
+                }),
+                center: {
+                  x: 0,
+                  opacity: 1,
+                },
+                exit: (direction: number) => ({
+                  x: direction > 0 ? -15 : direction < 0 ? 15 : 0,
+                  opacity: 0,
+                }),
+              }}
+              initial="enter"
+              animate="center"
+              exit="exit"
+              transition={{
+                duration: 0.15,
+                ease: 'easeInOut',
+              }}
+              style={{ willChange: "transform, opacity", transform: "translate3d(0,0,0)", backfaceVisibility: "hidden" }}
+              className={`absolute inset-0 overflow-y-auto ${densityConfig.screenPadding} w-full box-border gpu-layer`}
+            >
                 {currentScreen === 'dashboard' && (
                   <DashboardScreen
                     userProfile={profile}
@@ -890,6 +921,7 @@ export default function App() {
                     currency={settings.currency}
                     theme={settings.theme}
                     language={settings.language}
+                    settings={settings}
                     onNavigate={(scr) => setCurrentScreen(scr)}
                     onOpenQuickAction={handleOpenQuickAction}
                   />
@@ -901,6 +933,7 @@ export default function App() {
                     currency={settings.currency}
                     isDark={isDark}
                     language={settings.language}
+                    settings={settings}
                     onAddAccount={handleAddAccount}
                     onDeleteAccount={handleDeleteAccount}
                     onOpenTransfer={() => setCurrentScreen('transactions')}
@@ -912,13 +945,14 @@ export default function App() {
                     transactions={transactions}
                     categories={categories}
                     accounts={accounts}
+                    goals={goals}
                     currency={settings.currency}
                     isDark={isDark}
                     language={settings.language}
                     onAddTransaction={handleAddTransaction}
                     onSoftDeleteTransaction={handleSoftDeleteTransaction}
                     onRestoreTransaction={handleRestoreTransaction}
-                    onNavigateToSavings={() => setCurrentScreen('savings')}
+                    onNavigateToSavings={() => setCurrentScreen('wishlist')}
                   />
                 )}
 
@@ -955,14 +989,11 @@ export default function App() {
                 {currentScreen === 'wishlist' && (
                   <WishlistGoalScreen
                     goals={goals}
-                    wishlists={wishlists}
                     currency={settings.currency}
                     isDark={isDark}
                     language={settings.language}
                     onAddGoal={handleAddGoal}
                     onDepositGoal={handleDepositGoal}
-                    onAddWishlist={handleAddWishlist}
-                    onDeleteWishlist={handleDeleteWishlist}
                   />
                 )}
 
@@ -1003,6 +1034,7 @@ export default function App() {
                     onNavigateTool={(tool) => setCurrentScreen(tool)}
                     isDark={isDark}
                     language={settings.language}
+                    liquidGlassEnabled={settings.liquidGlassEnabled !== false}
                   />
                 )}
 
@@ -1053,89 +1085,19 @@ export default function App() {
                 )}
               </motion.div>
             </AnimatePresence>
-          </div>
         )}
       </div>
 
-      {/* 4. Elegant Floating Liquid Glass Bottom Navigation Dock */}
+      {/* 4. Floating Liquid Glass Swipeable Bottom Navigation Bar */}
       {isFullAppView && (
-        <div 
-          ref={dockContainerRef}
-          className={`fixed bottom-5 left-1/2 -translate-x-1/2 w-[calc(100%-2rem)] max-w-lg z-40 p-1.5 rounded-3xl backdrop-blur-xl border transition-all duration-300 select-none overflow-hidden ${
-            isDark 
-              ? `bg-[#0E1022]/45 border-white/[0.08] shadow-[0_20px_50px_rgba(0,0,0,0.55),inset_0_1px_1px_rgba(255,255,255,0.1)] ${isDragSelectActive ? 'ring-2 ring-[#00E5C9]/50 scale-[1.01] bg-[#0E1022]/70 border-[#00E5C9]/30 shadow-[#00E5C9]/10' : ''}` 
-              : `bg-white/40 border-white/50 shadow-[0_20px_50px_rgba(108,76,245,0.12),inset_0_1px_2px_rgba(255,255,255,0.8)] ${isDragSelectActive ? 'ring-2 ring-[#00E5C9]/50 scale-[1.01] bg-white/70 border-[#00E5C9]/30 shadow-[#00E5C9]/10' : ''}`
-          }`}
-          style={{ touchAction: 'pan-x' }}
-        >
-          {/* Distinct, undulating teal-green gradient line that spans the width of the bar */}
-          <div className="absolute top-0 inset-x-0 h-[2.5px] overflow-hidden pointer-events-none z-10">
-            <motion.div 
-              animate={{
-                x: ['-50%', '50%'],
-              }}
-              transition={{
-                duration: 6,
-                repeat: Infinity,
-                ease: "linear"
-              }}
-              className="w-[200%] h-full bg-gradient-to-r from-transparent via-[#00f2fe] via-[#00E5C9] via-[#00B4D8] via-[#00f2fe] to-transparent opacity-90"
-            />
-          </div>
-          <div className="absolute top-0 inset-x-0 h-[1.5px] bg-[#00E5C9]/20 blur-[1px] pointer-events-none z-10" />
- 
-          <motion.div
-            ref={dockTrackRef}
-            drag={isDragSelectActive ? false : "x"}
-            dragConstraints={{ left: dragConstraintsLeft, right: 0 }}
-            dragElastic={0.2}
-            dragTransition={{ power: 0.2, timeConstant: 250 }}
-            onTouchStart={handleDockTouchStart}
-            onTouchMove={handleDockTouchMove}
-            onTouchEnd={handleDockTouchEnd}
-            onMouseDown={handleDockMouseDown}
-            onMouseMove={handleDockMouseMove}
-            onMouseUp={handleDockMouseUp}
-            onMouseLeave={handleDockMouseUp}
-            className="flex items-center gap-1.5 cursor-grab active:cursor-grabbing w-max min-w-full px-1 py-0.5 no-scrollbar overflow-x-visible relative z-20"
-          >
-            {navTabs.map((tab) => {
-              const isActive = currentScreen === tab.id || (tab.id === 'tools' && ['tools', 'aiAdvisor', 'recurring', 'debt', 'export', 'splitBill'].includes(currentScreen));
-              return (
-                <button
-                  key={tab.id}
-                  data-tab-id={tab.id}
-                  onClick={() => setCurrentScreen(tab.id)}
-                  className={`relative flex flex-col items-center justify-center py-2.5 px-4 min-w-[78px] rounded-2xl transition-all duration-300 flex-1 ${
-                    isActive 
-                      ? 'text-[#011F26] font-extrabold'
-                      : isDark ? 'text-zinc-400 hover:text-white' : 'text-zinc-500 hover:text-zinc-950'
-                  }`}
-                  title={tab.label}
-                  style={{ WebkitTapHighlightColor: 'transparent' }}
-                >
-                  {isActive && (
-                    <motion.div
-                      layoutId="activeDockIndicator"
-                      className="absolute inset-0 bg-gradient-to-r from-[#00E5C9] to-[#00B4D8] rounded-2xl -z-10 border border-[#00f2fe]/40"
-                      animate={{
-                        scale: isDragSelectActive ? 1.05 : 1,
-                        boxShadow: isDragSelectActive 
-                          ? '0px 0px 25px rgba(0,229,201,0.95), 0px 4px 12px rgba(0,180,216,0.6)' 
-                          : '0px 0px 20px rgba(0,229,201,0.75), 0px 2px 8px rgba(0,180,216,0.4)'
-                      }}
-                      transition={{ type: "spring", stiffness: isDragSelectActive ? 450 : 380, damping: isDragSelectActive ? 24 : 26 }}
-                    />
-                  )}
-                  <tab.icon className={`w-4 h-4 shrink-0 transition-transform duration-300 ${isActive ? 'scale-110 rotate-1' : 'scale-100 opacity-70'}`} />
-                  <span className={`text-[10px] font-bold mt-1 truncate tracking-tight text-center w-full transition-all duration-300 ${isActive ? 'opacity-100' : 'opacity-65'}`}>
-                    {tab.label}
-                  </span>
-                </button>
-              );
-            })}
-          </motion.div>
-        </div>
+        <LiquidGlassBottomBar
+          currentScreen={currentScreen}
+          setCurrentScreen={setCurrentScreen}
+          isDark={isDark}
+          navTabs={navTabs}
+          accentConfig={accentConfig}
+          liquidGlassEnabled={settings.liquidGlassEnabled !== false}
+        />
       )}
 
       {/* QRIS Scanner Modal */}
@@ -1147,6 +1109,42 @@ export default function App() {
         />
       )}
 
+      {/* OCR Struk Scanner Cam Modal */}
+      {isOcrScannerOpen && (
+        <OcrReceiptScannerModal
+          currency={settings.currency}
+          isDark={isDark}
+          onClose={() => setIsOcrScannerOpen(false)}
+          onScanSuccess={(scannedTx) => {
+            const newTx: Transaction = {
+              id: `tx_ocr_${Date.now()}`,
+              title: scannedTx.title || 'Struk Belanja',
+              amount: scannedTx.amount || 0,
+              type: 'EXPENSE',
+              categoryId: 'cat_belanja',
+              accountId: accounts[0]?.id || 'acc_utama',
+              date: scannedTx.date || new Date().toISOString().slice(0, 10),
+              time: scannedTx.time || new Date().toTimeString().slice(0, 5),
+              notes: scannedTx.notes || 'Hasil Scan Struk OCR'
+            };
+            handleAddTransaction(newTx);
+          }}
+        />
+      )}
+
+      {/* Home Screen Widget Preview Modal */}
+      {isWidgetModalOpen && (
+        <HomeScreenWidgetModal
+          goals={goals}
+          accounts={accounts}
+          currency={settings.currency}
+          isDark={isDark}
+          language={settings.language}
+          onClose={() => setIsWidgetModalOpen(false)}
+          onQuickDeposit={(goalId, amt) => handleDepositGoal(goalId, amt)}
+        />
+      )}
+
       {/* Notifications Drawer Modal */}
       {isNotificationsOpen && (
         <NotificationsModal
@@ -1154,6 +1152,18 @@ export default function App() {
           onClose={() => setIsNotificationsOpen(false)}
           onClearAll={handleClearNotifications}
           onMarkAsRead={handleMarkNotifRead}
+        />
+      )}
+
+      {/* Morphing Floating Action Button */}
+      {isFullAppView && (
+        <MorphingFab
+          isDark={isDark}
+          liquidGlassEnabled={settings.liquidGlassEnabled !== false}
+          onOpenAddTransaction={() => setCurrentScreen('transactions')}
+          onOpenOcrScanner={() => setIsOcrScannerOpen(true)}
+          onOpenWidgetModal={() => setIsWidgetModalOpen(true)}
+          onOpenQrisScan={() => setIsScanQrOpen(true)}
         />
       )}
 

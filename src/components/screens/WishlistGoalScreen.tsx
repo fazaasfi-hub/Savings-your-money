@@ -1,39 +1,37 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Goal, Wishlist } from '../../types';
+import { Goal } from '../../types';
 import { formatCurrency, formatNumberInput, parseNumberInput } from '../../utils/formatters';
-import { Target, Heart, Plus, CheckCircle2, Sparkles, ChevronRight, Gift, Clock, Trash2 } from 'lucide-react';
+import { Target, Plus, Sparkles, Award, CheckCircle2, Clock } from 'lucide-react';
 import confetti from 'canvas-confetti';
+import { LiquidFillProgress } from '../LiquidFillProgress';
+import { AnimatedCounter } from '../AnimatedCounter';
+import { SpinningTargetIcon, PulsingSparklesIcon } from '../InteractiveIcon';
+import { translateText } from '../../utils/translations';
 
 interface WishlistGoalScreenProps {
   goals: Goal[];
-  wishlists: Wishlist[];
   currency: 'IDR' | 'USD' | 'EUR';
   isDark?: boolean;
+  language?: string;
   onAddGoal: (goal: Goal) => void;
   onDepositGoal: (goalId: string, amount: number) => void;
-  onAddWishlist: (wish: Wishlist) => void;
-  onDeleteWishlist: (id: string) => void;
 }
 
 export const WishlistGoalScreen: React.FC<WishlistGoalScreenProps> = ({
   goals,
-  wishlists,
   currency,
   isDark = false,
+  language,
   onAddGoal,
   onDepositGoal,
-  onAddWishlist,
-  onDeleteWishlist
 }) => {
-  const [activeTab, setActiveTab] = useState<'GOALS' | 'WISHLIST'>('GOALS');
   const [isAdding, setIsAdding] = useState(false);
+  const t = (text: string) => translateText(text, language);
 
   // Goal Form States
   const [goalName, setGoalName] = useState('');
   const [goalTarget, setGoalTarget] = useState('');
-  const [goalDeadline, setGoalDeadline] = useState('2026-12-31');
-  const [goalCategory, setGoalCategory] = useState('Elektronik');
 
   // Deposit Modal State
   const [selectedDepositGoalId, setSelectedDepositGoalId] = useState<string | null>(null);
@@ -48,9 +46,9 @@ export const WishlistGoalScreen: React.FC<WishlistGoalScreenProps> = ({
       name: goalName.trim(),
       targetAmount: parseNumberInput(goalTarget),
       currentAmount: 0,
-      deadline: goalDeadline,
+      deadline: '',
       reminderEnabled: true,
-      category: goalCategory,
+      category: 'Tabungan',
       status: 'BERJALAN'
     };
 
@@ -80,18 +78,40 @@ export const WishlistGoalScreen: React.FC<WishlistGoalScreenProps> = ({
     setDepositAmount('');
   };
 
+  const totalTargetAmount = goals.reduce((acc, g) => acc + g.targetAmount, 0);
+  const totalCurrentAmount = goals.reduce((acc, g) => acc + g.currentAmount, 0);
+  const overallProgress = totalTargetAmount > 0 ? Math.min(100, Math.round((totalCurrentAmount / totalTargetAmount) * 100)) : 0;
+  const completedGoalsCount = goals.filter(g => g.currentAmount >= g.targetAmount && g.targetAmount > 0).length;
+
+  const selectedGoalObj = goals.find(g => g.id === selectedDepositGoalId);
+
+  // Helper to calculate estimated completion date based on savings velocity
+  const calculateEstimatedCompletionDate = (current: number, target: number) => {
+    const remaining = Math.max(0, target - current);
+    if (remaining === 0) return language === 'ID' ? 'Tercapai' : 'Achieved';
+    const estimatedMonthlyRate = 500000; // estimated average monthly deposit
+    const monthsRemaining = Math.max(1, Math.ceil(remaining / estimatedMonthlyRate));
+    const targetDate = new Date();
+    targetDate.setMonth(targetDate.getMonth() + monthsRemaining);
+    const monthNamesID = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const monthNamesEN = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    const monthNames = language === 'ID' ? monthNamesID : monthNamesEN;
+    const blnLabel = language === 'ID' ? 'bln' : 'mo';
+    return `${monthNames[targetDate.getMonth()]} ${targetDate.getFullYear()} (~${monthsRemaining} ${blnLabel})`;
+  };
+
   return (
     <motion.div
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
-      className="space-y-5 pb-20 select-none"
+      className="space-y-5 pb-56 select-none"
     >
       {/* Header */}
       <div className="flex items-center justify-between">
         <div>
-          <h2 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>Target & Wishlist</h2>
-          <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>Rencanakan impian & alokasi dana secara konsisten</p>
+          <h2 className={`text-xl font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>{t("Target Nabung")}</h2>
+          <p className={`text-xs ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{t("Fokus kumpulkan tabungan & raih target uangmu")}</p>
         </div>
 
         <button
@@ -99,30 +119,38 @@ export const WishlistGoalScreen: React.FC<WishlistGoalScreenProps> = ({
           className="px-3.5 py-1.5 bg-[#6C4CF5] hover:bg-indigo-700 text-white text-xs font-bold rounded-2xl shadow-md transition-all inline-flex items-center space-x-1"
         >
           <Plus className="w-4 h-4" />
-          <span>Tambah</span>
+          <span>{t("Tambah Target")}</span>
         </button>
       </div>
 
-      {/* Tabs */}
-      <div className={`grid grid-cols-2 p-1 rounded-2xl text-xs font-bold ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
-        <button
-          onClick={() => setActiveTab('GOALS')}
-          className={`py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 ${
-            activeTab === 'GOALS' ? 'bg-[#6C4CF5] text-white shadow-2xs' : isDark ? 'text-slate-300' : 'text-slate-600'
-          }`}
-        >
-          <Target className="w-4 h-4" />
-          <span>Target Tabungan ({goals.length})</span>
-        </button>
-        <button
-          onClick={() => setActiveTab('WISHLIST')}
-          className={`py-2 rounded-xl transition-all flex items-center justify-center space-x-1.5 ${
-            activeTab === 'WISHLIST' ? 'bg-[#6C4CF5] text-white shadow-2xs' : isDark ? 'text-slate-300' : 'text-slate-600'
-          }`}
-        >
-          <Heart className="w-4 h-4" />
-          <span>Wishlist Impian ({wishlists.length})</span>
-        </button>
+      {/* Overall Progress Banner */}
+      <div className="p-5 bg-gradient-to-r from-[#0B1220] via-[#1E1B4B] to-[#6C4CF5] text-white rounded-[24px] shadow-xl border border-white/10 space-y-3 relative overflow-hidden">
+        <div className="flex items-center justify-between relative z-10">
+          <div>
+            <div className="flex items-center gap-1.5">
+              <span className="text-[10px] uppercase tracking-wider font-bold text-indigo-200">{t("Total Progres Nabung")}</span>
+              {completedGoalsCount > 0 && (
+                <span className="px-2 py-0.5 bg-amber-400/20 text-amber-300 text-[9px] font-black rounded-full border border-amber-400/30 flex items-center gap-1">
+                  <Award className="w-3 h-3" />
+                  {completedGoalsCount} {t("Target Tercapai")}
+                </span>
+              )}
+            </div>
+            <div className="text-xl font-black text-white font-mono mt-0.5">
+              {formatCurrency(totalCurrentAmount, currency)} <span className="text-xs text-indigo-300 font-normal">/ {formatCurrency(totalTargetAmount, currency)}</span>
+            </div>
+          </div>
+          <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/20 flex items-center justify-center font-mono font-black text-sm text-amber-300 shadow-inner">
+            {overallProgress}%
+          </div>
+        </div>
+
+        <div className="w-full bg-black/40 h-2.5 rounded-full overflow-hidden p-0.5 border border-white/10 relative z-10">
+          <div
+            className="bg-gradient-to-r from-amber-400 to-indigo-400 h-full rounded-full transition-all duration-500"
+            style={{ width: `${overallProgress}%` }}
+          />
+        </div>
       </div>
 
       {/* Add Goal Modal */}
@@ -130,15 +158,15 @@ export const WishlistGoalScreen: React.FC<WishlistGoalScreenProps> = ({
         <form onSubmit={handleCreateGoal} className={`p-5 border rounded-[24px] shadow-lg space-y-4 ${
           isDark ? 'bg-[#1E293B] border-slate-800 text-white' : 'bg-white border-slate-200/80 text-slate-900'
         }`}>
-          <h3 className={`text-sm font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>Buat Target Tabungan Baru</h3>
+          <h3 className={`text-sm font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t("Buat Target Nabung Baru")}</h3>
 
           <div>
-            <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Nama Target</label>
+            <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Nama Target Tabungan")}</label>
             <input
               type="text"
               value={goalName}
               onChange={(e) => setGoalName(e.target.value)}
-              placeholder="Contoh: Dana Darurat, Liburan Bali"
+              placeholder={t("Contoh: Tabungan Liburan, Uang Pangkal, Laptop")}
               className={`w-full px-3.5 py-2.5 border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] ${
                 isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-300 text-slate-900'
               }`}
@@ -146,31 +174,18 @@ export const WishlistGoalScreen: React.FC<WishlistGoalScreenProps> = ({
             />
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
-            <div>
-              <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Target Nominal (Rp)</label>
-              <input
-                type="text"
-                value={formatNumberInput(goalTarget)}
-                onChange={(e) => setGoalTarget(parseNumberInput(e.target.value).toString())}
-                placeholder="10.000.000"
-                className={`w-full px-3.5 py-2.5 border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] font-mono ${
-                  isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-300 text-slate-900'
-                }`}
-                required
-              />
-            </div>
-            <div>
-              <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>Tenggat Waktu</label>
-              <input
-                type="date"
-                value={goalDeadline}
-                onChange={(e) => setGoalDeadline(e.target.value)}
-                className={`w-full px-3.5 py-2.5 border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] ${
-                  isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-white border-slate-300 text-slate-900'
-                }`}
-              />
-            </div>
+          <div>
+            <label className={`block text-xs font-semibold mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Target Nominal (Rp)")}</label>
+            <input
+              type="text"
+              value={formatNumberInput(goalTarget)}
+              onChange={(e) => setGoalTarget(parseNumberInput(e.target.value).toString())}
+              placeholder="10.000.000"
+              className={`w-full px-3.5 py-2.5 border rounded-xl text-xs focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] font-mono ${
+                isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-white border-slate-300 text-slate-900'
+              }`}
+              required
+            />
           </div>
 
           <div className="flex justify-end space-x-2 pt-2">
@@ -179,13 +194,13 @@ export const WishlistGoalScreen: React.FC<WishlistGoalScreenProps> = ({
               onClick={() => setIsAdding(false)}
               className={`px-3.5 py-2 text-xs font-semibold ${isDark ? 'text-slate-400 hover:text-white' : 'text-slate-600 hover:text-slate-900'}`}
             >
-              Batal
+              {t("Batal")}
             </button>
             <button
               type="submit"
               className="px-4 py-2 bg-[#6C4CF5] text-white text-xs font-bold rounded-xl hover:bg-indigo-700 shadow-md"
             >
-              Simpan Target
+              {t("Simpan Target")}
             </button>
           </div>
         </form>
@@ -197,19 +212,19 @@ export const WishlistGoalScreen: React.FC<WishlistGoalScreenProps> = ({
           <div className="flex items-center justify-between">
             <h3 className="text-sm font-bold text-white flex items-center gap-1.5">
               <Sparkles className="w-4 h-4 text-amber-400" />
-              <span>Setor Dana ke Target Tabungan</span>
+              <span>{t("Setor Uang ke")} {selectedGoalObj?.name || 'Target'}</span>
             </h3>
             <button
               type="button"
               onClick={() => setSelectedDepositGoalId(null)}
               className="text-xs text-slate-400 hover:text-white"
             >
-              Tutup
+              {t("Tutup")}
             </button>
           </div>
 
           <div>
-            <label className="block text-xs font-semibold text-indigo-200 mb-1">Nominal Setoran (Rp)</label>
+            <label className="block text-xs font-semibold text-indigo-200 mb-1">{t("Nominal Setoran (Rp)")}</label>
             <input
               type="text"
               value={formatNumberInput(depositAmount)}
@@ -224,103 +239,94 @@ export const WishlistGoalScreen: React.FC<WishlistGoalScreenProps> = ({
             type="submit"
             className="w-full py-2.5 bg-[#6C4CF5] hover:bg-indigo-600 text-white text-xs font-bold rounded-xl shadow-lg shadow-indigo-600/30 transition-all"
           >
-            Konfirmasi Setor
+            {t("Konfirmasi Setor")}
           </button>
         </form>
       )}
 
-      {/* Content Body */}
-      {activeTab === 'GOALS' ? (
-        <div className="space-y-3">
-          {goals.map((g) => {
+      {/* List Target Nabung */}
+      <div className="space-y-3">
+        {goals.length === 0 ? (
+          <div className={`p-8 text-center rounded-[24px] border ${isDark ? 'bg-[#1E293B] border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500'}`}>
+            <Target className="w-8 h-8 mx-auto mb-2 opacity-50 text-indigo-400" />
+            <p className="text-xs font-bold">{t("Belum ada target nabung")}</p>
+            <p className="text-[11px] mt-0.5">{t("Klik tombol \"+ Tambah Target\" untuk memulai impian baru.")}</p>
+          </div>
+        ) : (
+          goals.map((g) => {
             const percent = Math.min(100, Math.round((g.currentAmount / g.targetAmount) * 100));
+            const isCompleted = percent >= 100;
+            const estimatedCompletionPill = calculateEstimatedCompletionDate(g.currentAmount, g.targetAmount);
 
             return (
-              <div key={g.id} className={`p-5 border rounded-[24px] shadow-xs space-y-3 ${
+              <div key={g.id} className={`p-5 border rounded-[24px] shadow-xs space-y-3 relative overflow-hidden ${
                 isDark ? 'bg-[#1E293B] border-slate-800 text-white' : 'bg-white border-slate-200/80 text-slate-900'
               }`}>
-                <div className="flex items-center justify-between">
+                {isCompleted && (
+                  <div className="absolute top-0 right-0 bg-emerald-500 text-white text-[9px] font-black px-3 py-1 rounded-bl-xl shadow-md flex items-center gap-1 z-10">
+                    <CheckCircle2 className="w-3 h-3" />
+                    <span>{t("TARGET TERCAPAI! 🎉")}</span>
+                  </div>
+                )}
+
+                <div className="flex items-center justify-between relative z-10">
                   <div className="flex items-center space-x-2.5">
                     <div className={`w-10 h-10 rounded-2xl flex items-center justify-center font-bold text-sm border ${
-                      isDark ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-indigo-50 text-[#6C4CF5] border-indigo-200/60'
+                      isCompleted
+                        ? 'bg-emerald-500/20 text-emerald-400 border-emerald-500/30'
+                        : isDark ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20' : 'bg-indigo-50 text-[#6C4CF5] border-indigo-200/60'
                     }`}>
-                      <Target className="w-5 h-5" />
+                      <SpinningTargetIcon className="w-5 h-5" />
                     </div>
                     <div>
                       <h3 className={`text-xs font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>{g.name}</h3>
-                      <div className={`flex items-center gap-1 text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                        <Clock className="w-3 h-3" />
-                        <span>Deadline: {g.deadline}</span>
+                      <div className="flex items-center gap-2 mt-0.5">
+                        <span className="text-[10px] text-indigo-400 font-semibold">{t(g.category || 'Tabungan')}</span>
+                        {!isCompleted && (
+                          <span className="px-2 py-0.5 bg-amber-500/15 text-amber-400 border border-amber-500/20 rounded-full text-[9px] font-extrabold flex items-center gap-1">
+                            <Clock className="w-2.5 h-2.5" />
+                            <span>{t("Target:")} {estimatedCompletionPill}</span>
+                          </span>
+                        )}
                       </div>
                     </div>
                   </div>
 
                   <button
                     onClick={() => setSelectedDepositGoalId(g.id)}
-                    className="px-3 py-1.5 bg-[#6C4CF5] hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-xs transition-colors"
+                    className={`px-3 py-1.5 text-white text-xs font-bold rounded-xl shadow-xs transition-colors ${
+                      isCompleted ? 'bg-emerald-600 hover:bg-emerald-700' : 'bg-[#6C4CF5] hover:bg-indigo-700'
+                    }`}
                   >
                     + Setor
                   </button>
                 </div>
 
-                <div>
-                  <div className="flex justify-between items-center text-[11px] font-semibold mb-1">
-                    <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>Progres Terkumpul</span>
-                    <span className={`font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>{percent}%</span>
+                <div className="relative z-10 space-y-2">
+                  <div className="flex justify-between items-center text-[11px] font-semibold">
+                    <span className={isDark ? 'text-slate-400' : 'text-slate-500'}>{t("Progres Terkumpul")}</span>
+                    <span className={`font-extrabold ${isCompleted ? 'text-emerald-400' : isDark ? 'text-white' : 'text-slate-900'}`}>{percent}%</span>
                   </div>
 
-                  <div className={`w-full h-2.5 rounded-full overflow-hidden p-0.5 ${isDark ? 'bg-slate-800' : 'bg-slate-100'}`}>
-                    <div
-                      className="bg-gradient-to-r from-[#6C4CF5] to-indigo-500 h-full rounded-full transition-all duration-500"
-                      style={{ width: `${percent}%` }}
-                    />
-                  </div>
+                  {/* Liquid Fill Wave Progress */}
+                  <LiquidFillProgress
+                    percentage={percent}
+                    height="h-10"
+                    isCompleted={isCompleted}
+                  />
 
-                  <div className={`flex justify-between items-center text-[10px] font-medium mt-2 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                    <span>Terkumpul: <strong className={isDark ? 'text-white' : 'text-slate-800'}>{formatCurrency(g.currentAmount, currency)}</strong></span>
-                    <span>Target: <strong className={isDark ? 'text-white' : 'text-slate-800'}>{formatCurrency(g.targetAmount, currency)}</strong></span>
+                  <div className={`flex justify-between items-center text-[10px] font-medium pt-1 ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
+                    <span>{t("Terkumpul:")} <strong className={isDark ? 'text-white' : 'text-slate-800'}><AnimatedCounter value={g.currentAmount} currency={currency} /></strong></span>
+                    <span>{t("Target:")} <strong className={isDark ? 'text-white' : 'text-slate-800'}>{formatCurrency(g.targetAmount, currency)}</strong></span>
                   </div>
                 </div>
               </div>
             );
-          })}
-        </div>
-      ) : (
-        <div className="space-y-3">
-          {wishlists.map((w) => (
-            <div key={w.id} className={`p-4 border rounded-[24px] shadow-xs flex items-center justify-between ${
-              isDark ? 'bg-[#1E293B] border-slate-800 text-white' : 'bg-white border-slate-200/80 text-slate-900'
-            }`}>
-              <div className="flex items-center space-x-3">
-                {w.imageUrl ? (
-                  <img src={w.imageUrl} alt={w.title} className="w-12 h-12 rounded-2xl object-cover border border-slate-700" />
-                ) : (
-                  <div className={`w-12 h-12 rounded-2xl flex items-center justify-center font-bold ${
-                    isDark ? 'bg-pink-500/10 text-pink-400' : 'bg-pink-50 text-pink-600'
-                  }`}>
-                    <Gift className="w-6 h-6" />
-                  </div>
-                )}
-
-                <div>
-                  <h4 className={`text-xs font-extrabold ${isDark ? 'text-white' : 'text-slate-900'}`}>{w.title}</h4>
-                  <div className="text-xs font-black text-[#6C4CF5] dark:text-[#A78BFA] mt-0.5">
-                    {formatCurrency(w.price, currency)}
-                  </div>
-                  <p className={`text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>{w.notes}</p>
-                </div>
-              </div>
-
-              <button
-                onClick={() => onDeleteWishlist(w.id)}
-                className={`p-2 rounded-xl ${isDark ? 'text-slate-500 hover:text-rose-400' : 'text-slate-300 hover:text-rose-500'}`}
-              >
-                <Trash2 className="w-4 h-4" />
-              </button>
-            </div>
-          ))}
-        </div>
-      )}
+          })
+        )}
+      </div>
     </motion.div>
   );
 };
+
+

@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { UserProfile, AppSettings } from '../../types';
-import { User, Shield, Lock, Smartphone, Moon, Sun, Globe, Download, Database, RefreshCw, Sparkles, ChevronRight, Check, Camera, Edit2, Upload, X, Languages, Image as ImageIcon } from 'lucide-react';
-import { getTranslation } from '../../utils/translations';
+import { User, Shield, Lock, Smartphone, Moon, Sun, Globe, Download, Database, RefreshCw, Sparkles, ChevronRight, Check, Camera, Edit2, Upload, X, Languages, Image as ImageIcon, Square } from 'lucide-react';
+import { getTranslation, translateText } from '../../utils/translations';
 import { getInitials } from '../../utils/formatters';
+import { getCardTextureClasses, getAccentColorConfig, getBorderRadiusClass } from '../../utils/theme';
 
 interface SettingsProfileScreenProps {
   userProfile: UserProfile;
@@ -28,6 +29,9 @@ export const SettingsProfileScreen: React.FC<SettingsProfileScreenProps> = ({
   onLogout
 }) => {
   const t = getTranslation(settings.language);
+  const cardTextureClass = getCardTextureClasses(settings?.cardTexture, isDark, settings?.liquidGlassEnabled !== false);
+  const accentConfig = getAccentColorConfig(settings?.accentColor);
+  const radiusClass = getBorderRadiusClass(settings?.borderRadius);
   const [isEditingName, setIsEditingName] = useState(false);
   const [tempName, setTempName] = useState(userProfile.name);
   const [toastMsg, setToastMsg] = useState<string | null>(null);
@@ -94,7 +98,7 @@ export const SettingsProfileScreen: React.FC<SettingsProfileScreenProps> = ({
   };
 
   return (
-    <div className="space-y-5 pb-20">
+    <div className="space-y-5 pb-56">
       {/* Hidden File Input for Gallery Upload */}
       <input
         type="file"
@@ -119,7 +123,7 @@ export const SettingsProfileScreen: React.FC<SettingsProfileScreenProps> = ({
       )}
 
       {/* User Profile Card */}
-      <div className="p-5 bg-gradient-to-br from-[#0B1220] via-[#1E1B4B] to-[#6C4CF5] text-white rounded-[28px] shadow-xl space-y-4 border border-white/10 relative overflow-hidden">
+      <div className={`p-5 bg-gradient-to-br from-[#0B1220] via-[#1E1B4B] to-[#6C4CF5] text-white ${radiusClass.card} shadow-xl space-y-4 border border-white/10 relative overflow-hidden`}>
         <div className="flex items-center space-x-4">
           {/* Avatar with Gallery Upload Overlay */}
           <div className="relative group shrink-0">
@@ -241,159 +245,285 @@ export const SettingsProfileScreen: React.FC<SettingsProfileScreenProps> = ({
       </div>
 
       {/* Preferences Section */}
-      <div className={`p-4 border rounded-[24px] shadow-xs space-y-3 ${
-        isDark ? 'bg-[#1E293B] border-slate-800 text-white' : 'bg-white border-slate-200/80 text-slate-900'
-      }`}>
-        <h3 className={`text-xs font-extrabold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-900'}`}>{t.currencyAndDisplay}</h3>
+      <div className={`p-4 ${radiusClass.card} ${cardTextureClass} space-y-3`}>
+          <h3 className={`text-xs font-extrabold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-900'}`}>{t.currencyAndDisplay}</h3>
 
-        <div className="space-y-2">
-          {/* Main Currency Selector */}
-          <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
-            <div className="flex items-center space-x-2.5">
-              <Globe className="w-4 h-4 text-[#6C4CF5] dark:text-[#A78BFA]" />
-              <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{t.mainCurrency}</span>
+          <div className="space-y-2">
+            {/* Main Currency Selector */}
+            <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
+              <div className="flex items-center space-x-2.5">
+                <Globe className="w-4 h-4 text-[#6C4CF5] dark:text-[#A78BFA]" />
+                <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{t.mainCurrency}</span>
+              </div>
+              <select
+                value={settings.currency}
+                onChange={(e) => onUpdateSettings({ ...settings, currency: e.target.value as any })}
+                className={`text-xs font-bold px-2.5 py-1 rounded-xl focus:outline-none ${
+                  isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-800'
+                }`}
+              >
+                <option value="IDR">IDR (Rupiah)</option>
+                <option value="USD">USD ($)</option>
+                <option value="EUR">EUR (€)</option>
+              </select>
             </div>
-            <select
-              value={settings.currency}
-              onChange={(e) => onUpdateSettings({ ...settings, currency: e.target.value as any })}
-              className={`text-xs font-bold px-2.5 py-1 rounded-xl focus:outline-none ${
-                isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-800'
-              }`}
-            >
-              <option value="IDR">IDR (Rupiah)</option>
-              <option value="USD">USD ($)</option>
-              <option value="EUR">EUR (€)</option>
-            </select>
-          </div>
 
-          {/* Theme Selector */}
-          <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
-            <div className="flex items-center space-x-2.5">
-              <Moon className="w-4 h-4 text-[#6C4CF5] dark:text-[#A78BFA]" />
-              <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{t.displayTheme}</span>
+            {/* Theme Selector */}
+            <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
+              <div className="flex items-center space-x-2.5">
+                <Moon className="w-4 h-4 text-[#6C4CF5] dark:text-[#A78BFA]" />
+                <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{t.displayTheme}</span>
+              </div>
+              <select
+                value={settings.theme}
+                onChange={(e) => onUpdateSettings({ ...settings, theme: e.target.value as any })}
+                className={`text-xs font-bold px-2.5 py-1 rounded-xl focus:outline-none ${
+                  isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-800'
+                }`}
+              >
+                <option value="LIGHT">{t.lightTheme}</option>
+                <option value="DARK">{t.darkTheme}</option>
+                <option value="SYSTEM">{t.systemTheme}</option>
+              </select>
             </div>
-            <select
-              value={settings.theme}
-              onChange={(e) => onUpdateSettings({ ...settings, theme: e.target.value as any })}
-              className={`text-xs font-bold px-2.5 py-1 rounded-xl focus:outline-none ${
-                isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-800'
-              }`}
-            >
-              <option value="LIGHT">{t.lightTheme}</option>
-              <option value="DARK">{t.darkTheme}</option>
-              <option value="SYSTEM">{t.systemTheme}</option>
-            </select>
-          </div>
 
-          {/* App Language Selector */}
-          <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
-            <div className="flex items-center space-x-2.5">
-              <Languages className="w-4 h-4 text-[#6C4CF5] dark:text-[#A78BFA]" />
-              <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{t.languageSetting}</span>
+            {/* Font Size & Density Control */}
+            <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
+              <div className="flex items-center space-x-2.5">
+                <Sparkles className="w-4 h-4 text-cyan-400" />
+                <div>
+                  <span className={`text-xs font-bold block ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Kepadatan Antarmuka (Density)</span>
+                  <span className="text-[10px] text-slate-400">Skala ukuran teks & margin</span>
+                </div>
+              </div>
+              <select
+                value={(settings as any).density || 'NORMAL'}
+                onChange={(e) => onUpdateSettings({ ...settings, density: e.target.value } as any)}
+                className={`text-xs font-bold px-2.5 py-1 rounded-xl focus:outline-none ${
+                  isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-800'
+                }`}
+              >
+                <option value="COMPACT">Compact (Rapat)</option>
+                <option value="NORMAL">Normal (Standar)</option>
+                <option value="SPACIOUS">Spacious (Lega)</option>
+              </select>
             </div>
-            <select
-              value={settings.language}
-              onChange={(e) => onUpdateSettings({ ...settings, language: e.target.value as any })}
-              className={`text-xs font-bold px-2.5 py-1 rounded-xl focus:outline-none ${
-                isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-800'
-              }`}
-            >
-              <option value="ID">Indonesia 🇮🇩</option>
-              <option value="EN">English 🇺🇸</option>
-              <option value="ES">Español 🇪🇸</option>
-              <option value="JA">日本語 🇯🇵</option>
-              <option value="AR">العربية 🇸🇦</option>
-              <option value="FR">Français 🇫🇷</option>
-              <option value="DE">Deutsch 🇩🇪</option>
-              <option value="ZH">简体中文 🇨🇳</option>
-              <option value="KO">한국어 🇰🇷</option>
-            </select>
+
+            {/* Card Texture Options */}
+            <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
+              <div className="flex items-center space-x-2.5">
+                <Smartphone className="w-4 h-4 text-amber-400" />
+                <div>
+                  <span className={`text-xs font-bold block ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Tekstur Kartu Tabungan</span>
+                  <span className="text-[10px] text-slate-400">Efek visual latar kartu</span>
+                </div>
+              </div>
+              <select
+                value={(settings as any).cardTexture || 'GLASS'}
+                onChange={(e) => onUpdateSettings({ ...settings, cardTexture: e.target.value } as any)}
+                className={`text-xs font-bold px-2.5 py-1 rounded-xl focus:outline-none ${
+                  isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-800'
+                }`}
+              >
+                <option value="GLASS">Glassmorphism (Mika)</option>
+                <option value="METALIK">Metalik Premium</option>
+                <option value="CARBON">Carbon Fiber</option>
+                <option value="HOLOGRAM">Hologram Pelangi</option>
+                <option value="MATTE">Matte Minimalis</option>
+              </select>
+            </div>
+
+            {/* Border Radius Control */}
+            <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
+              <div className="flex items-center space-x-2.5">
+                <Square className="w-4 h-4 text-emerald-400" />
+                <div>
+                  <span className={`text-xs font-bold block ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Kelengkungan Sudut (Rounded)</span>
+                  <span className="text-[10px] text-slate-400">Gaya sudut kartu & komponen</span>
+                </div>
+              </div>
+              <select
+                value={(settings as any).borderRadius || 'LG'}
+                onChange={(e) => onUpdateSettings({ ...settings, borderRadius: e.target.value } as any)}
+                className={`text-xs font-bold px-2.5 py-1 rounded-xl focus:outline-none ${
+                  isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-800'
+                }`}
+              >
+                <option value="NONE">Siku / Tajam (0px)</option>
+                <option value="SM">Minimal (8px)</option>
+                <option value="MD">Sedang (16px)</option>
+                <option value="LG">Lengkung (24px)</option>
+                <option value="FULL">Super Capsule (32px)</option>
+              </select>
+            </div>
+
+            {/* Dynamic Color Accent Picker */}
+            <div className={`p-2.5 rounded-xl space-y-2 ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
+              <div className="flex items-center justify-between">
+                <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>Warna Aksen Aplikasi</span>
+                <span className="text-[10px] text-indigo-400 font-extrabold uppercase">
+                  {(settings as any).accentColor || 'INDIGO'}
+                </span>
+              </div>
+              <div className="flex items-center justify-between gap-2 pt-1">
+                {[
+                  { id: 'INDIGO', bg: 'bg-[#6C4CF5]' },
+                  { id: 'EMERALD', bg: 'bg-emerald-500' },
+                  { id: 'ROSE', bg: 'bg-rose-500' },
+                  { id: 'AMBER', bg: 'bg-amber-500' },
+                  { id: 'CYAN', bg: 'bg-cyan-500' },
+                  { id: 'PURPLE', bg: 'bg-purple-500' }
+                ].map((acc) => (
+                  <button
+                    key={acc.id}
+                    onClick={() => onUpdateSettings({ ...settings, accentColor: acc.id } as any)}
+                    className={`w-7 h-7 rounded-full ${acc.bg} transition-all flex items-center justify-center ${
+                      ((settings as any).accentColor || 'INDIGO') === acc.id ? 'ring-4 ring-white/40 scale-110 shadow-lg' : 'opacity-70 hover:opacity-100'
+                    }`}
+                  >
+                    {((settings as any).accentColor || 'INDIGO') === acc.id && (
+                      <Check className="w-3.5 h-3.5 text-white" />
+                    )}
+                  </button>
+                ))}
+              </div>
+            </div>
+
+            {/* Liquid Glass Navigation Toggle */}
+            <div className={`p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'} flex items-center justify-between transition-all`}>
+              <div className="flex items-start space-x-2.5 max-w-[70%]">
+                <Smartphone className="w-4 h-4 text-indigo-400 mt-0.5 shrink-0" />
+                <div className="space-y-0.5">
+                  <span className={`text-xs font-bold block ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>
+                    {translateText('Gaya Navigasi Liquid Glass', settings.language)}
+                  </span>
+                  <p className="text-[10px] text-slate-400 leading-tight">
+                    {settings.liquidGlassEnabled !== false
+                      ? translateText('Aktifkan efek visual gel mika premium & transisi cair elastis', settings.language)
+                      : translateText('Menggunakan navigasi bawah flat standar yang simpel & hemat memori', settings.language)
+                    }
+                  </p>
+                </div>
+              </div>
+              <button
+                onClick={() => onUpdateSettings({ ...settings, liquidGlassEnabled: settings.liquidGlassEnabled === false ? true : false })}
+                className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-300 focus:outline-none ${
+                  settings.liquidGlassEnabled !== false ? 'bg-[#6C4CF5]' : 'bg-zinc-700'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform duration-300 ${
+                    settings.liquidGlassEnabled !== false ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+
+            {/* App Language Selector */}
+            <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
+              <div className="flex items-center space-x-2.5">
+                <Languages className="w-4 h-4 text-[#6C4CF5] dark:text-[#A78BFA]" />
+                <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{t.languageSetting}</span>
+              </div>
+              <select
+                value={settings.language}
+                onChange={(e) => onUpdateSettings({ ...settings, language: e.target.value as any })}
+                className={`text-xs font-bold px-2.5 py-1 rounded-xl focus:outline-none ${
+                  isDark ? 'bg-slate-800 text-white' : 'bg-slate-100 text-slate-800'
+                }`}
+              >
+                <option value="ID">Indonesia 🇮🇩</option>
+                <option value="EN">English 🇺🇸</option>
+                <option value="ES">Español 🇪🇸</option>
+                <option value="JA">日本語 🇯🇵</option>
+                <option value="AR">العربية 🇸🇦</option>
+                <option value="FR">Français 🇫🇷</option>
+                <option value="DE">Deutsch 🇩🇪</option>
+                <option value="ZH">简体中文 🇨🇳</option>
+                <option value="KO">한국어 🇰🇷</option>
+              </select>
+            </div>
           </div>
         </div>
-      </div>
 
       {/* Security Section */}
-      <div className={`p-4 border rounded-[24px] shadow-xs space-y-3 ${
-        isDark ? 'bg-[#1E293B] border-slate-800 text-white' : 'bg-white border-slate-200/80 text-slate-900'
-      }`}>
-        <h3 className={`text-xs font-extrabold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-900'}`}>{t.securitySection}</h3>
+        <div className={`p-4 ${radiusClass.card} ${cardTextureClass} space-y-3`}>
+          <h3 className={`text-xs font-extrabold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-900'}`}>{t.securitySection}</h3>
 
-        <div className="space-y-2">
-          <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
-            <div className="flex items-center space-x-2.5">
-              <Lock className="w-4 h-4 text-emerald-500" />
-              <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{t.biometricSecurity}</span>
+          <div className="space-y-2">
+            <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
+              <div className="flex items-center space-x-2.5">
+                <Lock className="w-4 h-4 text-emerald-500" />
+                <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{t.biometricSecurity}</span>
+              </div>
+              <input
+                type="checkbox"
+                checked={settings.isBiometricsEnabled}
+                onChange={(e) => onUpdateSettings({ ...settings, isBiometricsEnabled: e.target.checked })}
+                className="w-4 h-4 accent-[#6C4CF5] rounded cursor-pointer"
+              />
             </div>
-            <input
-              type="checkbox"
-              checked={settings.isBiometricsEnabled}
-              onChange={(e) => onUpdateSettings({ ...settings, isBiometricsEnabled: e.target.checked })}
-              className="w-4 h-4 accent-[#6C4CF5] rounded cursor-pointer"
-            />
-          </div>
 
-          <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
-            <div className="flex items-center space-x-2.5">
-              <Shield className="w-4 h-4 text-indigo-500" />
-              <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{t.pinSecurity}</span>
+            <div className={`flex items-center justify-between p-2.5 rounded-xl ${isDark ? 'hover:bg-slate-800' : 'hover:bg-slate-50'}`}>
+              <div className="flex items-center space-x-2.5">
+                <Shield className="w-4 h-4 text-indigo-500" />
+                <span className={`text-xs font-bold ${isDark ? 'text-slate-200' : 'text-slate-800'}`}>{t.pinSecurity}</span>
+              </div>
+              <input
+                type="checkbox"
+                checked={settings.isPinEnabled}
+                onChange={(e) => onUpdateSettings({ ...settings, isPinEnabled: e.target.checked })}
+                className="w-4 h-4 accent-[#6C4CF5] rounded cursor-pointer"
+              />
             </div>
-            <input
-              type="checkbox"
-              checked={settings.isPinEnabled}
-              onChange={(e) => onUpdateSettings({ ...settings, isPinEnabled: e.target.checked })}
-              className="w-4 h-4 accent-[#6C4CF5] rounded cursor-pointer"
-            />
           </div>
         </div>
-      </div>
 
       {/* Data Export & Backup */}
-      <div className={`p-4 border rounded-[24px] shadow-xs space-y-3 ${
-        isDark ? 'bg-[#1E293B] border-slate-800 text-white' : 'bg-white border-slate-200/80 text-slate-900'
-      }`}>
-        <h3 className={`text-xs font-extrabold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-900'}`}>{t.dataBackup}</h3>
+        <div className={`p-4 ${radiusClass.card} ${cardTextureClass} space-y-3`}>
+          <h3 className={`text-xs font-extrabold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-900'}`}>{t.dataBackup}</h3>
 
-        <div className="grid grid-cols-2 gap-2">
+          <div className="grid grid-cols-2 gap-2">
+            <button
+              onClick={onExportBackup}
+              className={`p-3 rounded-2xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-colors ${
+                isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+              }`}
+            >
+              <Download className="w-4 h-4 text-[#6C4CF5] dark:text-[#A78BFA]" />
+              <span>Export Backup JSON</span>
+            </button>
+
+            <button
+              onClick={onExportCsv}
+              className={`p-3 rounded-2xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-colors ${
+                isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+              }`}
+            >
+              <Database className="w-4 h-4 text-emerald-500" />
+              <span>Export Laporan CSV</span>
+            </button>
+          </div>
+
           <button
-            onClick={onExportBackup}
-            className={`p-3 rounded-2xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-colors ${
-              isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
+            onClick={onResetData}
+            className={`w-full py-2.5 text-rose-500 text-xs font-bold rounded-2xl transition-colors flex items-center justify-center space-x-1.5 border ${
+              isDark ? 'bg-rose-500/10 border-rose-500/20 hover:bg-rose-500/20' : 'bg-rose-50 border-rose-200/60 hover:bg-rose-100'
             }`}
           >
-            <Download className="w-4 h-4 text-[#6C4CF5] dark:text-[#A78BFA]" />
-            <span>Export Backup JSON</span>
+            <RefreshCw className="w-3.5 h-3.5" />
+            <span>{t.resetAllData}</span>
           </button>
 
-          <button
-            onClick={onExportCsv}
-            className={`p-3 rounded-2xl text-xs font-bold flex items-center justify-center space-x-1.5 transition-colors ${
-              isDark ? 'bg-slate-800 hover:bg-slate-700 text-slate-200' : 'bg-slate-100 hover:bg-slate-200 text-slate-800'
-            }`}
-          >
-            <Database className="w-4 h-4 text-emerald-500" />
-            <span>Export Laporan CSV</span>
-          </button>
+          {onLogout && (
+            <button
+              onClick={onLogout}
+              className="w-full py-3 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white text-xs font-black rounded-2xl shadow-lg shadow-rose-600/30 transition-all flex items-center justify-center space-x-2 border border-rose-400/30"
+            >
+              <span>{t.logoutFirebase}</span>
+            </button>
+          )}
         </div>
-
-        <button
-          onClick={onResetData}
-          className={`w-full py-2.5 text-rose-500 text-xs font-bold rounded-2xl transition-colors flex items-center justify-center space-x-1.5 border ${
-            isDark ? 'bg-rose-500/10 border-rose-500/20 hover:bg-rose-500/20' : 'bg-rose-50 border-rose-200/60 hover:bg-rose-100'
-          }`}
-        >
-          <RefreshCw className="w-3.5 h-3.5" />
-          <span>{t.resetAllData}</span>
-        </button>
-
-        {onLogout && (
-          <button
-            onClick={onLogout}
-            className="w-full py-3 bg-gradient-to-r from-rose-600 to-rose-700 hover:from-rose-500 hover:to-rose-600 text-white text-xs font-black rounded-2xl shadow-lg shadow-rose-600/30 transition-all flex items-center justify-center space-x-2 border border-rose-400/30"
-          >
-            <span>{t.logoutFirebase}</span>
-          </button>
-        )}
-      </div>
     </div>
   );
 };

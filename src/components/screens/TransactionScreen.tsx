@@ -1,16 +1,17 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { Transaction, Category, SavingsAccount } from '../../types';
+import { Transaction, Category, SavingsAccount, Goal } from '../../types';
 import { formatCurrency, formatNumberInput, parseNumberInput } from '../../utils/formatters';
 import {
-  Plus, Search, ArrowUpRight, ArrowDownRight, Repeat, Trash2, RotateCcw, Filter, Calendar as CalendarIcon, Tag, CreditCard, Sparkles, CheckCircle2
+  Plus, Search, ArrowUpRight, ArrowDownRight, Repeat, Trash2, RotateCcw, Filter, Calendar as CalendarIcon, Tag, Sparkles, CheckCircle2
 } from 'lucide-react';
 import { translateText } from '../../utils/translations';
 
 interface TransactionScreenProps {
   transactions: Transaction[];
   categories: Category[];
-  accounts: SavingsAccount[];
+  accounts?: SavingsAccount[];
+  goals?: Goal[];
   currency: 'IDR' | 'USD' | 'EUR';
   isDark?: boolean;
   language?: string;
@@ -23,43 +24,45 @@ interface TransactionScreenProps {
 export const TransactionScreen: React.FC<TransactionScreenProps> = ({
   transactions,
   categories,
-  accounts,
+  accounts = [],
+  goals = [],
   currency,
   isDark = false,
   language = 'ID',
   onAddTransaction,
   onSoftDeleteTransaction,
   onRestoreTransaction,
-  onNavigateToSavings
 }) => {
   const [activeTab, setActiveTab] = useState<'ALL' | 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'TRASH'>('ALL');
-  const [dateFilter, setDateFilter] = useState<'ALL' | 'TODAY' | 'WEEK' | 'MONTH'>('ALL');
   const [searchQuery, setSearchQuery] = useState('');
   const [isAdding, setIsAdding] = useState(false);
+
+  // Default target choices
+  const defaultTargetOptions = goals.length > 0
+    ? goals.map(g => ({ id: g.id, name: g.name }))
+    : [{ id: 'tab_utama', name: 'Tabungan Utama' }];
 
   // Form states
   const [title, setTitle] = useState('');
   const [amount, setAmount] = useState('');
-  const [txType, setTxType] = useState<'INCOME' | 'EXPENSE' | 'TRANSFER'>('EXPENSE');
+  const [txType, setTxType] = useState<'INCOME' | 'EXPENSE' | 'TRANSFER'>('INCOME');
   const [selectedCategory, setSelectedCategory] = useState(categories[0]?.id || '');
-  const [selectedAccount, setSelectedAccount] = useState(accounts[0]?.id || '');
-  const [targetAccount, setTargetAccount] = useState(accounts[1]?.id || accounts[0]?.id || '');
+  const [selectedTabungan, setSelectedTabungan] = useState(defaultTargetOptions[0]?.id || 'tab_utama');
+  const [targetTabungan, setTargetTabungan] = useState(defaultTargetOptions[1]?.id || defaultTargetOptions[0]?.id || 'tab_utama');
   const [notes, setNotes] = useState('');
 
-  // Automatically sync dropdowns with accounts/categories when isAdding becomes true
+  // Automatically sync dropdowns when opening add transaction form
   React.useEffect(() => {
     if (isAdding) {
-      if (accounts.length > 0) {
-        setSelectedAccount(accounts[0].id);
-        setTargetAccount(accounts[1]?.id || accounts[0].id);
+      if (defaultTargetOptions.length > 0) {
+        setSelectedTabungan(defaultTargetOptions[0].id);
+        setTargetTabungan(defaultTargetOptions[1]?.id || defaultTargetOptions[0].id);
       }
       if (categories.length > 0) {
         setSelectedCategory(categories[0].id);
       }
     }
   }, [isAdding]);
-
-  const todayStr = new Date().toISOString().slice(0, 10);
 
   const t = (text: string) => translateText(text, language);
 
@@ -92,19 +95,20 @@ export const TransactionScreen: React.FC<TransactionScreenProps> = ({
 
     const newTx: Transaction = {
       id: `tx_${Date.now()}`,
-      title: title.trim(),
+      title: title.trim() || (txType === 'INCOME' ? 'Setor Tabungan' : txType === 'EXPENSE' ? 'Tarik Tabungan' : 'Transfer Tabungan'),
       amount: numAmount,
       type: txType,
       categoryId: txType === 'TRANSFER' ? 'transfer' : selectedCategory,
-      accountId: selectedAccount,
-      targetAccountId: txType === 'TRANSFER' ? targetAccount : undefined,
-      date: todayStr,
-      time: new Date().toLocaleTimeString('id-ID', { hour: '2-digit', minute: '2-digit' }),
-      notes: notes.trim(),
-      isDeleted: false
+      accountId: selectedTabungan,
+      targetAccountId: txType === 'TRANSFER' ? targetTabungan : undefined,
+      date: new Date().toISOString().slice(0, 10),
+      time: new Date().toTimeString().slice(0, 5),
+      notes: notes.trim()
     };
 
     onAddTransaction(newTx);
+
+    // Reset Form
     setTitle('');
     setAmount('');
     setNotes('');
@@ -116,7 +120,7 @@ export const TransactionScreen: React.FC<TransactionScreenProps> = ({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
-      className="space-y-5 pb-20 select-none"
+      className="space-y-5 pb-56 select-none"
     >
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -218,178 +222,149 @@ export const TransactionScreen: React.FC<TransactionScreenProps> = ({
             </button>
           </div>
 
-          {accounts.length === 0 ? (
-            <div className="py-6 text-center space-y-4">
-              <div className="mx-auto w-12 h-12 rounded-2xl bg-amber-500/15 flex items-center justify-center border border-amber-500/25">
-                <CreditCard className="w-6 h-6 text-amber-500 animate-pulse" />
-              </div>
-              <div className="space-y-1 max-w-xs mx-auto">
-                <h4 className={`text-xs font-bold ${isDark ? 'text-amber-400' : 'text-amber-600'}`}>{t("Belum Ada Rekening Aktif")}</h4>
-                <p className={`text-[11px] leading-relaxed ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                  {t("Silakan buat rekening atau dompet terlebih dahulu di menu Rekening sebelum mencatatkan transaksi.")}
-                </p>
-              </div>
-              {onNavigateToSavings && (
-                <button
-                  type="button"
-                  onClick={() => {
-                    setIsAdding(false);
-                    onNavigateToSavings();
-                  }}
-                  className="px-4 py-2 bg-[#6C4CF5] hover:bg-indigo-700 text-white text-[11px] font-bold rounded-xl shadow-md transition-all active:scale-95 inline-flex items-center space-x-1"
-                >
-                  <span>{t("Tambah Rekening Sekarang")}</span>
-                </button>
-              )}
-            </div>
-          ) : (
-            <>
-              {/* Type Selector */}
-              <div className={`grid grid-cols-3 gap-1 p-1 rounded-2xl ${isDark ? 'bg-slate-800/80 border border-slate-700/50' : 'bg-slate-100'}`}>
-                <button
-                  type="button"
-                  onClick={() => setTxType('EXPENSE')}
-                  className={`py-2 px-1 text-[11px] font-bold rounded-xl transition-all truncate text-center ${
-                    txType === 'EXPENSE' ? 'bg-rose-600 text-white shadow-md' : isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {t("Keluar")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTxType('INCOME')}
-                  className={`py-2 px-1 text-[11px] font-bold rounded-xl transition-all truncate text-center ${
-                    txType === 'INCOME' ? 'bg-emerald-600 text-white shadow-md' : isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {t("Masuk")}
-                </button>
-                <button
-                  type="button"
-                  onClick={() => setTxType('TRANSFER')}
-                  className={`py-2 px-1 text-[11px] font-bold rounded-xl transition-all truncate text-center ${
-                    txType === 'TRANSFER' ? 'bg-[#6C4CF5] text-white shadow-md' : isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
-                  }`}
-                >
-                  {t("Transfer")}
-                </button>
-              </div>
+          {/* Type Selector */}
+          <div className={`grid grid-cols-3 gap-1 p-1 rounded-2xl ${isDark ? 'bg-slate-800/80 border border-slate-700/50' : 'bg-slate-100'}`}>
+            <button
+              type="button"
+              onClick={() => setTxType('INCOME')}
+              className={`py-2 px-1 text-[11px] font-bold rounded-xl transition-all truncate text-center ${
+                txType === 'INCOME' ? 'bg-emerald-600 text-white shadow-md' : isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              {t("Setor (+)")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setTxType('EXPENSE')}
+              className={`py-2 px-1 text-[11px] font-bold rounded-xl transition-all truncate text-center ${
+                txType === 'EXPENSE' ? 'bg-rose-600 text-white shadow-md' : isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              {t("Tarik (-)")}
+            </button>
+            <button
+              type="button"
+              onClick={() => setTxType('TRANSFER')}
+              className={`py-2 px-1 text-[11px] font-bold rounded-xl transition-all truncate text-center ${
+                txType === 'TRANSFER' ? 'bg-[#6C4CF5] text-white shadow-md' : isDark ? 'text-slate-300 hover:text-white' : 'text-slate-600 hover:text-slate-900'
+              }`}
+            >
+              {t("Transfer")}
+            </button>
+          </div>
 
-              {/* Amount Input with Quick Buttons */}
-              <div className="space-y-1.5">
-                <label className={`block text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
-                  {t("Nominal")}
-                </label>
-                <div className="relative">
-                  <span className={`absolute left-3.5 top-3 text-xs font-bold ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Rp</span>
-                  <input
-                    type="text"
-                    value={formatNumberInput(amount)}
-                    onChange={(e) => setAmount(parseNumberInput(e.target.value).toString())}
-                    placeholder="0"
-                    className={`w-full pl-10 pr-4 py-3 border rounded-2xl text-base font-extrabold focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] font-mono ${
-                      isDark ? 'bg-slate-800/90 border-slate-700 text-white placeholder-slate-600' : 'bg-slate-50 border-slate-200 text-slate-900'
-                    }`}
-                    required
-                  />
-                </div>
-                {/* Quick amount chips */}
-                <div className="flex gap-1.5 pt-1 overflow-x-auto pb-1">
-                  {[50000, 100000, 250000, 500000, 1000000].map((val) => (
-                    <button
-                      key={val}
-                      type="button"
-                      onClick={() => setAmount(val.toString())}
-                      className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border transition-all whitespace-nowrap ${
-                        isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'
-                      }`}
-                    >
-                      +{val >= 1000000 ? `${val / 1000000}jt` : `${val / 1000}rb`}
-                    </button>
+          {/* Amount Input with Quick Buttons */}
+          <div className="space-y-1.5">
+            <label className={`block text-[11px] font-bold uppercase tracking-wider ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>
+              {t("Nominal")}
+            </label>
+            <div className="relative">
+              <span className={`absolute left-3.5 top-3 text-xs font-bold ${isDark ? 'text-slate-500' : 'text-slate-400'}`}>Rp</span>
+              <input
+                type="text"
+                value={formatNumberInput(amount)}
+                onChange={(e) => setAmount(parseNumberInput(e.target.value).toString())}
+                placeholder="0"
+                className={`w-full pl-10 pr-4 py-3 border rounded-2xl text-base font-extrabold focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] font-mono ${
+                  isDark ? 'bg-slate-800/90 border-slate-700 text-white placeholder-slate-600' : 'bg-slate-50 border-slate-200 text-slate-900'
+                }`}
+                required
+              />
+            </div>
+            {/* Quick amount chips */}
+            <div className="flex gap-1.5 pt-1 overflow-x-auto pb-1">
+              {[50000, 100000, 250000, 500000, 1000000].map((val) => (
+                <button
+                  key={val}
+                  type="button"
+                  onClick={() => setAmount(val.toString())}
+                  className={`px-2.5 py-1 text-[10px] font-bold rounded-lg border transition-all whitespace-nowrap ${
+                    isDark ? 'bg-slate-800 border-slate-700 text-slate-300 hover:bg-slate-700' : 'bg-white border-slate-200 text-slate-600 hover:bg-slate-100'
+                  }`}
+                >
+                  +{val >= 1000000 ? `${val / 1000000}jt` : `${val / 1000}rb`}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <label className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Judul Transaksi")}</label>
+            <input
+              type="text"
+              value={title}
+              onChange={(e) => setTitle(e.target.value)}
+              placeholder={t("Contoh: Setor Tabungan Bulanan, Beli Barang")}
+              className={`w-full px-3.5 py-2.5 border rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] ${
+                isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900'
+              }`}
+            />
+          </div>
+
+          {txType === 'TRANSFER' ? (
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Pilih Tabungan Asal")}</label>
+                <select
+                  value={selectedTabungan}
+                  onChange={(e) => setSelectedTabungan(e.target.value)}
+                  className={`w-full px-3 py-2.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] ${
+                    isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
+                  }`}
+                >
+                  {defaultTargetOptions.map(item => (
+                    <option key={item.id} value={item.id}>{item.name}</option>
                   ))}
-                </div>
+                </select>
               </div>
 
               <div>
-                <label className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Judul Transaksi")}</label>
-                <input
-                  type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder={t("Contoh: Makan Siang, Gaji Bulanan, Bensin")}
-                  className={`w-full px-3.5 py-2.5 border rounded-xl text-xs font-medium focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] ${
-                    isDark ? 'bg-slate-800 border-slate-700 text-white placeholder-slate-500' : 'bg-slate-50 border-slate-200 text-slate-900'
+                <label className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Tabungan Tujuan")}</label>
+                <select
+                  value={targetTabungan}
+                  onChange={(e) => setTargetTabungan(e.target.value)}
+                  className={`w-full px-3 py-2.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] ${
+                    isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                   }`}
-                  required
-                />
-              </div>
-
-              <div className="grid grid-cols-2 gap-3">
-                <div>
-                  <label className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Sumber Rekening")}</label>
-                  <select
-                    value={selectedAccount}
-                    onChange={(e) => setSelectedAccount(e.target.value)}
-                    className={`w-full px-3 py-2.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] ${
-                      isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
-                    }`}
-                  >
-                    {accounts.map(a => (
-                      <option key={a.id} value={a.id}>{a.name}</option>
-                    ))}
-                  </select>
-                </div>
-
-                {txType === 'TRANSFER' ? (
-                  <div>
-                    <label className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Rekening Tujuan")}</label>
-                    <select
-                      value={targetAccount}
-                      onChange={(e) => setTargetAccount(e.target.value)}
-                      className={`w-full px-3 py-2.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] ${
-                        isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
-                      }`}
-                    >
-                      {accounts.map(a => (
-                        <option key={a.id} value={a.id}>{a.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                ) : (
-                  <div>
-                    <label className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Kategori")}</label>
-                    <select
-                      value={selectedCategory}
-                      onChange={(e) => setSelectedCategory(e.target.value)}
-                      className={`w-full px-3 py-2.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] ${
-                        isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
-                      }`}
-                    >
-                      {categories.map(c => (
-                        <option key={c.id} value={c.id}>{c.name}</option>
-                      ))}
-                    </select>
-                  </div>
-                )}
-              </div>
-
-              <div className="flex items-center justify-end space-x-2 pt-2">
-                <button
-                  type="button"
-                  onClick={() => setIsAdding(false)}
-                  className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-colors ${isDark ? 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700' : 'text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200'}`}
                 >
-                  {t("Batal")}
-                </button>
-                <button
-                  type="submit"
-                  className="px-5 py-2.5 bg-[#6C4CF5] text-white text-xs font-extrabold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-500/25 transition-all"
-                >
-                  {t("Simpan Transaksi")}
-                </button>
+                  {defaultTargetOptions.map(item => (
+                    <option key={item.id} value={item.id}>{item.name}</option>
+                  ))}
+                </select>
               </div>
-            </>
+            </div>
+          ) : (
+            <div>
+              <label className={`block text-[11px] font-bold uppercase tracking-wider mb-1 ${isDark ? 'text-slate-300' : 'text-slate-700'}`}>{t("Pilih Tabungan")}</label>
+              <select
+                value={selectedTabungan}
+                onChange={(e) => setSelectedTabungan(e.target.value)}
+                className={`w-full px-3 py-2.5 border rounded-xl text-xs font-semibold focus:outline-none focus:ring-2 focus:ring-[#6C4CF5] ${
+                  isDark ? 'bg-slate-800 border-slate-700 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
+                }`}
+              >
+                {defaultTargetOptions.map(item => (
+                  <option key={item.id} value={item.id}>{item.name}</option>
+                ))}
+              </select>
+            </div>
           )}
+
+          <div className="flex items-center justify-end space-x-2 pt-2">
+            <button
+              type="button"
+              onClick={() => setIsAdding(false)}
+              className={`px-4 py-2.5 text-xs font-bold rounded-xl transition-colors ${isDark ? 'text-slate-400 hover:text-white bg-slate-800 hover:bg-slate-700' : 'text-slate-600 hover:text-slate-900 bg-slate-100 hover:bg-slate-200'}`}
+            >
+              {t("Batal")}
+            </button>
+            <button
+              type="submit"
+              className="px-5 py-2.5 bg-[#6C4CF5] text-white text-xs font-extrabold rounded-xl hover:bg-indigo-700 shadow-lg shadow-indigo-500/25 transition-all"
+            >
+              {t("Simpan Transaksi")}
+            </button>
+          </div>
         </motion.form>
       )}
 
@@ -404,6 +379,8 @@ export const TransactionScreen: React.FC<TransactionScreenProps> = ({
         ) : (
           filteredTransactions.map((tx) => {
             const acc = accounts.find(a => a.id === tx.accountId);
+            const goalMatch = goals.find(g => g.id === tx.accountId);
+            const accountLabel = acc?.name || goalMatch?.name || 'Tabungan Utama';
             const cat = categories.find(c => c.id === tx.categoryId);
 
             return (
@@ -425,7 +402,7 @@ export const TransactionScreen: React.FC<TransactionScreenProps> = ({
                   <div className="min-w-0">
                     <h4 className={`text-xs font-extrabold truncate ${isDark ? 'text-white' : 'text-slate-900'}`}>{tx.title}</h4>
                     <div className={`flex items-center gap-1.5 text-[10px] ${isDark ? 'text-slate-400' : 'text-slate-500'}`}>
-                      <span className={`font-semibold truncate max-w-[80px] inline-block ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{acc?.name || 'Utama'}</span>
+                      <span className={`font-semibold truncate max-w-[80px] inline-block ${isDark ? 'text-slate-300' : 'text-slate-600'}`}>{accountLabel}</span>
                       <span>•</span>
                       <span className="shrink-0">{tx.date}</span>
                     </div>

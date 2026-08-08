@@ -7,9 +7,15 @@ interface ToolsScreenProps {
   onNavigateTool: (tool: 'aiAdvisor' | 'recurring' | 'debt' | 'export' | 'splitBill') => void;
   isDark: boolean;
   language?: string;
+  liquidGlassEnabled?: boolean;
 }
 
-export const ToolsScreen: React.FC<ToolsScreenProps> = ({ onNavigateTool, isDark, language = 'ID' }) => {
+export const ToolsScreen: React.FC<ToolsScreenProps> = ({ 
+  onNavigateTool, 
+  isDark, 
+  language = 'ID',
+  liquidGlassEnabled = true 
+}) => {
   const t = (text: string) => translateText(text, language);
 
   const tools = [
@@ -60,7 +66,7 @@ export const ToolsScreen: React.FC<ToolsScreenProps> = ({ onNavigateTool, isDark
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
-      className="space-y-5 pb-20 select-none"
+      className="space-y-5 pb-56 select-none"
     >
       {/* Header */}
       <div>
@@ -77,14 +83,28 @@ export const ToolsScreen: React.FC<ToolsScreenProps> = ({ onNavigateTool, isDark
           return (
             <motion.div
               key={item.id}
-              whileHover={{ scale: 1.01 }}
-              whileTap={{ scale: 0.99 }}
+              whileHover={{ scale: 1.02, y: -2 }}
+              whileTap={{ scale: 0.98 }}
               onClick={() => onNavigateTool(item.id as any)}
-              className={`p-4 rounded-2xl border cursor-pointer flex items-center justify-between transition-all ${
-                isDark ? 'bg-[#14182E] border-slate-800 hover:border-indigo-500/50' : 'bg-white border-slate-200 hover:border-indigo-500/50 shadow-xs'
+              className={`relative p-4 rounded-2xl border cursor-pointer flex items-center justify-between transition-all duration-300 overflow-hidden ${
+                liquidGlassEnabled
+                  ? (isDark 
+                      ? 'backdrop-blur-md bg-gradient-to-b from-white/15 via-slate-950/75 to-black/85 border-white/20 hover:border-white/40 shadow-[0_18px_40px_rgba(0,0,0,0.7),inset_0_1.5px_1.5px_rgba(255,255,255,0.3)] transform-gpu' 
+                      : 'backdrop-blur-md bg-gradient-to-b from-white/95 via-white/85 to-slate-100/80 border-white/90 hover:border-indigo-400 shadow-[0_15px_35px_rgba(108,76,245,0.12),inset_0_1.5px_2px_rgba(255,255,255,0.95)] transform-gpu')
+                  : (isDark
+                      ? 'bg-slate-900 border border-slate-800 hover:border-slate-700 shadow-md'
+                      : 'bg-white border border-slate-200 hover:border-slate-300 shadow-sm')
               }`}
             >
-              <div className="flex items-center space-x-3.5">
+              {/* iOS 18 Specular Reflection Top Glare */}
+              {liquidGlassEnabled && (
+                <>
+                  <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/60 to-transparent pointer-events-none z-10" />
+                  <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none rounded-t-2xl" />
+                </>
+              )}
+
+              <div className="flex items-center space-x-3.5 relative z-20">
                 <div className={`w-12 h-12 rounded-2xl bg-gradient-to-tr ${item.color} flex items-center justify-center text-white shadow-lg`}>
                   <Icon className="w-6 h-6" />
                 </div>

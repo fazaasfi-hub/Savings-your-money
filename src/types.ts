@@ -91,6 +91,11 @@ export interface AppSettings {
   currency: 'IDR' | 'USD' | 'EUR';
   dateFormat: 'DD/MM/YYYY' | 'YYYY-MM-DD' | 'MM/DD/YYYY';
   autoBackup: boolean;
+  density?: 'COMPACT' | 'NORMAL' | 'SPACIOUS';
+  cardTexture?: 'GLASS' | 'METALIK' | 'CARBON' | 'HOLOGRAM' | 'MATTE';
+  accentColor?: 'INDIGO' | 'EMERALD' | 'ROSE' | 'AMBER' | 'CYAN' | 'PURPLE';
+  borderRadius?: 'NONE' | 'SM' | 'MD' | 'LG' | 'FULL';
+  liquidGlassEnabled?: boolean;
 }
 
 export interface AppNotification {

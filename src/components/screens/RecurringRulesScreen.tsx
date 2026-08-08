@@ -3,6 +3,7 @@ import { motion } from 'motion/react';
 import { SavingsAccount } from '../../types';
 import { formatCurrency } from '../../utils/formatters';
 import { Repeat, Plus, CheckCircle2, Clock, Trash2, ShieldCheck, Zap } from 'lucide-react';
+import { translateText } from '../../utils/translations';
 
 interface RecurringRule {
   id: string;
@@ -18,13 +19,17 @@ interface RecurringRulesScreenProps {
   accounts: SavingsAccount[];
   currency: 'IDR' | 'USD' | 'EUR';
   isDark: boolean;
+  language?: string;
 }
 
 export const RecurringRulesScreen: React.FC<RecurringRulesScreenProps> = ({
   accounts,
   currency,
   isDark,
+  language,
 }) => {
+  const t = (text: string) => translateText(text, language);
+
   const [rules, setRules] = useState<RecurringRule[]>([
     {
       id: 'rec_1',
@@ -90,16 +95,16 @@ export const RecurringRulesScreen: React.FC<RecurringRulesScreenProps> = ({
       <div className="flex items-center justify-between">
         <div>
           <h1 className={`text-lg font-black tracking-tight ${isDark ? 'text-white' : 'text-slate-900'}`}>
-            Auto-Save & Tagihan Otomatis ⚡
+            {t("Auto-Save & Tagihan Otomatis ⚡")}
           </h1>
-          <p className="text-xs text-slate-400">Jadwalkan transfer rutin & pembayaran tagihan tanpa lupa</p>
+          <p className="text-xs text-slate-400">{t("Jadwalkan transfer rutin & pembayaran tagihan tanpa lupa")}</p>
         </div>
         <button
           onClick={() => setIsAdding(!isAdding)}
           className="px-3 py-1.5 bg-[#6C4CF5] hover:bg-indigo-700 text-white text-xs font-bold rounded-xl shadow-md flex items-center gap-1 transition-all shrink-0"
         >
           <Plus className="w-4 h-4" />
-          <span>Tambah Jadwal</span>
+          <span>{t("Tambah Jadwal")}</span>
         </button>
       </div>
 
@@ -111,14 +116,14 @@ export const RecurringRulesScreen: React.FC<RecurringRulesScreenProps> = ({
           onSubmit={handleAddRule}
           className={`p-4 rounded-2xl border space-y-3 ${isDark ? 'bg-[#14182E] border-slate-800' : 'bg-white border-slate-200'}`}
         >
-          <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>Buat Aturan Otomatis Baru</h3>
+          <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{t("Buat Aturan Otomatis Baru")}</h3>
           <div>
-            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Nama Aturan / Tagihan</label>
+            <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t("Nama Aturan / Tagihan")}</label>
             <input
               type="text"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              placeholder="Contoh: Nabung Rutin / Bayar Wifi"
+              placeholder={t("Contoh: Nabung Rutin / Bayar Wifi")}
               className={`w-full px-3 py-2 text-xs rounded-xl border outline-none ${
                 isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
               }`}
@@ -128,7 +133,7 @@ export const RecurringRulesScreen: React.FC<RecurringRulesScreenProps> = ({
 
           <div className="grid grid-cols-2 gap-2">
             <div>
-              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Nominal (Rp)</label>
+              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t("Nominal (Rp)")}</label>
               <input
                 type="number"
                 value={amount}
@@ -141,7 +146,7 @@ export const RecurringRulesScreen: React.FC<RecurringRulesScreenProps> = ({
               />
             </div>
             <div>
-              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">Frekuensi</label>
+              <label className="text-[10px] uppercase font-bold text-slate-400 block mb-1">{t("Frekuensi")}</label>
               <select
                 value={frequency}
                 onChange={(e: any) => setFrequency(e.target.value)}
@@ -149,9 +154,9 @@ export const RecurringRulesScreen: React.FC<RecurringRulesScreenProps> = ({
                   isDark ? 'bg-slate-900 border-slate-800 text-white' : 'bg-slate-50 border-slate-200 text-slate-900'
                 }`}
               >
-                <option value="DAILY">Harian</option>
-                <option value="WEEKLY">Mingguan</option>
-                <option value="MONTHLY">Bulanan</option>
+                <option value="DAILY">{t("Harian")}</option>
+                <option value="WEEKLY">{t("Mingguan")}</option>
+                <option value="MONTHLY">{t("Bulanan")}</option>
               </select>
             </div>
           </div>
@@ -162,13 +167,13 @@ export const RecurringRulesScreen: React.FC<RecurringRulesScreenProps> = ({
               onClick={() => setIsAdding(false)}
               className="px-3 py-1.5 rounded-xl text-xs font-semibold text-slate-400 hover:bg-slate-800"
             >
-              Batal
+              {t("Batal")}
             </button>
             <button
               type="submit"
               className="px-4 py-1.5 bg-[#6C4CF5] text-white text-xs font-bold rounded-xl shadow-md"
             >
-              Simpan Jadwal
+              {t("Simpan Jadwal")}
             </button>
           </div>
         </motion.form>
@@ -179,7 +184,7 @@ export const RecurringRulesScreen: React.FC<RecurringRulesScreenProps> = ({
         {rules.length === 0 ? (
           <div className={`p-8 rounded-2xl border text-center ${isDark ? 'bg-[#14182E] border-slate-800 text-slate-400' : 'bg-white border-slate-200 text-slate-500'}`}>
             <Repeat className="w-8 h-8 mx-auto text-indigo-400 mb-2 opacity-60" />
-            <p className="text-xs">Belum ada aturan otomatis yang dibuat.</p>
+            <p className="text-xs">{t("Belum ada aturan otomatis yang dibuat.")}</p>
           </div>
         ) : (
           rules.map(rule => (
@@ -198,10 +203,10 @@ export const RecurringRulesScreen: React.FC<RecurringRulesScreenProps> = ({
                 <div>
                   <h3 className={`text-xs font-bold ${isDark ? 'text-white' : 'text-slate-900'}`}>{rule.title}</h3>
                   <div className="text-[11px] font-mono font-semibold text-[#6C4CF5] mt-0.5">
-                    {formatCurrency(rule.amount, currency)} <span className="text-[10px] text-slate-400 font-normal">/ {rule.frequency === 'MONTHLY' ? 'Bulan' : rule.frequency === 'WEEKLY' ? 'Minggu' : 'Hari'}</span>
+                    {formatCurrency(rule.amount, currency)} <span className="text-[10px] text-slate-400 font-normal">/ {rule.frequency === 'MONTHLY' ? t('Bulan') : rule.frequency === 'WEEKLY' ? t('Minggu') : t('Hari')}</span>
                   </div>
                   <span className="text-[10px] text-slate-400 flex items-center gap-1 mt-0.5">
-                    <Clock className="w-3 h-3" /> Eksekusi berikutnya: {rule.nextDate}
+                    <Clock className="w-3 h-3" /> {t("Eksekusi berikutnya:")} {rule.nextDate}
                   </span>
                 </div>
               </div>

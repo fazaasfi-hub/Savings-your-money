@@ -143,10 +143,8 @@ export const PhoneSimulator: React.FC<PhoneSimulatorProps> = (props) => {
   const unreadNotifCount = notifications.filter(n => !n.isRead).length;
 
   const handleOpenQuickAction = (action: 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'TARGET' | 'SCAN_QR') => {
-    if (action === 'TARGET') {
+    if (action === 'TARGET' || action === 'TRANSFER') {
       setCurrentScreen('wishlist');
-    } else if (action === 'TRANSFER') {
-      setCurrentScreen('savings');
     } else if (action === 'SCAN_QR') {
       setIsScanQrOpen(true);
     } else {
@@ -370,6 +368,7 @@ export const PhoneSimulator: React.FC<PhoneSimulatorProps> = (props) => {
                     transactions={props.transactions}
                     categories={props.categories}
                     accounts={props.accounts}
+                    goals={props.goals}
                     currency={props.settings.currency}
                     isDark={isDark}
                     onAddTransaction={props.onAddTransaction}
@@ -408,13 +407,10 @@ export const PhoneSimulator: React.FC<PhoneSimulatorProps> = (props) => {
                 {currentScreen === 'wishlist' && (
                   <WishlistGoalScreen
                     goals={props.goals}
-                    wishlists={props.wishlists}
                     currency={props.settings.currency}
                     isDark={isDark}
                     onAddGoal={props.onAddGoal}
                     onDepositGoal={props.onDepositGoal}
-                    onAddWishlist={props.onAddWishlist}
-                    onDeleteWishlist={props.onDeleteWishlist}
                   />
                 )}
 
@@ -455,6 +451,8 @@ export const PhoneSimulator: React.FC<PhoneSimulatorProps> = (props) => {
                   <ToolsScreen
                     onNavigateTool={(tool) => setCurrentScreen(tool)}
                     isDark={isDark}
+                    language={props.settings.language}
+                    liquidGlassEnabled={props.settings.liquidGlassEnabled !== false}
                   />
                 )}
 
@@ -522,24 +520,6 @@ export const PhoneSimulator: React.FC<PhoneSimulatorProps> = (props) => {
                   )}
                   <LayoutDashboard className="w-4 h-4 shrink-0" />
                   <span className="text-[9px] font-semibold mt-0.5 truncate w-full text-center">Beranda</span>
-                </button>
-
-                <button
-                  onClick={() => setCurrentScreen('savings')}
-                  className={`flex-1 min-w-0 px-0.5 py-1 rounded-xl flex flex-col items-center justify-center transition-all relative ${
-                    currentScreen === 'savings' ? 'text-white font-bold' : 'text-zinc-400 hover:text-zinc-200'
-                  }`}
-                  title="Rekening"
-                >
-                  {currentScreen === 'savings' && (
-                    <motion.div
-                      layoutId="activeDockIndicator"
-                      className="absolute inset-0 bg-indigo-600 rounded-xl -z-10"
-                      transition={{ type: "spring", stiffness: 400, damping: 30 }}
-                    />
-                  )}
-                  <Wallet className="w-4 h-4 shrink-0" />
-                  <span className="text-[9px] font-semibold mt-0.5 truncate w-full text-center">Rekening</span>
                 </button>
 
                 <button

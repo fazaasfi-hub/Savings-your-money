@@ -1,15 +1,17 @@
 import React, { useState } from 'react';
 import { motion } from 'motion/react';
-import { SavingsAccount } from '../../types';
+import { SavingsAccount, AppSettings } from '../../types';
 import { formatCurrency, formatNumberInput, parseNumberInput } from '../../utils/formatters';
 import { Wallet, Plus, Trash2, Repeat, ShieldCheck, Palmtree, Laptop, Sparkles, ArrowRightLeft } from 'lucide-react';
 import { translateText } from '../../utils/translations';
+import { getCardTextureClasses, getAccentColorConfig, getBorderRadiusClass } from '../../utils/theme';
 
 interface SavingsScreenProps {
   accounts: SavingsAccount[];
   currency: 'IDR' | 'USD' | 'EUR';
   isDark?: boolean;
   language?: string;
+  settings?: AppSettings;
   onAddAccount: (acc: SavingsAccount) => void;
   onDeleteAccount: (id: string) => void;
   onOpenTransfer: () => void;
@@ -20,6 +22,7 @@ export const SavingsScreen: React.FC<SavingsScreenProps> = ({
   currency,
   isDark = false,
   language = 'ID',
+  settings,
   onAddAccount,
   onDeleteAccount,
   onOpenTransfer
@@ -32,6 +35,9 @@ export const SavingsScreen: React.FC<SavingsScreenProps> = ({
   const [notes, setNotes] = useState('');
 
   const t = (text: string) => translateText(text, language);
+  const cardTextureClass = getCardTextureClasses(settings?.cardTexture, isDark, settings?.liquidGlassEnabled !== false);
+  const accentConfig = getAccentColorConfig(settings?.accentColor);
+  const radiusClass = getBorderRadiusClass(settings?.borderRadius);
 
   const totalBalance = accounts.reduce((acc, a) => acc + a.balance, 0);
 
@@ -73,7 +79,7 @@ export const SavingsScreen: React.FC<SavingsScreenProps> = ({
       initial={{ opacity: 0, y: 12 }}
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.35, ease: 'easeOut' }}
-      className="space-y-5 pb-20 select-none"
+      className="space-y-5 pb-56 select-none"
     >
       {/* Header */}
       <div className="flex items-center justify-between">
@@ -84,7 +90,7 @@ export const SavingsScreen: React.FC<SavingsScreenProps> = ({
 
         <button
           onClick={() => setIsAdding(!isAdding)}
-          className="px-3.5 py-1.5 bg-[#6C4CF5] hover:bg-indigo-700 text-white text-xs font-bold rounded-2xl shadow-md transition-all inline-flex items-center space-x-1 shrink-0"
+          className={`px-3.5 py-1.5 ${accentConfig.primaryBg} text-white text-xs font-bold ${radiusClass.button} shadow-md transition-all inline-flex items-center space-x-1 shrink-0`}
         >
           <Plus className="w-4 h-4" />
           <span>{t("Tambah Rekening")}</span>
@@ -92,7 +98,7 @@ export const SavingsScreen: React.FC<SavingsScreenProps> = ({
       </div>
 
       {/* Total Balance Header Banner */}
-      <div className="p-5 bg-gradient-to-r from-[#0B1220] via-[#1E1B4B] to-[#6C4CF5] text-white rounded-[24px] shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border border-white/10 overflow-hidden">
+      <div className={`p-5 bg-gradient-to-r from-[#0B1220] via-[#1E1B4B] to-[#6C4CF5] text-white ${radiusClass.card} shadow-xl flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border border-white/10 overflow-hidden`}>
         <div className="min-w-0 flex-1">
           <span className="text-[10px] uppercase tracking-wider font-bold text-indigo-200 block truncate">{t("Total Kas Terakumulasi")}</span>
           <div className="text-xl sm:text-2xl font-black text-white mt-0.5 truncate font-mono">
@@ -200,9 +206,7 @@ export const SavingsScreen: React.FC<SavingsScreenProps> = ({
           return (
             <div
               key={acc.id}
-              className={`p-5 border rounded-[24px] shadow-xs space-y-3 relative overflow-hidden ${
-                isDark ? 'bg-[#1E293B] border-slate-800 text-white' : 'bg-white border-slate-200/80 text-slate-900'
-              }`}
+              className={`p-5 ${radiusClass.card} shadow-xs space-y-3 relative overflow-hidden ${cardTextureClass}`}
             >
               <div
                 className="absolute top-0 left-0 bottom-0 w-1.5"

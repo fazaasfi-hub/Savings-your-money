@@ -2,6 +2,8 @@ import React, { useState } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import { SavingsAccount, Transaction, Goal, UserProfile } from '../../types';
 import { formatCurrency, getTimeBasedGreeting, getInitials } from '../../utils/formatters';
+import { AnimatedCounter } from '../AnimatedCounter';
+import { RingingBellIcon, SpinningTargetIcon, PulsingSparklesIcon, BouncingWalletIcon } from '../InteractiveIcon';
 import {
   Wallet,
   ArrowUpRight,
@@ -30,7 +32,9 @@ import {
 } from 'lucide-react';
 import { AreaChart, Area, ResponsiveContainer, Tooltip } from 'recharts';
 
-import { getTranslation } from '../../utils/translations';
+import { getTranslation, translateText } from '../../utils/translations';
+import { AppSettings } from '../../types';
+import { getCardTextureClasses, getAccentColorConfig, getBorderRadiusClass, getDensityClasses } from '../../utils/theme';
 
 interface DashboardScreenProps {
   userProfile: UserProfile;
@@ -40,6 +44,7 @@ interface DashboardScreenProps {
   currency: 'IDR' | 'USD' | 'EUR';
   theme?: 'LIGHT' | 'DARK' | 'SYSTEM';
   language?: string;
+  settings?: AppSettings;
   onNavigate: (screen: string) => void;
   onOpenQuickAction: (action: 'INCOME' | 'EXPENSE' | 'TRANSFER' | 'TARGET' | 'SCAN_QR') => void;
 }
@@ -52,16 +57,40 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
   currency,
   theme = 'DARK',
   language = 'ID',
+  settings,
   onNavigate,
   onOpenQuickAction
 }) => {
   const t = getTranslation(language);
+  const tText = (text: string) => translateText(text, language);
   const [hideBalance, setHideBalance] = useState(false);
   const [activeAccountIndex, setActiveAccountIndex] = useState(0);
   const greetingInfo = getTimeBasedGreeting();
 
   const isDark = theme === 'DARK';
-  const totalBalance = accounts.reduce((acc, a) => acc + a.balance, 0);
+  const cardTextureClass = getCardTextureClasses(settings?.cardTexture, isDark, settings?.liquidGlassEnabled !== false);
+  const accentConfig = getAccentColorConfig(settings?.accentColor);
+  const radiusClass = getBorderRadiusClass(settings?.borderRadius);
+  const densityConfig = getDensityClasses(settings?.density);
+  const totalBalance = goals.reduce((acc, g) => acc + g.currentAmount, 0) + accounts.reduce((acc, a) => acc + a.balance, 0);
+
+  const liquidGlassEnabled = settings?.liquidGlassEnabled !== false;
+
+  const getButtonClass = (colorType: 'emerald' | 'rose' | 'indigo' | 'amber') => {
+    if (liquidGlassEnabled) {
+      if (isDark) {
+        return `bg-gradient-to-b from-white/15 via-slate-900/60 to-${colorType}-950/20 border border-white/20 hover:border-${colorType}-400/60 shadow-[0_8px_20px_rgba(0,0,0,0.4),inset_0_1px_1px_rgba(255,255,255,0.3)] transform-gpu`;
+      } else {
+        return `bg-gradient-to-b from-white/95 via-white/70 to-${colorType}-50/50 border border-white/90 hover:border-${colorType}-500/60 shadow-[0_8px_20px_rgba(0,0,0,0.06),inset_0_1px_2px_rgba(255,255,255,1)] transform-gpu`;
+      }
+    } else {
+      if (isDark) {
+        return `bg-slate-850 border border-slate-700 hover:border-${colorType}-500 text-slate-100 hover:bg-slate-800 hover:shadow-md`;
+      } else {
+        return `bg-slate-50 border border-slate-200 hover:border-${colorType}-500 text-slate-800 hover:bg-slate-100 hover:shadow-sm`;
+      }
+    }
+  };
 
   // Current Month calculations
   const currentMonthStr = new Date().toISOString().slice(0, 7);
@@ -79,21 +108,39 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
 
   const savingsRate = totalIncomeMonth > 0
     ? Math.max(0, Math.round(((totalIncomeMonth - totalExpenseMonth) / totalIncomeMonth) * 100))
-    : 76;
+    : 0;
 
-  const recentTransactions = transactions
-    .filter(t => !t.isDeleted)
-    .slice(0, 5);
+  const activeTx = transactions.filter(t => !t.isDeleted);
+  const recentTransactions = activeTx.slice(0, 5);
 
-  const netWorthData = [
-    { month: 'Mei', value: 28000000 },
-    { month: 'Jun', value: 33500000 },
-    { month: 'Jul', value: 39000000 },
+  const growthPercent = (activeTx.length === 0 || totalBalance === 0)
+    ? 0
+    : Math.round(((totalIncomeMonth - totalExpenseMonth) / Math.max(1, totalBalance)) * 100);
+
+  const netWorthData = activeTx.length === 0 ? [
+    { month: 'Mei', value: totalBalance },
+    { month: 'Jun', value: totalBalance },
+    { month: 'Jul', value: totalBalance },
+    { month: 'Agu', value: totalBalance }
+  ] : [
+    { month: 'Mei', value: Math.max(0, totalBalance - totalIncomeMonth) },
+    { month: 'Jun', value: Math.max(0, totalBalance - (totalIncomeMonth * 0.5)) },
+    { month: 'Jul', value: Math.max(0, totalBalance - (totalIncomeMonth * 0.2)) },
     { month: 'Agu', value: totalBalance }
   ];
 
+  const healthScore = Math.min(100, Math.round(
+    (savingsRate * 0.4) + 
+    (goals.length > 0 ? 20 : 0) + 
+    (goals.length > 0 ? (goals.reduce((a, b) => a + (b.currentAmount / Math.max(1, b.targetAmount)), 0) / goals.length) * 30 : 0) +
+    (totalBalance > 0 ? 10 : 0)
+  ));
+
+  const healthStatus = healthScore >= 80 ? tText('Sangat Sehat 🎉') : healthScore >= 50 ? tText('Sehat & Stabil 👍') : tText('Perlu Ditingkatkan 💪');
+  const healthColor = healthScore >= 80 ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' : healthScore >= 50 ? 'text-amber-400 bg-amber-500/10 border-amber-500/20' : 'text-rose-400 bg-rose-500/10 border-rose-500/20';
+
   return (
-    <div className={`space-y-4 pb-20 select-none ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
+    <div className={`space-y-4 pb-56 select-none ${isDark ? 'text-zinc-100' : 'text-slate-900'}`}>
       {/* 1. CLEAN HEADER (Google Wallet / Revolut Style) */}
       <div className="flex items-center justify-between pt-1 pb-1">
         <div className="flex items-center space-x-3">
@@ -142,210 +189,105 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
         </div>
       </div>
 
-      {/* 2. REFINED BALANCE CARD */}
-      <div className="p-4 sm:p-5 rounded-2xl fintech-accent-card space-y-3 overflow-hidden">
-        {/* Top Info Bar */}
-        <div className="flex items-center justify-between gap-2">
-          <div className="flex items-center space-x-1.5 min-w-0">
-            <div className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
-            <span className="text-[10px] font-bold tracking-wider text-zinc-400 uppercase truncate">
-              {t.totalBalance}
-            </span>
-          </div>
-
-          <div className="flex items-center space-x-2 shrink-0">
-            <span className="inline-flex items-center space-x-1 px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-semibold rounded-full border border-emerald-500/20">
-              <ArrowUp className="w-3 h-3" />
-              <span>{savingsRate}% {t.savedRateSuffix}</span>
-            </span>
-
+      {/* 2. CREATED SAVINGS CARDS (Swipable if > 1, hidden if 0) */}
+      {goals && goals.length > 0 && (
+        <div className="space-y-1.5">
+          <div className="flex items-center justify-between px-1">
+            <div className="flex items-center space-x-1.5">
+              <div className="w-2 h-2 rounded-full bg-emerald-400 shrink-0" />
+              <span className="text-[10px] font-bold tracking-wider text-zinc-400 uppercase">
+                {tText('Tabungan Kamu')} ({goals.length})
+              </span>
+            </div>
             <button
-              onClick={() => setHideBalance(!hideBalance)}
-              className="p-1.5 bg-zinc-800/60 hover:bg-zinc-700/60 rounded-lg text-zinc-300 transition-colors border border-zinc-700/50"
-              title={hideBalance ? t.showBalance : t.hideBalance}
+              onClick={() => onNavigate('wishlist')}
+              className="text-[10px] font-semibold text-indigo-400 hover:text-indigo-300 flex items-center gap-0.5"
             >
-              {hideBalance ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+              <span>+ {tText('Buat Tabungan')}</span>
+              <ChevronRight className="w-3 h-3" />
             </button>
           </div>
-        </div>
 
-        {/* Balance Display */}
-        <div className="pt-0.5">
-          <div className="text-xl sm:text-2xl font-bold tracking-tight text-white font-mono truncate">
-            {hideBalance ? 'Rp •••••••••' : formatCurrency(totalBalance, currency)}
-          </div>
-        </div>
-
-        {/* Income & Expense Metrics */}
-        <div className="grid grid-cols-2 gap-2.5 pt-1 border-t border-zinc-800/80">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-7 h-7 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center shrink-0 border border-emerald-500/20">
-              <ArrowDownRight className="w-3.5 h-3.5" />
-            </div>
-            <div className="min-w-0">
-              <span className="text-[9px] font-medium uppercase tracking-wider text-zinc-400 block">{t.totalIncome}</span>
-              <span className="text-xs font-bold text-emerald-400 font-mono truncate block">
-                {hideBalance ? '••••••••' : `+${formatCurrency(totalIncomeMonth, currency)}`}
-              </span>
-            </div>
-          </div>
-
-          <div className="flex items-center space-x-2.5">
-            <div className="w-7 h-7 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center shrink-0 border border-rose-500/20">
-              <ArrowUpRight className="w-3.5 h-3.5" />
-            </div>
-            <div className="min-w-0">
-              <span className="text-[9px] font-medium uppercase tracking-wider text-zinc-400 block">{t.totalExpense}</span>
-              <span className="text-xs font-bold text-rose-400 font-mono truncate block">
-                {hideBalance ? '••••••••' : `-${formatCurrency(totalExpenseMonth, currency)}`}
-              </span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* 3. QUICK ACTIONS (EXACTLY 4 EQUAL BUTTONS PER ROW) */}
-      <div className="space-y-2">
-        <h3 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 px-1">
-          {t.quickActions}
-        </h3>
-
-        <div className="grid grid-cols-4 gap-2">
-          <button
-            onClick={() => onOpenQuickAction('INCOME')}
-            className="p-3 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 rounded-2xl flex flex-col items-center justify-center space-y-1.5 text-center transition-all"
-          >
-            <div className="w-9 h-9 rounded-xl bg-emerald-500/10 text-emerald-400 flex items-center justify-center border border-emerald-500/20">
-              <PlusCircle className="w-4 h-4" />
-            </div>
-            <span className="text-[10px] font-bold text-zinc-200 truncate w-full">{t.depositCash}</span>
-          </button>
-
-          <button
-            onClick={() => onOpenQuickAction('EXPENSE')}
-            className="p-3 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 rounded-2xl flex flex-col items-center justify-center space-y-1.5 text-center transition-all"
-          >
-            <div className="w-9 h-9 rounded-xl bg-rose-500/10 text-rose-400 flex items-center justify-center border border-rose-500/20">
-              <MinusCircle className="w-4 h-4" />
-            </div>
-            <span className="text-[10px] font-bold text-zinc-200 truncate w-full">{t.withdrawCash}</span>
-          </button>
-
-          <button
-            onClick={() => onOpenQuickAction('TRANSFER')}
-            className="p-3 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 rounded-2xl flex flex-col items-center justify-center space-y-1.5 text-center transition-all"
-          >
-            <div className="w-9 h-9 rounded-xl bg-indigo-500/10 text-indigo-400 flex items-center justify-center border border-indigo-500/20">
-              <Repeat className="w-4 h-4" />
-            </div>
-            <span className="text-[10px] font-bold text-zinc-200 truncate w-full">{t.transfer}</span>
-          </button>
-
-          <button
-            onClick={() => onOpenQuickAction('SCAN_QR')}
-            className="p-3 bg-zinc-900/90 hover:bg-zinc-800 border border-zinc-800 rounded-2xl flex flex-col items-center justify-center space-y-1.5 text-center transition-all"
-          >
-            <div className="w-9 h-9 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center border border-amber-500/20">
-              <QrCode className="w-4 h-4" />
-            </div>
-            <span className="text-[10px] font-bold text-zinc-200 truncate w-full">{t.scanQris}</span>
-          </button>
-        </div>
-      </div>
-
-      {/* 3.1 SETOR TABUNGAN CEPAT & QUICK DEPOSIT PRESETS */}
-      <div className="p-4 rounded-2xl bg-gradient-to-r from-indigo-900/60 via-purple-900/40 to-zinc-900 border border-indigo-500/30 space-y-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-2.5">
-            <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
-              <PlusCircle className="w-4 h-4" />
-            </div>
-            <div>
-              <div className="flex items-center gap-1.5">
-                <span className="text-xs font-black text-white">Setor Tabungan Cepat</span>
-                <span className="text-[9px] font-extrabold text-indigo-300 bg-indigo-500/20 px-1.5 py-0.5 rounded-full border border-indigo-500/30 uppercase">Tabungan</span>
-              </div>
-              <p className="text-[10px] text-zinc-300">Tambah saldo celengan & wujudkan target impianmu</p>
-            </div>
-          </div>
-          
-          <button
-            onClick={() => onOpenQuickAction('INCOME')}
-            className="px-3 py-1.5 bg-[#6C4CF5] hover:bg-indigo-600 text-white text-[10px] font-bold rounded-xl shadow-lg transition-all shrink-0 flex items-center gap-1"
-          >
-            <Sparkles className="w-3 h-3" />
-            <span>Setor Sekarang</span>
-          </button>
-        </div>
-
-        {/* Quick Deposit Buttons */}
-        <div className="pt-1 border-t border-indigo-500/20">
-          <span className="text-[9px] font-bold text-indigo-300 uppercase tracking-wider block mb-1.5">Nominal Setor Instant:</span>
-          <div className="grid grid-cols-4 gap-1.5">
-            {[10000, 20000, 50000, 100000].map((amt) => (
-              <button
-                key={amt}
-                onClick={() => onOpenQuickAction('INCOME')}
-                className="py-1.5 px-2 bg-indigo-950/80 hover:bg-indigo-800/80 text-indigo-200 border border-indigo-500/30 rounded-xl text-[10px] font-bold text-center transition-colors"
-              >
-                +Rp {(amt / 1000).toFixed(0)}k
-              </button>
-            ))}
-          </div>
-        </div>
-      </div>
-
-      {/* 3.2 TARGET IMPIN & CELENGAN DIGITAL */}
-      {goals && goals.length > 0 && (
-        <div className="space-y-2">
-          <div className="flex items-center justify-between px-1">
-            <h3 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400 flex items-center gap-1.5">
-              <Target className="w-3.5 h-3.5 text-amber-400" />
-              <span>Target Impian & Celengan ({goals.length})</span>
-            </h3>
-            <span
-              className="text-[10px] font-semibold text-indigo-400 flex items-center gap-0.5 cursor-pointer hover:text-indigo-300"
-              onClick={() => onNavigate('wishlist')}
-            >
-              <span>Lihat Semua</span>
-              <ChevronRight className="w-3 h-3" />
-            </span>
-          </div>
-
-          <div className="space-y-2">
-            {goals.slice(0, 3).map((goal) => {
+          <div className={`flex space-x-3 overflow-x-auto no-scrollbar py-1 ${goals.length > 1 ? 'snap-x snap-mandatory' : ''}`}>
+            {goals.map((goal) => {
               const progress = Math.min(100, Math.round((goal.currentAmount / goal.targetAmount) * 100));
+
               return (
                 <div
                   key={goal.id}
-                  className="p-3.5 rounded-2xl fintech-card space-y-2 hover:border-amber-500/40 transition-all cursor-pointer"
-                  onClick={() => onNavigate('wishlist')}
+                  className={`${
+                    goals.length === 1 ? 'w-full' : 'min-w-[280px] w-[280px] sm:min-w-[320px] sm:w-[320px] shrink-0 snap-center'
+                  } p-4 sm:p-5 ${radiusClass.card} ${cardTextureClass} space-y-3 overflow-hidden shadow-lg relative`}
                 >
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center space-x-2.5 min-w-0">
-                      <div className="w-8 h-8 rounded-xl bg-amber-500/10 text-amber-400 flex items-center justify-center shrink-0 border border-amber-500/20 font-bold text-xs">
-                        🎯
+                  {/* iOS 18 Liquid Glass Specular Reflection Glare */}
+                  {liquidGlassEnabled && (
+                    <>
+                      <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/70 to-transparent pointer-events-none z-10" />
+                      <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/15 to-transparent pointer-events-none rounded-t-[24px]" />
+                    </>
+                  )}
+                  {/* Card Header */}
+                  <div className="flex items-center justify-between gap-2">
+                    <div className="flex items-center space-x-2 min-w-0">
+                      <div className="w-7 h-7 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center border border-indigo-500/30 shrink-0">
+                        <Target className="w-4 h-4" />
                       </div>
                       <div className="min-w-0">
-                        <h4 className="text-xs font-bold text-white truncate">{goal.name}</h4>
-                        <span className="text-[9px] text-zinc-400 font-medium">{goal.category || 'Tabungan'}</span>
+                        <h4 className="text-xs font-black text-white truncate">{goal.name}</h4>
+                        <span className="text-[9px] text-indigo-300 font-semibold uppercase tracking-wider block">
+                          {goal.category || tText('Tabungan')}
+                        </span>
                       </div>
                     </div>
 
-                    <div className="text-right shrink-0">
-                      <span className="text-xs font-bold text-amber-400 font-mono block">{progress}%</span>
-                      <span className="text-[9px] text-zinc-400 font-mono">
-                        {formatCurrency(goal.currentAmount, currency)} / {formatCurrency(goal.targetAmount, currency)}
+                    <div className="flex items-center space-x-1.5 shrink-0">
+                      <span className="px-2 py-0.5 bg-emerald-500/10 text-emerald-400 text-[10px] font-bold rounded-full border border-emerald-500/20 font-mono">
+                        {progress}%
                       </span>
+                      <button
+                        onClick={() => setHideBalance(!hideBalance)}
+                        className="p-1.5 bg-zinc-800/60 hover:bg-zinc-700/60 rounded-lg text-zinc-300 transition-colors border border-zinc-700/50"
+                        title={hideBalance ? t.showBalance : t.hideBalance}
+                      >
+                        {hideBalance ? <EyeOff className="w-3.5 h-3.5" /> : <Eye className="w-3.5 h-3.5" />}
+                      </button>
                     </div>
                   </div>
 
-                  {/* Progress Bar */}
-                  <div className="w-full bg-zinc-800 h-2 rounded-full overflow-hidden p-0.5 border border-zinc-700/50">
-                    <div
-                      className="bg-gradient-to-r from-amber-500 to-indigo-500 h-full rounded-full transition-all duration-500"
-                      style={{ width: `${progress}%` }}
-                    />
+                  {/* Saldo Tabungan Display */}
+                  <div className="pt-1">
+                    <span className="text-[9px] font-medium text-zinc-400 uppercase tracking-wider block mb-0.5">
+                      {tText('Saldo Terkumpul')}
+                    </span>
+                    <div className="text-xl sm:text-2xl font-black text-white font-mono truncate">
+                      {hideBalance ? 'Rp •••••••••' : formatCurrency(goal.currentAmount, currency)}
+                    </div>
+                  </div>
+
+                  {/* Progress Bar & Target */}
+                  <div className="space-y-1.5 pt-1 border-t border-zinc-800/80">
+                    <div className="flex justify-between items-center text-[10px]">
+                      <span className="text-zinc-400">{tText('Target:')} <strong className="text-zinc-200 font-mono">{formatCurrency(goal.targetAmount, currency)}</strong></span>
+                      <span className="text-zinc-400">{goal.deadline ? `${tText('Deadline:')} ${goal.deadline}` : ''}</span>
+                    </div>
+
+                    <div className="w-full bg-zinc-900 h-2.5 rounded-full overflow-hidden p-0.5 border border-zinc-700/60">
+                      <div
+                        className="bg-gradient-to-r from-indigo-500 via-purple-500 to-emerald-400 h-full rounded-full transition-all duration-500"
+                        style={{ width: `${progress}%` }}
+                      />
+                    </div>
+                  </div>
+
+                  {/* Action Button */}
+                  <div className="pt-1 flex items-center justify-between">
+                    <button
+                      onClick={() => onOpenQuickAction('INCOME')}
+                      className={`w-full py-2 ${accentConfig.primaryBg} text-white text-xs font-bold ${radiusClass.button} shadow-md transition-all flex items-center justify-center space-x-1.5`}
+                    >
+                      <PlusCircle className="w-3.5 h-3.5" />
+                      <span>+ {tText('Setor ke Tabungan Ini')}</span>
+                    </button>
                   </div>
                 </div>
               );
@@ -354,64 +296,193 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
         </div>
       )}
 
-      {/* 4. ACCOUNTS VAULT (CLEAN SWIPEABLE CARDS) */}
-      <div className="space-y-2">
+      {/* 3. QUICK ACTIONS (LIQUID GLASS IPHONE / FLUTTER GLASS DOCK STYLE) */}
+      <div className="space-y-2.5">
         <div className="flex items-center justify-between px-1">
-          <h3 className="text-[11px] font-bold uppercase tracking-wider text-zinc-400">
-            {t.yourAccounts} ({accounts.length})
+          <h3 className="text-[11px] font-extrabold uppercase tracking-wider text-zinc-400">
+            {t.quickActions}
           </h3>
-          <span
-            className="text-[10px] font-semibold text-indigo-400 flex items-center gap-0.5 cursor-pointer hover:text-indigo-300"
-            onClick={() => onNavigate('savings')}
-          >
-            <span>{t.manage}</span>
-            <ChevronRight className="w-3 h-3" />
+          <span className={`text-[9px] font-mono px-2 py-0.5 rounded-full font-bold border ${
+            liquidGlassEnabled
+              ? 'bg-indigo-500/10 text-indigo-400 border-indigo-500/20'
+              : 'bg-emerald-500/10 text-emerald-400 border-emerald-500/20'
+          }`}>
+            {liquidGlassEnabled ? 'Liquid Glass' : 'Minimalis'}
           </span>
         </div>
 
-        <div className="flex space-x-2.5 overflow-x-auto no-scrollbar py-0.5">
-          {accounts.map((acc, idx) => (
-            <div
-              key={acc.id}
-              onClick={() => setActiveAccountIndex(idx)}
-              className={`min-w-[220px] p-4 rounded-2xl fintech-card shrink-0 cursor-pointer transition-all ${
-                activeAccountIndex === idx ? 'border-indigo-500/60 ring-1 ring-indigo-500/40' : 'opacity-85'
-              }`}
+        {/* Capsule Bar Container */}
+        <div className={`p-2.5 ${radiusClass.card} transition-all duration-300 relative overflow-hidden ${
+          liquidGlassEnabled
+            ? (isDark 
+                ? 'backdrop-blur-md bg-gradient-to-b from-white/10 via-slate-950/60 to-black/80 border transform-gpu border-white/15 shadow-[0_20px_50px_rgba(0,0,0,0.65),inset_0_1.5px_1px_rgba(255,255,255,0.25)]' 
+                : 'backdrop-blur-md bg-gradient-to-b from-white/90 via-slate-100/70 to-white/60 border transform-gpu border-white/80 shadow-[0_20px_40px_rgba(108,76,245,0.12),inset_0_1.5px_2px_rgba(255,255,255,0.9)]')
+            : (isDark
+                ? 'bg-slate-900 border border-slate-800 shadow-md'
+                : 'bg-white border border-slate-200 shadow-sm')
+        }`}>
+          {/* Top Specular Reflection Beam - glass mode only */}
+          {liquidGlassEnabled && (
+            <div className="absolute top-0 inset-x-0 h-[2px] bg-gradient-to-r from-transparent via-white/50 to-transparent pointer-events-none z-10" />
+          )}
+
+          <div className="grid grid-cols-4 gap-2 relative z-20">
+            {/* Quick Action 1: Income */}
+            <motion.button
+              whileHover={{ scale: 1.06, y: -3 }}
+              whileTap={{ scale: 0.92 }}
+              transition={{ type: "spring", stiffness: 500, damping: 25 }}
+              onClick={() => onOpenQuickAction('INCOME')}
+              className={`group relative p-3 rounded-2xl flex flex-col items-center justify-center space-y-1.5 text-center overflow-hidden transition-all duration-300 ${getButtonClass('emerald')}`}
             >
-              <div className="space-y-2.5">
-                <div className="flex items-center justify-between">
-                  <span className="px-2 py-0.5 bg-zinc-800 text-[9px] font-semibold rounded text-zinc-300 border border-zinc-700/50">
-                    {acc.type === 'EMERGENCY' ? t.emergency : acc.type === 'INVESTMENT' ? t.investment : t.main}
-                  </span>
-                  <span className="text-[9px] text-zinc-400 font-mono">{acc.accountNumber || '5270••8812'}</span>
-                </div>
+              {/* Internal Glass Highlight */}
+              {liquidGlassEnabled && (
+                <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent pointer-events-none rounded-t-2xl" />
+              )}
+              <div className="absolute -bottom-6 -right-6 w-14 h-14 bg-emerald-500/20 rounded-full blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-300" />
 
-                <div>
-                  <h4 className="text-xs font-bold text-white truncate">{acc.name}</h4>
-                  <p className="text-sm font-bold text-white font-mono mt-0.5">
-                    {hideBalance ? '••••••••' : formatCurrency(acc.balance, currency)}
-                  </p>
-                </div>
-
-                <div className="pt-2 border-t border-zinc-800 flex items-center justify-between text-[9px]">
-                  <span className="text-zinc-400">{t.annualInterest}</span>
-                  <span className="text-emerald-400 font-bold">{acc.interestRate}% p.a.</span>
-                </div>
+              <div className="relative z-10 w-10 h-10 rounded-xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center border border-emerald-400/40 shadow-[0_4px_12px_rgba(16,185,129,0.25),inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                <PlusCircle className="w-5 h-5 drop-shadow-[0_2px_6px_rgba(16,185,129,0.7)]" />
               </div>
+              <span className={`relative z-10 text-[10.5px] font-extrabold truncate w-full ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
+                {t.depositCash}
+              </span>
+            </motion.button>
+
+            {/* Quick Action 2: Expense */}
+            <motion.button
+              whileHover={{ scale: 1.06, y: -3 }}
+              whileTap={{ scale: 0.92 }}
+              transition={{ type: "spring", stiffness: 500, damping: 25 }}
+              onClick={() => onOpenQuickAction('EXPENSE')}
+              className={`group relative p-3 rounded-2xl flex flex-col items-center justify-center space-y-1.5 text-center overflow-hidden transition-all duration-300 ${getButtonClass('rose')}`}
+            >
+              {/* Internal Glass Highlight */}
+              {liquidGlassEnabled && (
+                <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent pointer-events-none rounded-t-2xl" />
+              )}
+              <div className="absolute -bottom-6 -right-6 w-14 h-14 bg-rose-500/20 rounded-full blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-300" />
+
+              <div className="relative z-10 w-10 h-10 rounded-xl bg-rose-500/20 text-rose-400 flex items-center justify-center border border-rose-400/40 shadow-[0_4px_12px_rgba(244,63,94,0.25),inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300">
+                <MinusCircle className="w-5 h-5 drop-shadow-[0_2px_6px_rgba(244,63,94,0.7)]" />
+              </div>
+              <span className={`relative z-10 text-[10.5px] font-extrabold truncate w-full ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
+                {t.withdrawCash}
+              </span>
+            </motion.button>
+
+            {/* Quick Action 3: Transfer */}
+            <motion.button
+              whileHover={{ scale: 1.06, y: -3 }}
+              whileTap={{ scale: 0.92 }}
+              transition={{ type: "spring", stiffness: 500, damping: 25 }}
+              onClick={() => onOpenQuickAction('TRANSFER')}
+              className={`group relative p-3 rounded-2xl flex flex-col items-center justify-center space-y-1.5 text-center overflow-hidden transition-all duration-300 ${getButtonClass('indigo')}`}
+            >
+              {/* Internal Glass Highlight */}
+              {liquidGlassEnabled && (
+                <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent pointer-events-none rounded-t-2xl" />
+              )}
+              <div className="absolute -bottom-6 -right-6 w-14 h-14 bg-indigo-500/20 rounded-full blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-300" />
+
+              <div className="relative z-10 w-10 h-10 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center border border-indigo-400/40 shadow-[0_4px_12px_rgba(99,102,241,0.25),inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:scale-110 group-hover:rotate-6 transition-all duration-300">
+                <Repeat className="w-5 h-5 drop-shadow-[0_2px_6px_rgba(99,102,241,0.7)]" />
+              </div>
+              <span className={`relative z-10 text-[10.5px] font-extrabold truncate w-full ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
+                {t.transfer}
+              </span>
+            </motion.button>
+
+            {/* Quick Action 4: QRIS */}
+            <motion.button
+              whileHover={{ scale: 1.06, y: -3 }}
+              whileTap={{ scale: 0.92 }}
+              transition={{ type: "spring", stiffness: 500, damping: 25 }}
+              onClick={() => onOpenQuickAction('SCAN_QR')}
+              className={`group relative p-3 rounded-2xl flex flex-col items-center justify-center space-y-1.5 text-center overflow-hidden transition-all duration-300 ${getButtonClass('amber')}`}
+            >
+              {/* Internal Glass Highlight */}
+              {liquidGlassEnabled && (
+                <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/25 to-transparent pointer-events-none rounded-t-2xl" />
+              )}
+              <div className="absolute -bottom-6 -right-6 w-14 h-14 bg-amber-500/20 rounded-full blur-xl pointer-events-none group-hover:scale-150 transition-transform duration-300" />
+
+              <div className="relative z-10 w-10 h-10 rounded-xl bg-amber-500/20 text-amber-400 flex items-center justify-center border border-amber-400/40 shadow-[0_4px_12px_rgba(245,158,11,0.25),inset_0_1px_1px_rgba(255,255,255,0.5)] group-hover:scale-110 group-hover:-rotate-6 transition-all duration-300">
+                <QrCode className="w-5 h-5 drop-shadow-[0_2px_6px_rgba(245,158,11,0.7)]" />
+              </div>
+              <span className={`relative z-10 text-[10.5px] font-extrabold truncate w-full ${isDark ? 'text-slate-100' : 'text-slate-800'}`}>
+                {t.scanQris}
+              </span>
+            </motion.button>
+          </div>
+        </div>
+      </div>
+
+      {/* 3.1 SETOR TABUNGAN CEPAT & QUICK DEPOSIT PRESETS */}
+      <div className={`relative overflow-hidden p-4 ${radiusClass.card} ${cardTextureClass} space-y-3`}>
+        {/* iOS 18 Specular Glare */}
+        {liquidGlassEnabled && (
+          <>
+            <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/70 to-transparent pointer-events-none z-10" />
+            <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none rounded-t-[24px]" />
+          </>
+        )}
+        <div className="flex items-center justify-between">
+          <div className="flex items-center space-x-2.5">
+            <div className="w-8 h-8 rounded-xl bg-indigo-500/20 text-indigo-400 flex items-center justify-center border border-indigo-500/30">
+              <PlusCircle className="w-4 h-4" />
             </div>
-          ))}
+            <div>
+              <div className="flex items-center gap-1.5">
+                <span className="text-xs font-black text-white">{tText('Setor Tabungan Cepat')}</span>
+                <span className="text-[9px] font-extrabold text-indigo-300 bg-indigo-500/20 px-1.5 py-0.5 rounded-full border border-indigo-500/30 uppercase">{tText('Tabungan')}</span>
+              </div>
+              <p className="text-[10px] text-zinc-300">{tText('Tambah saldo celengan tabungan kamu dengan mudah')}</p>
+            </div>
+          </div>
+          
+          <button
+            onClick={() => onOpenQuickAction('INCOME')}
+            className={`px-3 py-1.5 ${accentConfig.primaryBg} text-white text-[10px] font-bold ${radiusClass.button} shadow-lg transition-all shrink-0 flex items-center gap-1`}
+          >
+            <Sparkles className="w-3 h-3" />
+            <span>{tText('Setor Sekarang')}</span>
+          </button>
+        </div>
+
+        {/* Quick Deposit Buttons */}
+        <div className="pt-1 border-t border-indigo-500/20">
+          <span className="text-[9px] font-bold text-indigo-300 uppercase tracking-wider block mb-1.5">{tText('Nominal Setor Instant:')}</span>
+          <div className="grid grid-cols-4 gap-1.5">
+            {[10000, 20000, 50000, 100000].map((amt) => (
+              <button
+                key={amt}
+                onClick={() => onOpenQuickAction('INCOME')}
+                className={`py-1.5 px-2 bg-indigo-950/80 hover:bg-indigo-800/80 text-indigo-200 border border-indigo-500/30 ${radiusClass.button} text-[10px] font-bold text-center transition-colors`}
+              >
+                +Rp {(amt / 1000).toFixed(0)}k
+              </button>
+            ))}
+          </div>
         </div>
       </div>
 
       {/* 5. NET WORTH CHART CARD */}
-      <div className="p-4 rounded-2xl fintech-card space-y-2">
+      <div className={`relative overflow-hidden p-4 ${radiusClass.card} ${cardTextureClass} space-y-2`}>
+        {/* iOS 18 Specular Glare */}
+        <div className="absolute top-0 inset-x-0 h-[1.5px] bg-gradient-to-r from-transparent via-white/70 to-transparent pointer-events-none z-10" />
+        <div className="absolute top-0 inset-x-0 h-1/2 bg-gradient-to-b from-white/10 to-transparent pointer-events-none rounded-t-[24px]" />
         <div className="flex items-center justify-between">
           <div>
             <span className="text-[10px] font-bold uppercase tracking-wider text-zinc-400 block">{t.netWorthGrowth}</span>
             <div className="text-xs font-bold mt-0.5 flex items-center gap-1.5">
               <span className="text-white font-mono">{formatCurrency(totalBalance, currency)}</span>
-              <span className="text-[9px] font-bold text-emerald-400 bg-emerald-500/10 px-1.5 py-0.5 rounded border border-emerald-500/20">
-                +18.4%
+              <span className={`text-[9px] font-bold px-1.5 py-0.5 rounded border ${
+                growthPercent >= 0 
+                  ? 'text-emerald-400 bg-emerald-500/10 border-emerald-500/20' 
+                  : 'text-rose-400 bg-rose-500/10 border-rose-500/20'
+              }`}>
+                {growthPercent >= 0 ? `+${growthPercent}%` : `${growthPercent}%`}
               </span>
             </div>
           </div>
@@ -467,7 +538,7 @@ export const DashboardScreen: React.FC<DashboardScreenProps> = ({
           {recentTransactions.map((tx) => (
             <div
               key={tx.id}
-              className="p-3 rounded-2xl fintech-card flex items-center justify-between transition-colors hover:bg-zinc-800/50"
+              className={`p-3 ${radiusClass.button} ${cardTextureClass} flex items-center justify-between transition-colors`}
             >
               <div className="flex items-center space-x-3 min-w-0">
                 <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs shrink-0 ${

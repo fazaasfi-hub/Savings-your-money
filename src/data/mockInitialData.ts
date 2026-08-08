@@ -49,7 +49,12 @@ export const DEFAULT_SETTINGS: AppSettings = {
   language: 'ID',
   currency: 'IDR',
   dateFormat: 'DD/MM/YYYY',
-  autoBackup: true
+  autoBackup: true,
+  density: 'NORMAL',
+  cardTexture: 'GLASS',
+  accentColor: 'INDIGO',
+  borderRadius: 'LG',
+  liquidGlassEnabled: true
 };
 
 export const INITIAL_NOTIFICATIONS: any[] = [];
